@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -21,11 +22,13 @@ const Footer = () => {
         <div>
           {/* Wrapper: stack on mobile, row on md+ */}
           <div className="flex flex-col gap-y-10 md:flex-row md:gap-x-10">
-            <img
-              className="mx-auto w-[200px] md:mx-0"
-              src="./logo2.svg"
-              alt="JB Blanket"
-            />
+            <Link to="/">
+              <img
+                className="mx-auto w-[200px] md:mx-0"
+                src="/logo2.svg"
+                alt="JB Blanket"
+              />
+            </Link>
 
             <div className="flex flex-1 flex-col gap-y-6">
               {/* Top section: stack on mobile */}
@@ -135,7 +138,7 @@ const Footer = () => {
               </div>
 
               {/* Socials: Collapsible on mobile */}
-              <div className="flex flex-col gap-y-4 px-4  border-b border-b-white pb-4">
+              <div className="flex flex-col gap-y-4 border-b border-b-white px-4 pb-4">
                 <p className="flex cursor-pointer items-center justify-between text-xl md:cursor-default">
                   Follow Us
                 </p>

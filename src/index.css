@@ -5,6 +5,9 @@
 @theme {
   --color-primary: #002051;
   --color-primary-50: #ebf3ff;
+  --color-strokeFont: #a098ae;
+  --color-mainProfile: #dedede;
+  --color-mainProfile-600: #565e6d;
 }
 
 @layer base {
