@@ -33,7 +33,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </Link>
 
         <div className="flex items-center justify-center gap-3">
-          <Link className="hidden lg:block" to={"/cart"}>
+          <Link className="hidden lg:block" to={"cart"}>
             <ShoppingCart size={24} />
           </Link>
           <div className="relative">

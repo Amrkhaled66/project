@@ -10,6 +10,7 @@ const DashBoardLayout: React.FC = () => {
     if (window.innerWidth >= 1024) {
       return true;
     }
+    console.log(window.innerWidth); 
     return false;
   });
 
@@ -23,7 +24,6 @@ const DashBoardLayout: React.FC = () => {
   };
 
   const openSidebar = (): void => {
-    console.log("openSidebar");
     setIsSidebarOpen(true);
   };
 

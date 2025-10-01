@@ -23,11 +23,11 @@ interface DashboardSidebarProps {
 }
 const menuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: UploadCloud, label: "Uploads", path: "/dashboard/uploads" },
-  { icon: Hand, label: "Design", path: "/dashboard/design" },
-  { icon: User, label: "Profile", path: "/dashboard/profile" },
-  { icon: ShoppingCart, label: "Cart", path: "/dashboard/cart" },
-  { icon: ClipboardList, label: "Orders", path: "/dashboard/orders" },
+  { icon: UploadCloud, label: "Uploads", path: "/uploads" },
+  { icon: Hand, label: "Design", path: "/design" },
+  { icon: User, label: "Profile", path: "/user-profile" },
+  { icon: ShoppingCart, label: "Cart", path: "/cart" },
+  { icon: ClipboardList, label: "Orders", path: "/orders" },
 ];
 
 const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
@@ -38,21 +38,20 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   const name = "Jane Doa";
   const email = "Jane_Doa@gmail.com";
 
-  console.log(isOpen);
   return (
     <>
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="bg-opacity-50 fixed inset-0 z-40 bg-black/50 lg:hidden"
+          className="bg-opacity-50 fixed inset-0 z-40 bg-black/50 lg:pointer-events-none lg:hidden"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`animate z-40 fixed lg:relative min-h-screen bg-mainProfile py-5 ps-3 ${
-          isOpen ? "w-66 translate-0" : " -translate-x-100 lg:w-22"
+        className={`animate bg-mainProfile fixed z-40 min-h-screen py-5 ps-3 lg:relative ${
+          isOpen ? "w-66 translate-0" : "-translate-x-100 lg:w-22"
         } space-y-9 lg:translate-x-0`}
       >
         <div className="flex items-center">
@@ -85,7 +84,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                 <li key={item.path}>
                   <NavLink
                     to={`/profile${item.path}`}
-                    onClick={onClose}
+                    onClick={window.innerWidth < 1024 ? onClose : () => {}}
                     className={({ isActive }) =>
                       `${isActive ? "bg-white text-black hover:bg-white/90" : "text-strokeFont"} group flex items-center gap-x-3 rounded-ss-3xl rounded-es-3xl p-2 ps-5 transition-colors hover:bg-gray-100`
                     }

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Home, Dashboard } from "./pages";
+import { Home, Dashboard, Uploads, Cart ,UserProfile} from "./pages";
 import MainLayout from "./layouts/MainLayout";
 import DashBoardLayout from "./layouts/DashBoardLayout";
 import ScrollToTop from "./components/ui/ScroolToTop";
@@ -20,8 +20,11 @@ export default function AppRouter() {
           <Route index element={<Home />} />
         </Route>
         <Route path="/profile" element={<Navigate to="/profile/dashboard" />} />
-        <Route path="/profile/dashboard" element={<DashBoardLayout />}>
-          <Route index element={<Dashboard />} />
+        <Route path="/profile" element={<DashBoardLayout />}>
+          <Route index path="dashboard" element={<Dashboard />} />
+          <Route path="uploads" element={<Uploads />} />
+          <Route path="cart" element={<Cart />} />
+          <Route path="user-profile" element={<UserProfile />} />
         </Route>
 
         {/* <Route path="/about" element={<About />} />

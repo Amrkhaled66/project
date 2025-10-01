@@ -3,9 +3,10 @@ import Button from "src/components/ui/Button";
 import GoastButton from "src/components/ui/GoastButton";
 import { useState } from "react";
 
+import { ShoppingCart, User } from "lucide-react";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const isAuth = true;
   return (
     <div className="fixed top-0 left-0 z-50 w-full bg-white shadow-md">
       <div className="container mx-auto flex items-center justify-between px-6 py-4 lg:px-8">
@@ -15,14 +16,26 @@ const Header = () => {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden items-center space-x-4 lg:flex">
-          <Link to="/login">
-            <GoastButton className="w-[110px] py-1.5">Login</GoastButton>
-          </Link>
-          <Link to="/signup">
-            <Button className="w-[110px] py-1.5">Sign Up</Button>
-          </Link>
-        </div>
+        {isAuth ? (
+          <div className="hidden items-center space-x-4 lg:flex">
+            <Link to="/profile/cart">
+              <ShoppingCart />
+            </Link>
+            <Link to="/profile" className="flex items-center space-x-2">
+              <User />
+              <span className="text-sm font-medium">John Doe</span>
+            </Link>
+          </div>
+        ) : (
+          <div className="hidden items-center space-x-4 lg:flex">
+            <Link to="/login">
+              <GoastButton className="w-[110px] py-1.5">Login</GoastButton>
+            </Link>
+            <Link to="/signup">
+              <Button className="w-[110px] py-1.5">Sign Up</Button>
+            </Link>
+          </div>
+        )}
 
         {/* Mobile Hamburger Menu */}
         <button
