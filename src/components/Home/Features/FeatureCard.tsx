@@ -22,7 +22,7 @@ const FeatureCard = ({
         {Icon}
       </div>
       <h3 className="text-xl font-semibold">{title}</h3>
-      <p className="text-sm text-gray-600">{subTitle}</p>
+      <p className="text-sm text-center text-gray-600">{subTitle}</p>
     </motion.div>
   );
 };
