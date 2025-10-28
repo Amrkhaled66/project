@@ -1,8 +1,19 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Home, Dashboard, Uploads, Cart ,UserProfile} from "./pages";
+import {
+  Home,
+  Dashboard,
+  Uploads,
+  Cart,
+  UserProfile,
+  Orders,
+  Design,
+} from "./pages";
 import MainLayout from "./layouts/MainLayout";
 import DashBoardLayout from "./layouts/DashBoardLayout";
 import ScrollToTop from "./components/ui/ScroolToTop";
+
+import { CartProvider } from "./context/cart";
+// import { BlanketDesignerProvider } from "./context/desginerCtx";
 // // import your page components
 // import Home from "./pages/Home";
 // import About from "./pages/About";
@@ -21,10 +32,36 @@ export default function AppRouter() {
         </Route>
         <Route path="/profile" element={<Navigate to="/profile/dashboard" />} />
         <Route path="/profile" element={<DashBoardLayout />}>
-          <Route index path="dashboard" element={<Dashboard />} />
+          <Route
+            index
+            path="dashboard"
+            element={
+              <CartProvider>
+                <Dashboard />
+              </CartProvider>
+            }
+          />
           <Route path="uploads" element={<Uploads />} />
-          <Route path="cart" element={<Cart />} />
+          <Route
+            path="cart"
+            element={
+              <CartProvider>
+                <Cart />
+              </CartProvider>
+            }
+          />
           <Route path="user-profile" element={<UserProfile />} />
+          <Route path="orders" element={<Orders />} />
+          <Route
+            path="desgin"
+            element={
+              // <BlanketDesignerProvider>
+              <CartProvider>
+                <Design />
+              </CartProvider>
+              // </BlanketDesignerProvider>
+            }
+          />
         </Route>
 
         {/* <Route path="/about" element={<About />} />

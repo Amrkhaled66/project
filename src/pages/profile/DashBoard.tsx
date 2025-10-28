@@ -1,8 +1,8 @@
 import CurrentOrderCard from "src/components/Profile/Dashboard/CurrentOrderCard";
+import CurrentDesignCard from "src/components/Profile/Dashboard/CurrentDesginCard";
 import orders from "src/data/orders";
 import ProfileFeatureCard from "src/components/Profile/Dashboard/ProfileFeatureCard";
 import { motion, Variants } from "framer-motion";
-import { Link } from "react-router-dom";
 
 import Draw from "src/components/ui/icons/Draw";
 import Upload from "src/components/ui/icons/Upload";
@@ -29,8 +29,8 @@ const DashBoard = () => {
   const isLoading = false;
 
   return (
-    <div className="mx-auto space-y-5  lg:space-y-10 ">
-      <div className="flex flex-col page-header gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mx-auto container space-y-5 lg:space-y-10">
+      <div className="page-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold sm:text-3xl">
           Dashboard Overview
         </h1>
@@ -48,6 +48,7 @@ const DashBoard = () => {
           ) : (
             <CurrentOrderCard order={orders[0]} />
           )}
+          <CurrentDesignCard />
         </div>
 
         <motion.div
@@ -63,7 +64,7 @@ const DashBoard = () => {
               title="Start New Design"
               subTitle="Begin creating your next custom blanket."
               buttonText="Create Design"
-              to={"/profile/design"}
+              to={"/profile/desgin"}
             />
           </motion.div>
 

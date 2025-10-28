@@ -13,7 +13,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
 
   return (
-    <header className="w-full">
+    <header className="w-full container mx-auto">
       <div className="flex items-center justify-between py-3">
         <div className="flex items-center justify-between gap-4">
           <button

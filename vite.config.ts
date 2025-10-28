@@ -9,4 +9,7 @@ export default defineConfig({
       src: path.resolve(__dirname, "src"), 
     },
   },
+  server:{
+    host: true,
+  }
 });

@@ -24,7 +24,7 @@ interface DashboardSidebarProps {
 const menuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: UploadCloud, label: "Uploads", path: "/uploads" },
-  { icon: Hand, label: "Design", path: "/design" },
+  { icon: Hand, label: "Design", path: "/desgin" },
   { icon: User, label: "Profile", path: "/user-profile" },
   { icon: ShoppingCart, label: "Cart", path: "/cart" },
   { icon: ClipboardList, label: "Orders", path: "/orders" },
@@ -50,52 +50,54 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
       {/* Sidebar */}
       <aside
-        className={`animate bg-mainProfile fixed z-40 min-h-screen py-5 ps-3 lg:relative ${
+        className={`animate bg-mainProfile fixed z-40 min-h-screen  ps-3 lg:relative ${
           isOpen ? "w-66 translate-0" : "-translate-x-100 lg:w-22"
         } space-y-9 lg:translate-x-0`}
       >
-        <div className="flex items-center">
-          <div className="flex items-center gap-3 px-2">
-            <div className="bg-primary size-9 rounded-xl"></div>
-            {isOpen && (
-              <div className="border-l pl-1">
-                <p className="text-lg font-medium">{name}</p>
-                <p className="text-xs font-light">{email}</p>
-              </div>
-            )}
+        <div className="py-5 sticky space-y-5 h-fit top-0">
+          <div className="flex items-center">
+            <div className="flex items-center gap-3 px-2">
+              <div className="bg-primary size-9 rounded-xl"></div>
+              {isOpen && (
+                <div className="border-l pl-1">
+                  <p className="text-lg font-medium">{name}</p>
+                  <p className="text-xs font-light">{email}</p>
+                </div>
+              )}
+            </div>
+            <div>
+              <button
+                onClick={isOpen ? onClose : onOpen}
+                className="translate-x-3 rounded-lg bg-gray-500 px-1 py-1"
+              >
+                <ChevronLeft
+                  className={`animate size-5 text-white ${!isOpen && "rotate-180"}`}
+                />
+              </button>
+            </div>
           </div>
-          <div>
-            <button
-              onClick={isOpen ? onClose : onOpen}
-              className="translate-x-3 rounded-lg bg-gray-500 px-1 py-1"
-            >
-              <ChevronLeft
-                className={`animate size-5 text-white ${!isOpen && "rotate-180"}`}
-              />
-            </button>
-          </div>
-        </div>
-        <div className="h-full overflow-y-auto pb-4">
-          <ul className="space-y-2 font-medium">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
+          <div className="h-full overflow-y-auto pb-4">
+            <ul className="space-y-2 font-medium">
+              {menuItems.map((item) => {
+                const Icon = item.icon;
 
-              return (
-                <li key={item.path}>
-                  <NavLink
-                    to={`/profile${item.path}`}
-                    onClick={window.innerWidth < 1024 ? onClose : () => {}}
-                    className={({ isActive }) =>
-                      `${isActive ? "bg-white text-black hover:bg-white/90" : "text-strokeFont"} group flex items-center gap-x-3 rounded-ss-3xl rounded-es-3xl p-2 ps-5 transition-colors hover:bg-gray-100`
-                    }
-                  >
-                    <Icon size={20} className={""} />
-                    {isOpen && <span className="ml-3">{item.label}</span>}
-                  </NavLink>
-                </li>
-              );
-            })}
-          </ul>
+                return (
+                  <li key={item.path}>
+                    <NavLink
+                      to={`/profile${item.path}`}
+                      onClick={window.innerWidth < 1024 ? onClose : () => {}}
+                      className={({ isActive }) =>
+                        `${isActive ? "bg-white text-black hover:bg-white/90" : "text-strokeFont"} group flex items-center gap-x-3 rounded-ss-3xl rounded-es-3xl p-2 ps-5 transition-colors hover:bg-gray-100`
+                      }
+                    >
+                      <Icon size={20} className={""} />
+                      {isOpen && <span className="ml-3">{item.label}</span>}
+                    </NavLink>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
       </aside>
     </>

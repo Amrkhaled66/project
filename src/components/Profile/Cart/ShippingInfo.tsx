@@ -17,12 +17,11 @@ const CheckoutForm = ({ onChangeTab }: { onChangeTab: (tab: Tab) => void }) => {
   const { form, errors, touched, update, handleBlur, validateAll, isValid } = useCheckoutForm();
 
   const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("ererer");
-    if (validateAll()) {
-      onChangeTab("Payment Details"); 
-    }
-  };
+  e.preventDefault();
+  if (validateAll()) {
+    onChangeTab("Payment Details");
+  }
+};
 
   console.log(errors)
   return (
