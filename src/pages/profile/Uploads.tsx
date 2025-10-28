@@ -3,7 +3,7 @@ import React from "react";
 import Uploadform from "src/components/Profile/Uploads/UploadForm";
 const Uploads = () => {
   return (
-    <div className="container mx-auto">
+    <div className="container space-y-4 mx-auto">
       <div className="page-header">
         <h1 className="text-2xl font-semibold sm:text-3xl">
           Upload Photos & Videos

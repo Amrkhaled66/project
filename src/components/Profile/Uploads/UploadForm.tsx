@@ -237,7 +237,7 @@ export default function Uploadform({
     <div className="">
       <form
         onSubmit={handleSubmit}
-        className="bg-mainProfile w-full space-y-6 rounded-lg border border-neutral-200 p-6 shadow-sm"
+        className="bg-mainProfile w-full lg:w-1/2 space-y-6 rounded-lg border border-neutral-200 p-6 shadow-sm"
       >
         <header>
           <h2 className="text-lg font-semibold text-neutral-900">
