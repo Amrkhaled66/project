@@ -22,27 +22,32 @@ const DesginArea = ({
   blanketColor: string | null;
 }) => {
   const [isAddPhotoModelOpen, setIsAddPhotoModelOpen] = useState(false);
-  const [items, setItems] = useState<GridItemType[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    console.log(saved);
-    if (saved) {
-      return JSON.parse(saved) as GridItemType[];
-    } else {
-      return [];
-    }
-  });
+
+  const [items, setItems] = useState<GridItemType[]>([]);
   const { updateDesign } = useCart();
   const canvasRef = useRef<CanvasHandle>(null);
+  const hasMountedRef = useRef(false); 
 
   useEffect(() => {
-    console.log(items);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        setItems(JSON.parse(saved) as GridItemType[]);
+      } catch {
+        setItems([]);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (hasMountedRef.current) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } else {
+      hasMountedRef.current = true;
+    }
   }, [items]);
 
-  // useEffect(() => {
-  //   setItems([]);
-  // }, [selectedSizeId]);
-  // 🧠 Snapshot logic
+  // ✅ Snapshot & update cart design image
   useEffect(() => {
     const timeout = setTimeout(async () => {
       if (canvasRef.current) {
@@ -89,10 +94,12 @@ const DesginArea = ({
           borderColor={borderColor}
           selectedSizeId={selectedSizeId}
         />
+
         <div className="w-full space-y-2">
           <p className="text-center text-sm sm:text-lg font-light">
             Upload photos to customize your blanket design
           </p>
+
           <div className="grid w-full gap-x-2 gap-y-3 sm:grid-cols-2">
             <MainDashButton
               text="Add Photos"
@@ -109,7 +116,9 @@ const DesginArea = ({
             />
             <GoastButton
               className="flex items-center justify-center gap-2 !rounded-none"
-              onClick={() => {}}
+              onClick={() => {
+                // Auto Layout logic (optional)
+              }}
             >
               <Sparkles />
               Auto Layout

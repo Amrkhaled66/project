@@ -32,7 +32,7 @@ export default function GridItem({
       style={style}
       {...attributes}
       {...listeners}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseMove={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`relative aspect-square cursor-grab overflow-hidden ${
         isDragging ? "" : "transition hover:shadow-md"
@@ -49,7 +49,7 @@ export default function GridItem({
           e.stopPropagation(); // prevent triggering drag
           onDelete(id);
         }}
-        className={`absolute end-1 top-1 aspect-square rounded-full bg-black/50 p-1 text-white sm:opacity-0  transition hover:bg-red-600 hover:opacity-100 ${isHovered && "opacity-100"}`}
+        className={`absolute end-1 top-1 aspect-square rounded-full bg-black/50 p-1 text-white sm:opacity-0  transition hover:bg-red-600 ${isHovered && "!opacity-100"}`}
       >
         <X className="size-4" />
       </button>

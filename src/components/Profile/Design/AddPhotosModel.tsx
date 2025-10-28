@@ -3,7 +3,7 @@ import Model from "src/components/ui/Model";
 import { X, Check } from "lucide-react";
 import { images } from "src/data/images";
 import MainDashButton from "src/components/ui/MainDashButton";
-
+import { useCart } from "src/context/cart";
 type Props = {
   isOpen: boolean;
   onClose: () => void;
@@ -20,15 +20,19 @@ export default function AddPhotosModel({
   isItemExits,
 }: Props) {
   const [selected, setSelected] = useState<string[]>([]);
-
+  const { cartItem } = useCart();
+  const {
+    size: { cols, rows },
+  } = cartItem;
+  const maxphoto = cols * rows;
   const toggleSelect = (src: string) => {
     setSelected((prev) =>
-      prev.includes(src) ? prev.filter((s) => s !== src) : [...prev, src]
+      prev.includes(src) ? prev.filter((s) => s !== src) : [...prev, src],
     );
   };
 
   const handleAddSelected = () => {
-    selected.forEach((src) => {
+    selected.slice(0, maxphoto).forEach((src) => {
       const id = src; // use src as ID
       if (!isItemExits(id)) {
         onAddItem({ id, image: src });
@@ -53,7 +57,7 @@ export default function AddPhotosModel({
         </div>
 
         {/* Images grid */}
-        <div className="flex flex-wrap gap-3 rounded-xl bg-neutral-100 px-4 py-3 max-h-[400px] overflow-y-auto">
+        <div className="flex max-h-[400px] flex-wrap gap-3 overflow-y-auto rounded-xl bg-neutral-100 px-4 py-3">
           {images.map((src, index) => {
             const isSelected = selected.includes(src);
             const exists = isItemExits(src);
@@ -64,9 +68,7 @@ export default function AddPhotosModel({
                 onClick={() => {
                   if (!exists) toggleSelect(src);
                 }}
-                className={`relative aspect-square size-20 rounded-xl overflow-hidden cursor-pointer transition 
-                ${exists ? "opacity-50" : "hover:scale-105"} 
-                ${isSelected ? "ring-2 ring-blue-500" : ""}`}
+                className={`relative aspect-square size-20 cursor-pointer overflow-hidden rounded-xl transition ${exists ? "opacity-50" : "hover:scale-105"} ${isSelected ? "ring-2 ring-blue-500" : ""}`}
               >
                 <img
                   src={src}

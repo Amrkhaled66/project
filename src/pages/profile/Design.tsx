@@ -1,4 +1,3 @@
-import { useEffect, useMemo } from "react";
 import priceFormmater from "src/utils/priceFormmater";
 
 import MainDashButton from "src/components/ui/MainDashButton";
@@ -10,8 +9,7 @@ import DesginArea from "src/components/Profile/Design/DesignArea";
 
 import { useCart } from "src/context/cart";
 import { upgrades } from "src/data/upgrades";
-import { getSizeById, BlanketSizeId } from "src/data/blanketSizes";
-
+import { Link } from "react-router-dom";
 export default function BlanketDesigner() {
   const { cartItem, updateUpgrades, getCartTotal } = useCart();
 
@@ -30,11 +28,13 @@ export default function BlanketDesigner() {
             <span>Total: </span>
             <span>{priceFormmater(total)}</span>
           </p>
-          <MainDashButton
-            className="!w-fit px-4"
-            text="Check Out"
-            onClick={() => console.log("Proceed to checkout")}
-          />
+          <Link to={"/profile/cart"}>
+            <MainDashButton
+              className="!w-fit px-4"
+              text="Check Out"
+              onClick={() => console.log("Proceed to checkout")}
+            />
+          </Link>
         </div>
       </div>
 
@@ -47,9 +47,9 @@ export default function BlanketDesigner() {
           />
         </div>
 
-        <div className="flex sm:max-h-max max-h-[400px] flex-col gap-4 overflow-y-auto">
+        <div className="flex max-h-[400px] flex-col gap-4 overflow-y-auto sm:max-h-max">
           <div className="flex flex-col gap-4">
-            <div className="grid gap-y-2 grid-cols-1 sm:grid-cols-2 gap-x-4">
+            <div className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
               <Sizes />
               <AddonsCheckbox
                 selectedUpgrades={selectedUpgrades}

@@ -3,8 +3,25 @@ import { useCart } from "src/context/cart";
 import { ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import priceFormmater from "src/utils/priceFormmater";
+import { initialState, CartItem } from "src/context/cart";
+const isInitialCart = (item: CartItem, initial: CartItem): boolean => {
+  return (
+    item.size.id === initial.size.id &&
+    item.color === initial.color &&
+    item.borderColor === initial.borderColor &&
+    item.quantity === initial.quantity &&
+    item.totalPrice === initial.totalPrice &&
+    item.designImage === initial.designImage &&
+    item.upgrades.length === 0 // نكتفي بأن القائمة فاضية
+  );
+};
+
 const CurrentDesignCard = () => {
   const { cartItem, getCartTotal } = useCart();
+
+  if (isInitialCart(cartItem, initialState)) {
+    return null;
+  }
 
   return (
     <div className="animate flex w-full flex-col space-y-6 rounded-xl border-2 bg-white py-4 shadow-md hover:shadow-lg">

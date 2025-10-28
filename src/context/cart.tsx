@@ -31,7 +31,7 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const initialState: CartItem = {
+export const initialState: CartItem = {
   size: BLANKET_SIZES[0],
   color: null,
   borderColor: null,
