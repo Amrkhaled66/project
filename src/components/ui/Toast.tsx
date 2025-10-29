@@ -8,9 +8,9 @@ export default function Toast(
   background: string,
   position?: SweetAlertPosition,
 ) {
-  Swal.mixin({
+  return Swal.mixin({
     toast: true,
-    position: position ||"top" ,
+    position: position || "top",
     showConfirmButton: false,
     timer: 1500,
     timerProgressBar: true,

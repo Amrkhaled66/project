@@ -26,7 +26,7 @@ const DesginArea = ({
   const [items, setItems] = useState<GridItemType[]>([]);
   const { updateDesign } = useCart();
   const canvasRef = useRef<CanvasHandle>(null);
-  const hasMountedRef = useRef(false); 
+  const hasMountedRef = useRef(false);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -96,7 +96,7 @@ const DesginArea = ({
         />
 
         <div className="w-full space-y-2">
-          <p className="text-center text-sm sm:text-lg font-light">
+          <p className="text-center text-sm font-light sm:text-lg">
             Upload photos to customize your blanket design
           </p>
 
@@ -108,6 +108,7 @@ const DesginArea = ({
               icon={<CirclePlus />}
             />
             <AddPhotosModel
+              itemsLength={items.length}
               onClose={() => setIsAddPhotoModelOpen(false)}
               isOpen={isAddPhotoModelOpen}
               onAddItem={handleAddItem}

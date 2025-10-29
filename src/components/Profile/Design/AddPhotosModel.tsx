@@ -4,12 +4,14 @@ import { X, Check } from "lucide-react";
 import { images } from "src/data/images";
 import MainDashButton from "src/components/ui/MainDashButton";
 import { useCart } from "src/context/cart";
+import Toast from "src/components/ui/Toast";
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   onAddItem: (item: { id: string; image: string }) => void;
   onDeleteItem: (id: string) => void;
   isItemExits: (id: string) => boolean;
+  itemsLength: number;
 };
 
 export default function AddPhotosModel({
@@ -18,6 +20,7 @@ export default function AddPhotosModel({
   onAddItem,
   onDeleteItem,
   isItemExits,
+  itemsLength,
 }: Props) {
   const [selected, setSelected] = useState<string[]>([]);
   const { cartItem } = useCart();
@@ -25,9 +28,23 @@ export default function AddPhotosModel({
     size: { cols, rows },
   } = cartItem;
   const maxphoto = cols * rows;
+  const isFull = itemsLength + selected.length >= maxphoto;
+
   const toggleSelect = (src: string) => {
     setSelected((prev) =>
-      prev.includes(src) ? prev.filter((s) => s !== src) : [...prev, src],
+      prev.includes(src)
+        ? prev.filter((s) => s !== src)
+        : !isFull
+          ? [...prev, src]
+          : (() => {
+              Toast(
+                "Maximum photo slots filled!",
+                "warning",
+                "#fff3cd",
+                "top-end",
+              );
+              return prev;
+            })(),
     );
   };
 
