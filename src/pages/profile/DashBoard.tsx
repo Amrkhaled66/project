@@ -31,7 +31,7 @@ const DashBoard = () => {
     authData: { user },
   } = useAuth();
   return (
-    <div className="container mx-auto space-y-5 lg:space-y-10">
+    <div className=" mx-auto space-y-5 lg:space-y-10">
       <div className="page-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold sm:text-3xl">
           Dashboard Overview

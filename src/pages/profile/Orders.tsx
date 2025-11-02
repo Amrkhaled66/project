@@ -6,7 +6,7 @@ const Orders = () => {
   const lastOrder = orders?.[0];
 
   return (
-    <div className="container space-y-6">
+    <div className="space-y-6">
       {/* Fancy header */}
       <div className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-gradient-to-br from-white to-neutral-50">
         <div className="absolute inset-0 -z-10 opacity-40 blur-2xl [background:radial-gradient(120px_120px_at_20%_10%,#06b6d4,transparent),radial-gradient(160px_160px_at_80%_20%,#9333ea,transparent),radial-gradient(140px_140px_at_50%_100%,#22c55e,transparent)]" />
@@ -26,7 +26,9 @@ const Orders = () => {
               <span className="rounded-lg bg-neutral-900 px-2 py-1 text-white">
                 #{lastOrder.id}
               </span>
-              <span className="text-neutral-500">• Placed on {lastOrder.date}</span>
+              <span className="text-neutral-500">
+                • Placed on {lastOrder.date}
+              </span>
             </div>
           ) : null}
         </div>

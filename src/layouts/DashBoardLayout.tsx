@@ -28,7 +28,7 @@ const DashBoardLayout: React.FC = () => {
   };
 
   return (
-    <div >
+    <div>
       <div className="flex">
         <DashboardSidebar
           isOpen={isSidebarOpen}
@@ -36,12 +36,12 @@ const DashBoardLayout: React.FC = () => {
           onClose={closeSidebar}
         />
 
-        <div className="w-full space-y-5  bg-white py-2 lg:px-6">
+        <div className="w-full space-y-5 bg-white py-2 px-6">
           <DashboardHeader
             onMenuToggle={toggleSidebar}
             isSidebarOpen={isSidebarOpen}
           />
-          <div className="pb-4  lg:pb-8">
+          <div className="pb-4 lg:pb-8">
             <Outlet />
           </div>
         </div>

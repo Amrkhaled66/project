@@ -3,7 +3,7 @@ import TransactionsTable from "src/components/Profile/UserProfile/TransactionsTa
 import UpdateInfoForm from "src/components/Profile/UserProfile/UpdateInfoForm";
 const UserProfile = () => {
   return (
-    <div className="space-y-6 container mx-auto">
+    <div className="mx-auto space-y-6">
       <div className="page-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold sm:text-3xl">
           Account Information

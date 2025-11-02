@@ -21,7 +21,7 @@ export default function BlanketDesigner() {
   const total = getCartTotal();
 
   return (
-    <div className="container mx-auto min-h-dvh space-y-4">
+    <div className="mx-auto min-h-dvh space-y-4">
       <div className="page-header flex items-center justify-between font-bold">
         <div className="flex w-full items-center justify-between gap-4">
           <p className="flex space-x-2">

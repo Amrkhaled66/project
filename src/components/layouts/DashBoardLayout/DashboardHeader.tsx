@@ -17,7 +17,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const navigate = useNavigate();
 
   return (
-    <header className="container mx-auto w-full">
+    <header className=" mx-auto w-full">
       <div className="flex items-center justify-between py-3">
         <div className="flex items-center justify-between gap-4">
           <button
