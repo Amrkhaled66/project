@@ -1,6 +1,8 @@
 import { TextAlignJustify, X, User, LogOut, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "src/context/auth.context";
+import { useNavigate } from "react-router-dom";
 
 interface DashboardHeaderProps {
   onMenuToggle: () => void;
@@ -11,9 +13,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   isSidebarOpen,
 }) => {
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
-    <header className="w-full container mx-auto">
+    <header className="container mx-auto w-full">
       <div className="flex items-center justify-between py-3">
         <div className="flex items-center justify-between gap-4">
           <button
@@ -48,7 +52,13 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
             {isProfileOpen && (
               <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
-                <button className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50">
+                <button
+                  onClick={() => {
+                    logout();
+                    navigate("/login");
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50"
+                >
                   <LogOut size={16} />
                   Sign Out
                 </button>

@@ -7,7 +7,7 @@ import { motion, Variants } from "framer-motion";
 import Draw from "src/components/ui/icons/Draw";
 import Upload from "src/components/ui/icons/Upload";
 import Orders from "src/components/ui/icons/Orders";
-
+import { useAuth } from "src/context/auth.context";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -27,15 +27,17 @@ const item: Variants = {
 const DashBoard = () => {
   const name = "Hares";
   const isLoading = false;
-
+  const {
+    authData: { user },
+  } = useAuth();
   return (
-    <div className="mx-auto container space-y-5 lg:space-y-10">
+    <div className="container mx-auto space-y-5 lg:space-y-10">
       <div className="page-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold sm:text-3xl">
           Dashboard Overview
         </h1>
         <p className="text-base font-semibold text-gray-700 sm:text-lg">
-          Welcome back, <span className="underline">{name}!</span>
+          Welcome back, <span className="underline">{user?.firstName}!</span>
         </p>
       </div>
 

@@ -4,7 +4,7 @@ import {
   BlanketSizeId,
   getSizeById,
 } from "src/data/blanketSizes";
-import { useCart } from "src/context/cart";
+import { useCart } from "src/context/cart.context";
 
 const Sizes = () => {
   const { updateSize, cartItem } = useCart();

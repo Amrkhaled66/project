@@ -5,3 +5,5 @@ export { default as Cart } from "./profile/Cart";
 export { default as UserProfile } from "./profile/UserProfile";
 export { default as Orders } from "./profile/Orders";
 export { default as Design } from "./profile/Design";
+export { default as LoginPage } from "./Login";
+export { default as SignupPage } from "./Signup";

@@ -1,5 +1,5 @@
 import priceFormatter from "src/utils/priceFormmater";
-import { CartItem as CartItemType } from "src/context/cart";
+import { CartItem as CartItemType } from "src/context/cart.context";
 
 type CartItemProps = {
   item: CartItemType;

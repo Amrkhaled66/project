@@ -7,20 +7,15 @@ import {
   UserProfile,
   Orders,
   Design,
+  LoginPage,
+  SignupPage,
 } from "./pages";
 import MainLayout from "./layouts/MainLayout";
 import DashBoardLayout from "./layouts/DashBoardLayout";
 import ScrollToTop from "./components/ui/ScroolToTop";
 
-import { CartProvider } from "./context/cart";
-// import { BlanketDesignerProvider } from "./context/desginerCtx";
-// // import your page components
-// import Home from "./pages/Home";
-// import About from "./pages/About";
-// import Login from "./pages/Login";
-// import Signup from "./pages/Signup";
-// import Profile from "./pages/Profile";
-// import Dashboard from "./pages/Dashboard";
+import AuthRoutes from "./middleware/AuthRoutes";
+import OnlyGuestRoute from "./middleware/onlyGuestUser";
 
 export default function AppRouter() {
   return (
@@ -28,47 +23,33 @@ export default function AppRouter() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />} />
-        </Route>
-        <Route path="/profile" element={<Navigate to="/profile/dashboard" />} />
-        <Route path="/profile" element={<DashBoardLayout />}>
           <Route
             index
-            path="dashboard"
             element={
-              <CartProvider>
-                <Dashboard />
-              </CartProvider>
-            }
-          />
-          <Route path="uploads" element={<Uploads />} />
-          <Route
-            path="cart"
-            element={
-              <CartProvider>
-                <Cart />
-              </CartProvider>
-            }
-          />
-          <Route path="user-profile" element={<UserProfile />} />
-          <Route path="orders" element={<Orders />} />
-          <Route
-            path="desgin"
-            element={
-              // <BlanketDesignerProvider>
-              <CartProvider>
-                <Design />
-              </CartProvider>
-              // </BlanketDesignerProvider>
+              <OnlyGuestRoute>
+                <Home />
+              </OnlyGuestRoute>
             }
           />
         </Route>
-
-        {/* <Route path="/about" element={<About />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/profile/dashboard" element={<Dashboard />} /> */}
+        <Route path="/profile" element={<Navigate to="/profile/dashboard" />} />
+        <Route
+          path="/profile"
+          element={
+            <AuthRoutes>
+              <DashBoardLayout />
+            </AuthRoutes>
+          }
+        >
+          <Route index path="dashboard" element={<Dashboard />} />
+          <Route path="uploads" element={<Uploads />} />
+          <Route path="cart" element={<Cart />} />
+          <Route path="user-profile" element={<UserProfile />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="desgin" element={<Design />} />
+        </Route>
+        <Route path="/login" element={<LoginPage />}></Route>
+        <Route path="/register" element={<SignupPage />}></Route>
       </Routes>
     </BrowserRouter>
   );

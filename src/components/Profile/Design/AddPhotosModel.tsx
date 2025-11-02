@@ -3,7 +3,7 @@ import Model from "src/components/ui/Model";
 import { X, Check } from "lucide-react";
 import { images } from "src/data/images";
 import MainDashButton from "src/components/ui/MainDashButton";
-import { useCart } from "src/context/cart";
+import { useCart } from "src/context/cart.context";
 import Toast from "src/components/ui/Toast";
 type Props = {
   isOpen: boolean;

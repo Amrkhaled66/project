@@ -2,7 +2,7 @@ import cart from "src/data/cart";
 import CartItem from "src/components/Profile/Cart/CartItem";
 import CartSummary from "src/components/Profile/Cart/CartSummary";
 import CartForm from "src/components/Profile/Cart/CartForm";
-import { useCart } from "src/context/cart";
+import { useCart } from "src/context/cart.context";
 const Cart = () => {
   const { cartItem } = useCart();
   return (

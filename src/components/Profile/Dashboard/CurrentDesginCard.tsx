@@ -1,9 +1,9 @@
 // src/components/Profile/Dashboard/CurrentDesignCard.tsx
-import { useCart } from "src/context/cart";
+import { useCart } from "src/context/cart.context";
 import { ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import priceFormmater from "src/utils/priceFormmater";
-import { initialState, CartItem } from "src/context/cart";
+import { initialState, CartItem } from "src/context/cart.context";
 const isInitialCart = (item: CartItem, initial: CartItem): boolean => {
   return (
     item.size.id === initial.size.id &&

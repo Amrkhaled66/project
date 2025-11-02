@@ -1,6 +1,6 @@
 // BorderColorSelector.tsx
 import ColorSelector from "src/components/ui/ColorSelector";
-import { useCart } from "src/context/cart";
+import { useCart } from "src/context/cart.context";
 export default function BorderColorSelector() {
   const { updateBorderColor, cartItem } = useCart();
   const onSelectColor = (color: string) => {

@@ -8,6 +8,7 @@
   --color-strokeFont: #a098ae;
   --color-mainProfile: #dedede;
   --color-mainProfile-600: #565e6d;
+  --color-stroke: #f3f4f6;
 }
 
 @layer base {
@@ -54,11 +55,10 @@ button {
 
 .container {
   width: 100%;
-    padding-right: 16px;
-    padding-left: 16px;
+  padding-right: 16px;
+  padding-left: 16px;
   @media (width >= 40rem /* 640px */) {
     max-width: 40rem /* 640px */;
-
   }
   @media (width >= 48rem /* 768px */) {
     max-width: 48rem /* 768px */;
@@ -72,4 +72,14 @@ button {
   @media (width >= 96rem /* 1536px */) {
     max-width: 96rem /* 1536px */;
   }
+}
+
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none;
 }

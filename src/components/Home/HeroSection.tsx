@@ -2,7 +2,10 @@ import { motion } from "framer-motion";
 import Button from "src/components/ui/Button";
 import SunIcon from "../ui/icons/SunIcon";
 import { Link } from "react-router-dom";
+import { useAuth } from "src/context/auth.context";
 const HeroSection = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <div className="bg-primary-50 flex h-screen flex-col items-center justify-center space-y-12 px-4 text-center sm:px-6 lg:px-8">
       <motion.div
@@ -45,7 +48,7 @@ const HeroSection = () => {
         animate={{ scale: 1 }}
         transition={{ duration: 0.5, delay: 1 }}
       >
-        <Link to="/profile">
+        <Link to={isAuthenticated ? "/profile" : "/register"}>
           <Button className="px-12 py-3 text-lg sm:text-xl lg:px-28 lg:py-4">
             Start Your Blanket
           </Button>

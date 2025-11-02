@@ -7,7 +7,7 @@ import BorderColor from "src/components/Profile/Design/BorderColor";
 import AddonsCheckbox from "src/components/Profile/Design/Upgrades";
 import DesginArea from "src/components/Profile/Design/DesignArea";
 
-import { useCart } from "src/context/cart";
+import { useCart } from "src/context/cart.context";
 import { upgrades } from "src/data/upgrades";
 import { Link } from "react-router-dom";
 export default function BlanketDesigner() {

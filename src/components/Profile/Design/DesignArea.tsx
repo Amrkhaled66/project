@@ -8,7 +8,7 @@ import { BlanketSizeId } from "src/data/blanketSizes";
 import AddPhotosModel from "./AddPhotosModel";
 import { arrayMove } from "@dnd-kit/sortable";
 import { GridItemType } from "./Canvas/GridItem";
-import { useCart } from "src/context/cart";
+import { useCart } from "src/context/cart.context";
 
 const STORAGE_KEY = "blanket-design-items";
 

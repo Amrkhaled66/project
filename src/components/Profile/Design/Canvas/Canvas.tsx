@@ -10,7 +10,7 @@ import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 
 import { getSizeById, BlanketSizeId } from "src/data/blanketSizes";
 import GridItem, { GridItemType } from "./GridItem";
-import { useCart } from "src/context/cart";
+import { useCart } from "src/context/cart.context";
 
 export interface CanvasHandle {
   getSnapshot: () => Promise<string>;
