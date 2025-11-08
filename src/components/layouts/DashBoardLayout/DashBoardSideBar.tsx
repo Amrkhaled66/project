@@ -9,7 +9,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-
+import { useAuth } from "src/context/auth.context";
 interface MenuItem {
   icon: LucideIcon;
   label: string;
@@ -35,9 +35,9 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   onClose,
   onOpen,
 }) => {
-  const name = "Jane Doa";
-  const email = "Jane_Doa@gmail.com";
-
+  const {
+    authData: { user },
+  } = useAuth();
   return (
     <>
       {/* Overlay for mobile */}
@@ -50,18 +50,18 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
       {/* Sidebar */}
       <aside
-        className={`animate bg-mainProfile fixed z-40 min-h-screen  ps-3 lg:relative ${
+        className={`animate bg-mainProfile fixed z-40 min-h-screen ps-3 lg:relative ${
           isOpen ? "w-66 translate-0" : "-translate-x-100 lg:w-22"
         } space-y-9 lg:translate-x-0`}
       >
-        <div className="py-5 sticky space-y-5 h-fit top-0">
+        <div className="sticky top-0 h-fit space-y-5 py-5">
           <div className="flex items-center">
             <div className="flex items-center gap-3 px-2">
               <div className="bg-primary size-9 rounded-xl"></div>
               {isOpen && (
                 <div className="border-l pl-1">
-                  <p className="text-lg font-medium">{name}</p>
-                  <p className="text-xs font-light">{email}</p>
+                  <p className="text-lg font-medium">{user?.firstName}</p>
+                  <p className="text-xs font-light">{user?.email}</p>
                 </div>
               )}
             </div>
