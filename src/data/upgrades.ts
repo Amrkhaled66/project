@@ -13,11 +13,19 @@ export const upgrades = [
     price: 20.0,
   },
   {
-    id: "cornerstones",
-    name: "Cornerstones",
-    description: "Decorative patches on blanket corners.",
+    id: "cornerstonesSingle",
+    name: "Cornerstones (Single)",
+    description: "Add decorative patches to the 4 corners of the blanket.",
     price: 10.0,
   },
+  {
+    id: "cornerstonesDouble",
+    name: "Cornerstones (Double)",
+    description:
+      "Add decorative patches to all 8 positions — 4 corners and 4 midpoints on each side.",
+    price: 18.0, // you can adjust this based on your pricing
+  },
+
   {
     id: "customPanels",
     name: "Custom Panels",
@@ -29,5 +37,19 @@ export const upgrades = [
     name: "Quilted Preserve",
     description: "Enhanced durability and texture.",
     price: 25.0,
+  },
+  {
+    id: "fringeBorder",
+    name: "Fringe Border",
+    description: "Add a decorative fringe to the border.",
+    price: 22.0,
+  },
+  {
+    id: "binding",
+    name: "Custom Anti-Fray Binding",
+    description:
+      "Protective stitched edge wrapping the full blanket; auto-enabled with Quilted Preserve.",
+    price: 25.0,
+    autoAppliedBy: "quiltedPreserve", // 👈 custom field for logic
   },
 ];

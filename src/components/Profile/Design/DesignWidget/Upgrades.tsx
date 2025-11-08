@@ -1,7 +1,7 @@
 import { upgrades } from "src/data/upgrades";
-import DesginContainer from "./DesginContainer";
+import DesginContainer from "../DesginContainer";
 import priceFormmater from "src/utils/priceFormmater";
-
+import { useState } from "react";
 type AddonsCheckboxProps = {
   selectedUpgrades: string[];
   onToggleUpgrade: (id: string) => void;
@@ -11,6 +11,7 @@ export default function AddonsCheckbox({
   selectedUpgrades,
   onToggleUpgrade,
 }: AddonsCheckboxProps) {
+
   return (
     <DesginContainer header="Upgrades" className="">
       <div className="space-y-2">

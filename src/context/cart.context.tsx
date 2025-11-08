@@ -1,10 +1,18 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { BlanketSize, BLANKET_SIZES } from "src/data/blanketSizes";
-import { getCart, setCart, clearCart as clearCartStorage } from "src/utils/cartStorage";
+import { upgrades } from "src/data/upgrades";
+import {
+  getCart,
+  setCart,
+  clearCart as clearCartStorage,
+} from "src/utils/cartStorage";
 type Upgrade = {
   id: string;
   name: string;
   price: number;
+  props?: {
+    [key: string]: any;
+  };
 };
 
 export type CartItem = {
@@ -15,6 +23,8 @@ export type CartItem = {
   quantity: number;
   totalPrice: number;
   designImage: string | null;
+  backingColor: string | null;
+  cornerImage: string | null;
 };
 
 type CartContextType = {
@@ -22,11 +32,18 @@ type CartContextType = {
   updateSize: (size: BlanketSize) => void;
   updateColor: (color: string | null) => void;
   updateBorderColor: (borderColor: string | null) => void;
+  updateBackingColor: (color: string | null) => void;
   updateUpgrades: (upgrades: Upgrade[]) => void;
   updateQuantity: (quantity: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
   updateDesign: (designImage: string | null) => void;
+  updateBindingColor: (color: string | null) => void;
+  updateCornerImage: (image: string | null) => void;
+  hasFringe: boolean;
+  hasBinding: boolean;
+  isQualityPreserve: boolean;
+  isCornerstones: boolean;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -39,6 +56,8 @@ export const initialState: CartItem = {
   quantity: 1,
   totalPrice: 0,
   designImage: null,
+  backingColor: null,
+  cornerImage: null,
 };
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -88,11 +107,22 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       return { ...prev, color };
     });
   };
+  const updateBackingColor = (color: string | null) => {
+    setCartItem((prev) => {
+      return { ...prev, backingColor: color };
+    });
+  };
 
   // --- Update border color ---
   const updateBorderColor = (borderColor: string | null) => {
     setCartItem((prev) => {
       return { ...prev, borderColor };
+    });
+  };
+
+  const updateCornerImage = (cornerImage: string | null) => {
+    setCartItem((prev) => {
+      return { ...prev, cornerImage };
     });
   };
 
@@ -118,6 +148,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
+  const updateBindingColor = (color: string | null) => {
+    setCartItem((prev) => {
+      const hasBinding = prev.upgrades.some((u) => u.id === "binding");
+      if (!hasBinding) return prev;
+      return {
+        ...prev,
+        upgrades: prev.upgrades.map((u) =>
+          u.id === "binding" ? { ...u, props: { ...u.props, color } } : u,
+        ),
+      };
+    });
+  };
+
   const updateDesign = (designImage: string | null) => {
     setCartItem((prev) => {
       return { ...prev, designImage };
@@ -132,7 +175,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // --- Get total ---
   const getCartTotal = () => (cartItem ? cartItem.totalPrice : 0);
-
+  const hasFringe = cartItem.upgrades?.some((u) => u.id === "fringeBorder");
+  const hasBinding = cartItem.upgrades?.some((u) => u.id === "binding");
+  const isQualityPreserve = cartItem.upgrades?.some(
+    (u) => u.id === "quiltedPreserve",
+  );
+  const isCornerstones = cartItem?.upgrades?.some(
+    (u) => u.id === "cornerstonesSingle" || u.id === "cornerstonesDouble",
+  );
   return (
     <CartContext.Provider
       value={{
@@ -145,6 +195,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         clearCart,
         getCartTotal,
         updateDesign,
+        updateBackingColor,
+        updateBindingColor,
+        updateCornerImage,
+        hasFringe,
+        hasBinding,
+        isQualityPreserve,
+        isCornerstones
       }}
     >
       {children}

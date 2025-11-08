@@ -1,51 +1,45 @@
-import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+// src/components/Canvas/Canvas.tsx
 import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
-
-import { getSizeById, BlanketSizeId } from "src/data/blanketSizes";
-import GridItem, { GridItemType } from "./GridItem";
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { useCart } from "src/context/cart.context";
+import { useDesign } from "src/context/desgin.context";
+import CanvasFront from "./FrontGrid";
+import CanvasBack from "./BackGrid";
+import { GridItemType } from "src/components/Profile/Design/Canvas/GridItem";
 
 export interface CanvasHandle {
   getSnapshot: () => Promise<string>;
 }
 
-function EmptyCell() {
-  return (
-    <div className="aspect-square rounded-lg border border-dashed border-gray-400 bg-neutral-200/30" />
-  );
-}
+const Canvas = forwardRef<
+  CanvasHandle,
+  {
+    items: GridItemType[];
+    onUpdateItems: (items: GridItemType[]) => void;
+    onDeleteItem: (id: string) => void;
+    onDragEnd: (event: any) => void;
+  }
+>(({ items, onUpdateItems, onDeleteItem, onDragEnd }, ref) => {
+  const {
+    cartItem,
+    hasBinding,
+    hasFringe,
+    isCornerstones,
+    isQualityPreserve,
+  } = useCart();
+  const [isFlipped, setIsFlipped] = useState(false);
+  const canvasRef = useRef<HTMLDivElement|null>(null);
 
-const Canvas = forwardRef<CanvasHandle, {
-  selectedSizeId: BlanketSizeId;
-  borderColor: string | null;
-  blanketColor: string | null;
-  items: GridItemType[];
-  onUpdateItems: (newItems: GridItemType[]) => void;
-  onDeleteItem: (id: string) => void;
-  onDragEnd: (event: any) => void;
-}>(({
-  selectedSizeId,
-  borderColor,
-  blanketColor,
-  items,
-  onUpdateItems,
-  onDeleteItem,
-  onDragEnd,
-}, ref) => {
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
-  const size = getSizeById(selectedSizeId);
-  const { cartItem } = useCart();
-  const isCornerstones = cartItem?.upgrades?.some(u => u.id === "cornerstones");
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const size = cartItem?.size;
+  const blanketColor = cartItem?.color || null;
+  const borderColor = cartItem?.borderColor || null;
+  const backgingColor = cartItem?.backingColor || null;
 
-  // Expose snapshot method to parent
   useImperativeHandle(ref, () => ({
     async getSnapshot() {
       const htmlToImage = await import("html-to-image");
@@ -56,45 +50,57 @@ const Canvas = forwardRef<CanvasHandle, {
 
   useEffect(() => {
     onUpdateItems([]);
-  }, [selectedSizeId]);
-
-  const totalCells = size.rows * size.cols;
-  const placeholders =
-    items.length < totalCells
-      ? Array.from({ length: totalCells - items.length }, (_, i) => i)
-      : [];
+  }, [size.id]);
 
   return (
-    <div className="mx-auto w-full" ref={canvasRef}>
-      <div style={{ backgroundColor: borderColor || "" }} className="relative animate p-5">
-        {isCornerstones && (
-          <>
-            <div className="absolute top-0 left-0 size-5 bg-white shadow-md"></div>
-            <div className="absolute top-0 right-0 size-5 bg-white shadow-md"></div>
-            <div className="absolute bottom-0 left-0 size-5 bg-white shadow-md"></div>
-            <div className="absolute right-0 bottom-0 size-5 bg-white shadow-md"></div>
-          </>
-        )}
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-          <SortableContext items={items.map(i => i.id)} strategy={rectSortingStrategy}>
-            <div
-              style={{
-                gridTemplateColumns: `repeat(${size.cols}, minmax(0, 1fr))`,
-                gridTemplateRows: `repeat(${size.rows}, minmax(0, 1fr))`,
-                backgroundColor: blanketColor || "",
-                borderColor: borderColor || "",
-              }}
-              className="mx-auto animate grid h-fit max-w-[600px] gap-2 p-4"
-            >
-              {items.map((item) => (
-                <GridItem key={item.id} {...item} onDelete={onDeleteItem} />
-              ))}
-              {placeholders.map((i) => (
-                <EmptyCell key={`empty-${i}`} />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+    <div className="mx-auto w-full p-5">
+      <div
+        style={{
+          transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          transition: "transform 0.6s",
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <div
+          className={`mx-auto w-fit bg-transparent ${isFlipped && "min-w-[90%]"}`}
+          style={{
+            transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          }}
+        >
+          {isFlipped ? (
+            <CanvasBack
+              cols={size.cols}
+              rows={size.rows}
+              backgingColor={backgingColor}
+            />
+          ) : (
+            <CanvasFront
+              size={size}
+              items={items}
+              onDeleteItem={onDeleteItem}
+              onDragEnd={onDragEnd}
+              blanketColor={blanketColor}
+              borderColor={borderColor}
+              hasBinding={hasBinding}
+              hasFringe={hasFringe}
+              isCornerstones={isCornerstones}
+              isQualityPreserve={isQualityPreserve}
+              bindingColor={
+                cartItem.upgrades.find((u) => u.id === "binding")?.props?.color
+              }
+              canvasRef={canvasRef}
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="mt-4 flex justify-center">
+        <button
+          onClick={() => setIsFlipped(!isFlipped)}
+          className="rounded-lg bg-blue-600 px-6 py-2 font-semibold text-white shadow-md transition-all hover:bg-blue-700 active:scale-95"
+        >
+          {isFlipped ? "Show Front" : "Show Back"}
+        </button>
       </div>
     </div>
   );

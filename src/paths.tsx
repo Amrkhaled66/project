@@ -16,7 +16,7 @@ import ScrollToTop from "./components/ui/ScroolToTop";
 
 import AuthRoutes from "./middleware/AuthRoutes";
 import OnlyGuestRoute from "./middleware/onlyGuestUser";
-
+import { DesignProvider } from "src/context/desgin.context";
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -46,7 +46,14 @@ export default function AppRouter() {
           <Route path="cart" element={<Cart />} />
           <Route path="user-profile" element={<UserProfile />} />
           <Route path="orders" element={<Orders />} />
-          <Route path="desgin" element={<Design />} />
+          <Route
+            path="desgin"
+            element={
+              <DesignProvider>
+                <Design />
+              </DesignProvider>
+            }
+          />
         </Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/register" element={<SignupPage />}></Route>

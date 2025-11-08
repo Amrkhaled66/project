@@ -1,10 +1,12 @@
 import { useState } from "react";
 import Model from "src/components/ui/Model";
 import { X, Check } from "lucide-react";
-import { images } from "src/data/images";
+import { images, cornerImages } from "src/data/images";
 import MainDashButton from "src/components/ui/MainDashButton";
 import { useCart } from "src/context/cart.context";
 import Toast from "src/components/ui/Toast";
+import { motion } from "framer-motion";
+import { useDesign } from "src/context/desgin.context";
 type Props = {
   isOpen: boolean;
   onClose: () => void;
@@ -12,6 +14,7 @@ type Props = {
   onDeleteItem: (id: string) => void;
   isItemExits: (id: string) => boolean;
   itemsLength: number;
+  onUpdateConrnerImage: (image: string | null) => void;
 };
 
 export default function AddPhotosModel({
@@ -21,12 +24,18 @@ export default function AddPhotosModel({
   onDeleteItem,
   isItemExits,
   itemsLength,
+  onUpdateConrnerImage,
 }: Props) {
   const [selected, setSelected] = useState<string[]>([]);
-  const { cartItem } = useCart();
+  const [activeTab, setActiveTab] = useState<"photos" | "armcandy">("photos");
+  const {
+    cartItem: { cornerImage },
+  } = useCart();
+  const { cartItem, isCornerstones } = useCart();
   const {
     size: { cols, rows },
   } = cartItem;
+
   const maxphoto = cols * rows;
   const isFull = itemsLength + selected.length >= maxphoto;
 
@@ -50,7 +59,7 @@ export default function AddPhotosModel({
 
   const handleAddSelected = () => {
     selected.slice(0, maxphoto).forEach((src) => {
-      const id = src; // use src as ID
+      const id = src;
       if (!isItemExits(id)) {
         onAddItem({ id, image: src });
       }
@@ -58,6 +67,13 @@ export default function AddPhotosModel({
     setSelected([]);
     onClose();
   };
+
+  const handleCornerImageSelect = (src: string) => {
+    setSelected([src]);
+    onUpdateConrnerImage(src);
+  };
+
+  const currentImages = activeTab === "armcandy" ? cornerImages : images;
 
   return (
     <Model isOpen={isOpen} onClose={onClose}>
@@ -73,19 +89,70 @@ export default function AddPhotosModel({
           </button>
         </div>
 
-        {/* Images grid */}
-        <div className="flex max-h-[400px] flex-wrap gap-3 overflow-y-auto rounded-xl bg-neutral-100 px-4 py-3">
-          {images.map((src, index) => {
-            const isSelected = selected.includes(src);
-            const exists = isItemExits(src);
+        {/* Tabs */}
+        <div className="relative flex w-full items-center gap-2 border-b border-neutral-200">
+          {[
+            { id: "photos", label: "Photos" },
+            ...(isCornerstones ? [{ id: "armcandy", label: "Arm Candy" }] : []),
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id as "photos" | "armcandy");
+                  setSelected([]); // clear when switching
+                }}
+                className={`relative px-4 py-3 font-medium transition-colors duration-200 ${
+                  isActive
+                    ? "text-primary"
+                    : "hover:text-primary text-neutral-600"
+                }`}
+              >
+                {tab.label}
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTab"
+                    layout="position"
+                    className="bg-primary absolute right-0 bottom-0 left-0 h-[3px] rounded-full"
+                    transition={{
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 30,
+                      mass: 0.5,
+                    }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Images Grid */}
+        <div className="flex max-h-[100px] flex-wrap gap-3 overflow-y-auto rounded-xl bg-neutral-100 px-4 py-3">
+          {currentImages.map((src, index) => {
+            const isSelected =
+              activeTab === "armcandy"
+                ? cornerImage === src
+                : selected.includes(src);
+            const exists =
+              activeTab === "armcandy" ? cornerImage === src : isItemExits(src);
+
+            const handleClick = () => {
+              if (activeTab === "armcandy") {
+                handleCornerImageSelect(src); // single select
+              } else if (!exists) {
+                toggleSelect(src); // multi select
+              }
+            };
 
             return (
               <div
                 key={index}
-                onClick={() => {
-                  if (!exists) toggleSelect(src);
-                }}
-                className={`relative aspect-square size-20 cursor-pointer overflow-hidden rounded-xl transition ${exists ? "opacity-50" : "hover:scale-105"} ${isSelected ? "ring-2 ring-blue-500" : ""}`}
+                onClick={handleClick}
+                className={`relative aspect-square size-20 cursor-pointer overflow-hidden rounded-xl transition ${
+                  exists ? "opacity-50" : "hover:scale-105"
+                } ${isSelected ? "ring-primary ring-2" : ""}`}
               >
                 <img
                   src={src}
@@ -98,7 +165,7 @@ export default function AddPhotosModel({
                   </div>
                 )}
                 {isSelected && !exists && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-blue-500/40 text-white">
+                  <div className="bg-primary/40 absolute inset-0 flex items-center justify-center text-white">
                     <Check size={20} />
                   </div>
                 )}
@@ -109,11 +176,13 @@ export default function AddPhotosModel({
 
         {/* Actions */}
         <div className="flex justify-end pt-2">
-          <MainDashButton
-            text="Add to Blanket"
-            disabled={selected.length === 0}
-            onClick={handleAddSelected}
-          />
+          {activeTab === "photos" && (
+            <MainDashButton
+              text="Add to Blanket"
+              disabled={selected.length === 0}
+              onClick={handleAddSelected}
+            />
+          )}
         </div>
       </div>
     </Model>

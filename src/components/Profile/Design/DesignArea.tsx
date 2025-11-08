@@ -1,85 +1,29 @@
-import { useRef, useState, useEffect } from "react";
 import DesginContainer from "./DesginContainer";
 import MainDashButton from "src/components/ui/MainDashButton";
 import GoastButton from "src/components/ui/GoastButton";
 import { Sparkles, CirclePlus } from "lucide-react";
-import Canvas, { CanvasHandle } from "./Canvas/Canvas";
-import { BlanketSizeId } from "src/data/blanketSizes";
+import Canvas from "./Canvas/Canvas";
 import AddPhotosModel from "./AddPhotosModel";
-import { arrayMove } from "@dnd-kit/sortable";
-import { GridItemType } from "./Canvas/GridItem";
+import { useDesign } from "src/context/desgin.context";
 import { useCart } from "src/context/cart.context";
+const DesignArea = () => {
+  const {
+    items,
+    setItems,
+    isAddPhotoModelOpen,
+    setIsAddPhotoModelOpen,
+    handleAddItem,
+    handleDeleteItem,
+    handleDragEnd,
+    isItemExits,
+    canvasRef,
+  } = useDesign();
 
-const STORAGE_KEY = "blanket-design-items";
-
-const DesginArea = ({
-  selectedSizeId,
-  borderColor,
-  blanketColor,
-}: {
-  selectedSizeId: BlanketSizeId;
-  borderColor: string | null;
-  blanketColor: string | null;
-}) => {
-  const [isAddPhotoModelOpen, setIsAddPhotoModelOpen] = useState(false);
-
-  const [items, setItems] = useState<GridItemType[]>([]);
-  const { updateDesign } = useCart();
-  const canvasRef = useRef<CanvasHandle>(null);
-  const hasMountedRef = useRef(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved) as GridItemType[]);
-      } catch {
-        setItems([]);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (hasMountedRef.current) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } else {
-      hasMountedRef.current = true;
-    }
-  }, [items]);
-
-  // ✅ Snapshot & update cart design image
-  useEffect(() => {
-    const timeout = setTimeout(async () => {
-      if (canvasRef.current) {
-        const image = await canvasRef.current.getSnapshot();
-        updateDesign(image);
-      }
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, [items, blanketColor, borderColor, selectedSizeId]);
-
-  const handleAddItem = ({ id, image }: GridItemType) =>
-    setItems((prev) => [...prev, { id, image }]);
-
-  const handleDeleteItem = (id: string) =>
-    setItems((prev) => prev.filter((item) => item.id !== id));
-
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      setItems((prev) => {
-        const oldIndex = prev.findIndex((i) => i.id === active.id);
-        const newIndex = prev.findIndex((i) => i.id === over.id);
-        return arrayMove(prev, oldIndex, newIndex);
-      });
-    }
-  };
-
-  const isItemExits = (id: string) => items.some((item) => item.id === id);
+  const { updateCornerImage } = useCart();
 
   return (
     <DesginContainer
-      className="!h-fit"
+      className="!h-fit flex-1"
       subHeader="Create a personalized blanket with your favorite memories"
       header="Design Your Blanket"
     >
@@ -90,9 +34,6 @@ const DesginArea = ({
           onUpdateItems={setItems}
           onDeleteItem={handleDeleteItem}
           onDragEnd={handleDragEnd}
-          blanketColor={blanketColor}
-          borderColor={borderColor}
-          selectedSizeId={selectedSizeId}
         />
 
         <div className="w-full space-y-2">
@@ -107,6 +48,7 @@ const DesginArea = ({
               onClick={() => setIsAddPhotoModelOpen(true)}
               icon={<CirclePlus />}
             />
+
             <AddPhotosModel
               itemsLength={items.length}
               onClose={() => setIsAddPhotoModelOpen(false)}
@@ -114,11 +56,13 @@ const DesginArea = ({
               onAddItem={handleAddItem}
               onDeleteItem={handleDeleteItem}
               isItemExits={isItemExits}
+              onUpdateConrnerImage={updateCornerImage}
             />
+
             <GoastButton
               className="flex items-center justify-center gap-2 !rounded-none"
               onClick={() => {
-                // Auto Layout logic (optional)
+                // optional Auto Layout logic
               }}
             >
               <Sparkles />
@@ -131,4 +75,4 @@ const DesginArea = ({
   );
 };
 
-export default DesginArea;
+export default DesignArea;
