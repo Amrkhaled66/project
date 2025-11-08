@@ -6,6 +6,8 @@ import Canvas from "./Canvas/Canvas";
 import AddPhotosModel from "./AddPhotosModel";
 import { useDesign } from "src/context/desgin.context";
 import { useCart } from "src/context/cart.context";
+import { useState } from "react";
+import Toast from "src/components/ui/Toast";
 const DesignArea = () => {
   const {
     items,
@@ -19,13 +21,38 @@ const DesignArea = () => {
     canvasRef,
   } = useDesign();
 
-  const { updateCornerImage } = useCart();
+  const {
+    updateCornerImage,
+    cartItem: { backingColor },
+  } = useCart();
+  const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
+  const toogleFlipped = () => {
+    setIsFlipped((prev: boolean) => !prev);
+  };
   return (
     <DesginContainer
       className="!h-fit flex-1"
       subHeader="Create a personalized blanket with your favorite memories"
       header="Design Your Blanket"
+      headerComponenet={
+        <button
+          onClick={
+            !backingColor
+              ? () =>
+                  Toast(
+                    "Please select a backing color",
+                    "warning",
+                    "#fff3cd",
+                    "top-end",
+                  )
+              : toogleFlipped
+          }
+          className="bg-primary rounded-lg px-4 py-2 text-white transition-all"
+        >
+          Flip
+        </button>
+      }
     >
       <div className="flex flex-col items-center justify-between gap-y-10">
         <Canvas
@@ -34,6 +61,7 @@ const DesignArea = () => {
           onUpdateItems={setItems}
           onDeleteItem={handleDeleteItem}
           onDragEnd={handleDragEnd}
+          isFlipped={isFlipped}
         />
 
         <div className="w-full space-y-2">

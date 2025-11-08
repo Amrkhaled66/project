@@ -10,7 +10,9 @@ import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import Corners from "../DesignWidget/Corners";
 import GridItem, { GridItemType } from "./GridItem";
 import sashingEffect from "src/assets/sashingEffect.png";
-
+import Blocking from "../upgrades/Blocking";
+import { useCart } from "src/context/cart.context";
+import EmbroideryZones from "../upgrades/Embroidery";
 function EmptyCell() {
   return (
     <div className="aspect-square rounded-lg border border-dashed border-gray-400 bg-neutral-200/30" />
@@ -24,12 +26,8 @@ interface CanvasFrontProps {
   onDragEnd: (event: any) => void;
   blanketColor: string | null;
   borderColor: string | null;
-  hasBinding: boolean;
-  hasFringe: boolean;
-  isCornerstones: boolean;
-  isQualityPreserve: boolean;
   bindingColor?: string | null;
-  canvasRef: React.RefObject<HTMLDivElement|null>;
+  canvasRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const CanvasFront: React.FC<CanvasFrontProps> = ({
@@ -39,16 +37,20 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
   onDragEnd,
   blanketColor,
   borderColor,
-  hasBinding,
-  hasFringe,
-  isCornerstones,
-  isQualityPreserve,
   bindingColor,
   canvasRef,
 }) => {
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
+  const {
+    hasBinding,
+    hasFringe,
+    isCornerstones,
+    isQualityPreserve,
+    hasBlocking,
+    hasEmbroidery,
+  } = useCart();
 
   const totalCells = size.rows * size.cols;
   const placeholders =
@@ -60,7 +62,7 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
     <div
       ref={canvasRef}
       style={{ backgroundColor: borderColor || "" }}
-      className="relative p-5 drop-shadow-xl"
+      className="relative p-5  drop-shadow-xl"
     >
       {hasBinding && (
         <div
@@ -70,7 +72,7 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
       )}
 
       {isCornerstones && <Corners />}
-
+      {hasEmbroidery && <EmbroideryZones />}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -91,7 +93,7 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
               }}
             />
           )}
-
+          {hasBlocking && <Blocking rows={size.rows} cols={size.cols} />}
           {hasFringe && (
             <div
               className="absolute inset-3 rounded-md"

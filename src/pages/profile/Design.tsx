@@ -15,8 +15,17 @@ import Preview from "src/components/Profile/Design/DesignWidget/Preview";
 import Sizes from "src/components/Profile/Design/DesignWidget/Sizes";
 import BackingColorSelector from "src/components/Profile/Design/DesignWidget/BackingColor";
 import BindingColor from "src/components/Profile/Design/DesignWidget/BindingColor";
+import BlockingColor from "src/components/Profile/Design/DesignWidget/BlockingColor";
+import Text from "src/components/Profile/Design/DesignWidget/Text";
 export default function BlanketDesigner() {
-  const { cartItem, getCartTotal, updateUpgrades, hasBinding } = useCart();
+  const {
+    cartItem,
+    getCartTotal,
+    updateUpgrades,
+    hasBinding,
+    hasBlocking,
+    hasEmbroidery,
+  } = useCart();
   const total = getCartTotal();
   const selectedUpgrades = cartItem?.upgrades?.map((u) => u.id) ?? [];
   const { setIsAddPhotoModelOpen } = useDesign();
@@ -66,7 +75,7 @@ export default function BlanketDesigner() {
   };
 
   const tabs = [
-    { id: "size", label: "Size", component: <Sizes /> },
+    { id: "size", label: "Size", component: <Sizes />, isActive: true },
     {
       id: "colors",
       label: "Colors",
@@ -75,9 +84,11 @@ export default function BlanketDesigner() {
           <BlanketColor />
           <BorderColor />
           {hasBinding && <BindingColor />}
+          {hasBlocking && <BlockingColor />}
           <BackingColorSelector />
         </div>
       ),
+      isActive: true,
     },
     {
       id: "upgrades",
@@ -88,8 +99,16 @@ export default function BlanketDesigner() {
           onToggleUpgrade={onToggleUpgrade}
         />
       ),
+      isActive: true,
     },
-    { id: "preview", label: "Preview", component: <Preview /> }, // 👈 new tab
+    { id: "preview", label: "Preview", component: <Preview /> ,      isActive:true
+},
+    {
+      id: "text",
+      label: "Text",
+      component: <Text />,
+      isActive: hasEmbroidery,
+    },
   ];
 
   return (
@@ -111,27 +130,34 @@ export default function BlanketDesigner() {
         {/* Right: Tabbed Controls */}
         <div className="sticky top-2 flex h-fit w-full flex-col space-y-4 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm lg:w-[40%]">
           {/* Tabs Header */}
-          <div className="relative flex w-full gap-2 border-b border-neutral-200">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`relative px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                  activeTab === tab.id
-                    ? "text-primary"
-                    : "hover:text-primary text-neutral-600"
-                }`}
-              >
-                {tab.label}
-                {activeTab === tab.id && (
-                  <motion.div
-                    layoutId="activeTabUnderline"
-                    className="bg-primary absolute right-0 bottom-0 left-0 h-[2px] rounded-full"
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
-              </button>
-            ))}
+          <div className="relative flex w-full gap-4 border-b border-neutral-200">
+            {tabs.map((tab) => {
+              if (!tab.isActive) return null;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`relative  px-1 py-2 text-sm font-medium transition-colors duration-200 ${
+                    activeTab === tab.id
+                      ? "text-primary"
+                      : "hover:text-primary text-neutral-600"
+                  }`}
+                >
+                  {tab.label}
+                  {activeTab === tab.id && (
+                    <motion.div
+                      layoutId="activeTabUnderline"
+                      className="bg-primary absolute right-0 bottom-0 left-0 h-[2px] rounded-full"
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {/* Tabs Content */}
@@ -149,7 +175,6 @@ export default function BlanketDesigner() {
             </AnimatePresence>
           </div>
 
-          <MainDashButton text="Order Now" onClick={() => {}} />
         </div>
       </div>
     </div>

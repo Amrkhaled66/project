@@ -1,7 +1,7 @@
 // src/components/Canvas/CanvasBack.tsx
 import React from "react";
 import { backingColors } from "src/data/colors";
-
+import { useCart } from "src/context/cart.context";
 interface CanvasBackProps {
   cols: number;
   rows: number;
@@ -24,14 +24,8 @@ const CanvasBack: React.FC<CanvasBackProps> = ({
         gridTemplateColumns: `repeat(${cols}, minmax(0, 100px))`,
         gridTemplateRows: `repeat(${rows}, minmax(0, 100px))`,
       }}
-      className="relative grid p-5 w-fit mx-auto drop-shadow-xl"
-    >
-      <div className="flex h-fit items-center justify-center p-4">
-        <div className="text-center text-gray-500">
-          <p className="text-lg font-semibold">Back Side</p>
-        </div>
-      </div>
-    </div>
+      className="relative mx-auto grid w-fit p-5 drop-shadow-xl"
+    ></div>
   );
 };
 

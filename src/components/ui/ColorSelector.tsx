@@ -6,6 +6,7 @@ type Props = {
   colors?: string[];
   selectedColor: string | null;
   onSelectColor: (color: string) => void;
+  headerComponenet?: React.ReactNode;
 };
 
 export default function ColorSelector({
@@ -13,9 +14,10 @@ export default function ColorSelector({
   colors = DEFAULT_COLORS,
   selectedColor,
   onSelectColor,
+  headerComponenet
 }: Props) {
   return (
-    <DesginContainer header={header}>
+    <DesginContainer headerComponenet={headerComponenet} header={header}>
       <div className="flex flex-wrap gap-x-2 gap-y-3">
         {colors.map((c) => {
           const selected = selectedColor === c;

@@ -39,9 +39,13 @@ type CartContextType = {
   getCartTotal: () => number;
   updateDesign: (designImage: string | null) => void;
   updateBindingColor: (color: string | null) => void;
+  updateBlockingColor: (color: string[], random: boolean) => void;
   updateCornerImage: (image: string | null) => void;
+  updateEmbroidery: (zones: any) => void;
   hasFringe: boolean;
+  hasBlocking: boolean;
   hasBinding: boolean;
+  hasEmbroidery: boolean;
   isQualityPreserve: boolean;
   isCornerstones: boolean;
 };
@@ -167,6 +171,34 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
+  const updateBlockingColor = (color: string[], random: boolean) => {
+    setCartItem((prev) => {
+      const hasBlocking = prev.upgrades.some((u) => u.id === "blocking");
+      if (!hasBlocking) return prev;
+      return {
+        ...prev,
+        upgrades: prev.upgrades.map((u) =>
+          u.id === "blocking"
+            ? { ...u, props: { ...u.props, color, random } }
+            : u,
+        ),
+      };
+    });
+  };
+
+  const updateEmbroidery = (zones:any) => {
+    setCartItem((prev) => {
+      const hasEmbroidery = prev.upgrades.some((u) => u.id === "embroidery");
+      if (!hasEmbroidery) return prev;
+      return {
+        ...prev,
+        upgrades: prev.upgrades.map((u) =>
+          u.id === "embroidery" ? { ...u, props: { ...u.props, zones } } : u,
+        ),
+      };
+    });
+  };
+
   // --- Clear ---
   const clearCart = () => {
     setCartItem(initialState);
@@ -183,6 +215,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const isCornerstones = cartItem?.upgrades?.some(
     (u) => u.id === "cornerstonesSingle" || u.id === "cornerstonesDouble",
   );
+  const hasBlocking = cartItem?.upgrades?.some((u) => u.id === "blocking");
+  const hasEmbroidery = cartItem?.upgrades?.some((u) => u.id === "embroidery");
   return (
     <CartContext.Provider
       value={{
@@ -198,10 +232,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         updateBackingColor,
         updateBindingColor,
         updateCornerImage,
+        updateBlockingColor,
+        updateEmbroidery,
         hasFringe,
+        hasBlocking,
         hasBinding,
         isQualityPreserve,
-        isCornerstones
+        isCornerstones,
+        hasEmbroidery,
       }}
     >
       {children}
