@@ -25,7 +25,7 @@ const signupValidation = (values: {
 
   const password = values.password;
   const strongPasswordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
   if (!password) newErrors.password = "Password is required";
   else if (!strongPasswordRegex.test(password))
