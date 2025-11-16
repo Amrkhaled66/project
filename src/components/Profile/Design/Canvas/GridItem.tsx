@@ -1,13 +1,14 @@
 import { CSS } from "@dnd-kit/utilities";
 import { X } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
-import { useState } from "react";
+import React from "react";
+
 export type GridItemType = {
   id: string;
   image: string;
 };
 
-export default function GridItem({
+function GridItem({
   id,
   image,
   onDelete,
@@ -19,11 +20,17 @@ export default function GridItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
-  const [isHovered, setIsHovered] = useState(false);
+  } = useSortable({
+    id,
+    data: { type: "grid-item", id },
+  });
+
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: isDragging ? "none" : transition,
+    willChange: "transform",
+    zIndex: isDragging ? 999 : undefined,
+    touchAction: "none" as const,
   };
 
   return (
@@ -32,27 +39,40 @@ export default function GridItem({
       style={style}
       {...attributes}
       {...listeners}
-      onMouseMove={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`relative aspect-square cursor-grab overflow-hidden ${
-        isDragging ? "" : "transition hover:shadow-md"
+      className={`group relative aspect-square cursor-grab overflow-hidden ${
+        isDragging ? "opacity-80 scale-[1.02]" : "transition hover:shadow-md"
       }`}
     >
+      {/* REAL IMAGE - added will-change for GPU acceleration */}
       <img
         src={image}
         alt={id}
-        className="object-fit pointer-events-none h-full w-full select-none"
+        draggable={false}
+        loading="lazy"
+        decoding="async"
+        className="pointer-events-none h-full w-full select-none object-cover"
+        style={{ willChange: isDragging ? "transform" : "auto" }}
       />
 
+      {/* DELETE BUTTON - uses CSS :hover via group-hover */}
       <button
         onClick={(e) => {
-          e.stopPropagation(); // prevent triggering drag
+          e.stopPropagation();
           onDelete(id);
         }}
-        className={`absolute end-1 top-1 aspect-square rounded-full bg-black/50 p-1 text-white sm:opacity-0  transition hover:bg-red-600 ${isHovered && "!opacity-100"}`}
+        className="absolute right-1 top-1 rounded-full bg-black/50 p-1 text-white opacity-0 transition hover:bg-red-600 group-hover:opacity-100"
       >
         <X className="size-4" />
       </button>
     </div>
   );
 }
+
+// Proper memoization with comparison function
+export default React.memo(GridItem, (prev, next) => {
+  return (
+    prev.id === next.id &&
+    prev.image === next.image &&
+    prev.onDelete === next.onDelete
+  );
+});

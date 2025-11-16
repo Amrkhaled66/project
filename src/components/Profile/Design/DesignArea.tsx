@@ -1,13 +1,14 @@
 import DesginContainer from "./DesginContainer";
 import MainDashButton from "src/components/ui/MainDashButton";
 import GoastButton from "src/components/ui/GoastButton";
-import { Sparkles, CirclePlus } from "lucide-react";
+import { Sparkles, CirclePlus, FlipHorizontal, Trash2 } from "lucide-react";
 import Canvas from "./Canvas/Canvas";
 import AddPhotosModel from "./AddPhotosModel";
 import { useDesign } from "src/context/desgin.context";
 import { useCart } from "src/context/cart.context";
 import { useState } from "react";
 import Toast from "src/components/ui/Toast";
+
 const DesignArea = () => {
   const {
     items,
@@ -22,83 +23,97 @@ const DesignArea = () => {
   } = useDesign();
 
   const {
-    updateCornerImage,
     cartItem: { backingColor },
   } = useCart();
+
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
-  const toogleFlipped = () => {
-    setIsFlipped((prev: boolean) => !prev);
+  const toggleFlipped = () => {
+    setIsFlipped((prev) => !prev);
   };
+
   return (
     <DesginContainer
       className="!h-fit flex-1"
       subHeader="Create a personalized blanket with your favorite memories"
       header="Design Your Blanket"
-      headerComponenet={
-        <button
-          onClick={
-            !backingColor
-              ? () =>
-                  Toast(
-                    "Please select a backing color",
-                    "warning",
-                    "#fff3cd",
-                    "top-end",
-                  )
-              : toogleFlipped
-          }
-          className="bg-primary rounded-lg px-4 py-2 text-white transition-all"
-        >
-          Flip
-        </button>
-      }
     >
-      <div className="flex flex-col items-center justify-between gap-y-10">
-        <Canvas
-          ref={canvasRef}
-          items={items}
-          onUpdateItems={setItems}
-          onDeleteItem={handleDeleteItem}
-          onDragEnd={handleDragEnd}
-          isFlipped={isFlipped}
-        />
+      <div className="flex flex-col gap-4">
+        {/* ⭐ Compact Toolbar */}
+        <div className="mx-auto flex items-center gap-3 rounded-md bg-neutral-100 px-3 py-2 shadow-sm">
+          <button
+            onClick={() => setIsAddPhotoModelOpen(true)}
+            className="flex items-center gap-1 rounded-md bg-primary/90 px-3 py-1.5 text-sm text-white transition-all hover:bg-primary"
+          >
+            <CirclePlus className="size-4" />
+            Add
+          </button>
 
-        <div className="w-full space-y-2">
-          <p className="text-center text-sm font-light sm:text-lg">
-            Upload photos to customize your blanket design
-          </p>
+          {/* <button
+            className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm text-gray-600 transition-all hover:bg-gray-200"
+            onClick={() => {
+              // optional Auto Layout logic
+            }}
+          >
+            <Sparkles className="size-4" />
+            Auto
+          </button> */}
 
-          <div className="grid w-full gap-x-2 gap-y-3 sm:grid-cols-2">
-            <MainDashButton
-              text="Add Photos"
-              className="!rounded-none"
-              onClick={() => setIsAddPhotoModelOpen(true)}
-              icon={<CirclePlus />}
-            />
+          <button
+            onClick={
+              !backingColor
+                ? () =>
+                    Toast(
+                      "Please select a backing color",
+                      "warning",
+                      "#fff3cd",
+                      "top-end"
+                    )
+                : toggleFlipped
+            }
+            disabled={!backingColor}
+            className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm text-gray-700 transition-all hover:bg-gray-200 disabled:opacity-50"
+          >
+            <FlipHorizontal className="size-4" />
+            Flip
+          </button>
 
-            <AddPhotosModel
-              itemsLength={items.length}
-              onClose={() => setIsAddPhotoModelOpen(false)}
-              isOpen={isAddPhotoModelOpen}
-              onAddItem={handleAddItem}
-              onDeleteItem={handleDeleteItem}
-              isItemExits={isItemExits}
-              onUpdateConrnerImage={updateCornerImage}
-            />
-
-            <GoastButton
-              className="flex items-center justify-center gap-2 !rounded-none"
-              onClick={() => {
-                // optional Auto Layout logic
-              }}
-            >
-              <Sparkles />
-              Auto Layout
-            </GoastButton>
-          </div>
+          {/* <button
+            onClick={() => setItems([])}
+            className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm text-gray-700 transition-all hover:bg-red-50 hover:text-red-600"
+          >
+            <Trash2 className="size-4" />
+            Clear
+          </button> */}
         </div>
+
+        {/* Canvas Centered */}
+        <div className="flex w-full justify-center">
+          <Canvas
+            ref={canvasRef}
+            items={items}
+            onUpdateItems={setItems}
+            onDeleteItem={handleDeleteItem}
+            onDragEnd={handleDragEnd}
+            isFlipped={isFlipped}
+          />
+        </div>
+
+        {/* Empty state hint */}
+        {items.length === 0 && (
+          <p className="text-center text-sm text-gray-500">
+            Click <strong>Add</strong> to start designing your blanket.
+          </p>
+        )}
       </div>
+
+      <AddPhotosModel
+        itemsLength={items.length}
+        onClose={() => setIsAddPhotoModelOpen(false)}
+        isOpen={isAddPhotoModelOpen}
+        onAddItem={handleAddItem}
+        isItemExits={isItemExits}
+      />
     </DesginContainer>
   );
 };

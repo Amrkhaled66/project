@@ -1,29 +1,17 @@
-// src/components/Canvas/Blocking.tsx
-import React, { useEffect, useState } from "react";
+// src/components/upgrades/Blocking.tsx
+import React, { useMemo } from "react";
 import { useCart } from "src/context/cart.context";
 import { DEFAULT_COLORS } from "src/data/colors";
 
 interface BlockingProps {
   rows: number;
   cols: number;
-  gap?: number;
-  cellSize?: number;
-  offset?: number;
 }
 
-const Blocking: React.FC<BlockingProps> = ({
-  rows,
-  cols,
-  gap = 12,
-  cellSize = 100,
-  offset = 22,
-}) => {
+const Blocking: React.FC<BlockingProps> = ({ rows, cols }) => {
   const { cartItem } = useCart();
-  const blockingUpgrade = cartItem.upgrades.find((u) => u.id === "blocking");
 
-  const [blocks, setBlocks] = useState<
-    { id: string; top: number; left: number; color: string }[]
-  >([]);
+  const blockingUpgrade = cartItem.upgrades.find((u) => u.id === "blocking");
 
   const colors =
     blockingUpgrade?.props?.color?.length > 0
@@ -37,13 +25,36 @@ const Blocking: React.FC<BlockingProps> = ({
       ? colors[Math.floor(Math.random() * colors.length)]
       : colors[0] || "#000000";
 
-  useEffect(() => {
-    const list = [];
+  // Memoize blocks calculation for performance
+  const blocks = useMemo(() => {
+    const blockList = [];
+
+    // Adaptive cell size matching CanvasFront.tsx logic
+    const getCellSize = () => {
+      const maxDimension = Math.max(rows, cols);
+      if (maxDimension <= 3) return 100;
+      if (maxDimension <= 4) return 85;
+      if (maxDimension <= 5) return 70;
+      return 60;
+    };
+
+    const cellSize = getCellSize();
+    const gridPadding = 16; // p-4 from parent grid
+    const gridGap = 8; // gap-2 from parent grid
+    const blockSize = 16; // Size of blocking square
+
+    // Blocking squares should appear at intersections
+    // For a grid with N cells, there are N-1 intersections
     for (let r = 0; r < rows - 1; r++) {
       for (let c = 0; c < cols - 1; c++) {
-        const top = offset + (r + 1) * (cellSize + gap) - gap / 2 + 1;
-        const left = offset + (c + 1) * (cellSize + gap) - gap / 2;
-        list.push({
+        // Calculate exact intersection point
+        // Position = padding + (cellSize + gap) * (index + 1) - blockSize/2
+        const top =
+          gridPadding + (cellSize + gridGap) * (r + 1) - blockSize + 20;
+        const left =
+          gridPadding + (cellSize + gridGap) * (c + 1) - blockSize + 20;
+
+        blockList.push({
           id: `block-${r}-${c}`,
           top,
           left,
@@ -51,20 +62,27 @@ const Blocking: React.FC<BlockingProps> = ({
         });
       }
     }
-    setBlocks(list);
-  }, [rows, cols, cellSize, gap, offset, blockingUpgrade]);
+
+    return blockList;
+  }, [rows, cols, colors, isRandom]);
 
   return (
     <>
-      {blocks.map((b) => (
+      {blocks.map((block) => (
         <div
-          key={b.id}
-          className="absolute w-4 h-4 rounded-sm border border-gray-400 shadow-sm transition-colors duration-300"
+          key={block.id}
+          className="pointer-events-none absolute"
           style={{
-            top: `${b.top}px`,
-            left: `${b.left}px`,
-            backgroundColor: b.color,
+            top: `${block.top}px`,
+            left: `${block.left}px`,
+            width: "16px",
+            height: "16px",
+            backgroundColor: block.color,
+            borderRadius: "2px",
+            border: "1px solid rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
             zIndex: 60,
+            transition: "background-color 300ms",
           }}
         />
       ))}
@@ -72,4 +90,4 @@ const Blocking: React.FC<BlockingProps> = ({
   );
 };
 
-export default Blocking;
+export default React.memo(Blocking);

@@ -1,18 +1,17 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { BlanketSize, BLANKET_SIZES } from "src/data/blanketSizes";
-import { upgrades } from "src/data/upgrades";
 import {
   getCart,
   setCart,
   clearCart as clearCartStorage,
 } from "src/utils/cartStorage";
+import { upgrades } from "src/data/upgrades";
+
 type Upgrade = {
   id: string;
   name: string;
   price: number;
-  props?: {
-    [key: string]: any;
-  };
+  props?: Record<string, any>;
 };
 
 export type CartItem = {
@@ -33,15 +32,16 @@ type CartContextType = {
   updateColor: (color: string | null) => void;
   updateBorderColor: (borderColor: string | null) => void;
   updateBackingColor: (color: string | null) => void;
-  updateUpgrades: (upgrades: Upgrade[]) => void;
+  updateUpgrades: (id: string) => void;
   updateQuantity: (quantity: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
   updateDesign: (designImage: string | null) => void;
   updateBindingColor: (color: string | null) => void;
   updateBlockingColor: (color: string[], random: boolean) => void;
-  updateCornerImage: (image: string | null) => void;
+  updateCornerImage: (index: number, image: string) => void;
   updateEmbroidery: (zones: any) => void;
+  updateQualityPreservedColor: (color: string) => void;
   hasFringe: boolean;
   hasBlocking: boolean;
   hasBinding: boolean;
@@ -63,19 +63,108 @@ export const initialState: CartItem = {
   backingColor: null,
   cornerImage: null,
 };
+
+const calculateTotalPrice = (
+  size: BlanketSize,
+  upgrades: Upgrade[],
+  quantity: number
+): number => {
+  const upgradesTotal = upgrades.reduce((sum, u) => sum + u.price, 0);
+  return (size.price + upgradesTotal) * quantity;
+};
+
+const handleUpgradeRemoval = (currentIds: string[], id: string): string[] => {
+  let newIds = currentIds.filter((u) => u !== id);
+
+  // Remove binding if quiltedPreserve removed
+  if (id === "quiltedPreserve") {
+    newIds = newIds.filter((u) => u !== "binding");
+  }
+
+  return newIds;
+};
+
+const handleUpgradeAddition = (currentIds: string[], id: string): string[] => {
+  let newIds = [...currentIds, id];
+
+  // quiltedPreserve adds binding automatically
+  if (id === "quiltedPreserve" && !newIds.includes("binding")) {
+    newIds.push("binding");
+  }
+
+  // cornerstones double removes single
+  if (id === "cornerstonesDouble") {
+    newIds = newIds.filter((u) => u !== "cornerstonesSingle");
+  }
+
+  // cornerstones single removes double
+  if (id === "cornerstonesSingle") {
+    newIds = newIds.filter((u) => u !== "cornerstonesDouble");
+  }
+
+  return newIds;
+};
+
+const mapUpgrades = (
+  upgradeIds: string[],
+  existingUpgrades: Upgrade[]
+): Upgrade[] => {
+  return upgrades
+    .filter((u) => upgradeIds.includes(u.id))
+    .map((u) => {
+      const existing = existingUpgrades.find((x) => x.id === u.id);
+      return existing ? { ...u, props: existing.props } : u;
+    });
+};
+
+const updateUpgradeProps = (
+  upgrades: Upgrade[],
+  upgradeId: string,
+  newProps: Record<string, any>
+): Upgrade[] => {
+  return upgrades.map((u) =>
+    u.id === upgradeId ? { ...u, props: { ...u.props, ...newProps } } : u
+  );
+};
+
+const hasUpgrade = (upgrades: Upgrade[], id: string): boolean => {
+  return upgrades.some((u) => u.id === id);
+};
+
+// Generic updater for simple cart properties
+const createSimpleUpdater = <K extends keyof CartItem>(
+  setCartItem: React.Dispatch<React.SetStateAction<CartItem>>,
+  key: K
+) => {
+  return (value: CartItem[K]) => {
+    setCartItem((prev) => ({ ...prev, [key]: value }));
+  };
+};
+
+// Generic updater for upgrade properties with validation
+const createUpgradePropsUpdater = (
+  setCartItem: React.Dispatch<React.SetStateAction<CartItem>>,
+  upgradeId: string
+) => {
+  return (props: Record<string, any>) => {
+    setCartItem((prev) => {
+      if (!hasUpgrade(prev.upgrades, upgradeId)) return prev;
+      return {
+        ...prev,
+        upgrades: updateUpgradeProps(prev.upgrades, upgradeId, props),
+      };
+    });
+  };
+};
+
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [cartItem, setCartItem] = useState<CartItem>(() => {
-    const saved = getCart();
-    if (saved) {
-      return saved;
-    } else {
-      return initialState;
-    }
+    return getCart() || initialState;
   });
 
-  // --- Save to localStorage ---
+  // Persist to localStorage
   useEffect(() => {
     if (cartItem) {
       setCart(cartItem);
@@ -84,139 +173,102 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [cartItem]);
 
-  // --- Helper: calculate total price ---
-  const calculateTotalPrice = (
-    size: BlanketSize,
-    upgrades: Upgrade[],
-    quantity: number,
-  ) => {
-    const upgradesTotal = upgrades.reduce((sum, u) => sum + u.price, 0);
-    return (size.price + upgradesTotal) * quantity;
-  };
+  // Simple property updaters
+  const updateColor = createSimpleUpdater(setCartItem, "color");
+  const updateBackingColor = createSimpleUpdater(setCartItem, "backingColor");
+  const updateBorderColor = createSimpleUpdater(setCartItem, "borderColor");
+  const updateDesign = createSimpleUpdater(setCartItem, "designImage");
 
-  // --- Update size ---
-  const updateSize = (size: BlanketSize) => {
-    setCartItem((prev) => {
-      return {
-        ...prev,
-        size,
-        totalPrice: calculateTotalPrice(size, prev.upgrades, prev.quantity),
-      };
-    });
-  };
-
-  // --- Update blanket color ---
-  const updateColor = (color: string | null) => {
-    setCartItem((prev) => {
-      return { ...prev, color };
-    });
-  };
-  const updateBackingColor = (color: string | null) => {
-    setCartItem((prev) => {
-      return { ...prev, backingColor: color };
-    });
-  };
-
-  // --- Update border color ---
-  const updateBorderColor = (borderColor: string | null) => {
-    setCartItem((prev) => {
-      return { ...prev, borderColor };
-    });
-  };
-
-  const updateCornerImage = (cornerImage: string | null) => {
-    setCartItem((prev) => {
-      return { ...prev, cornerImage };
-    });
-  };
-
-  // --- Update upgrades ---
-  const updateUpgrades = (upgrades: Upgrade[]) => {
-    setCartItem((prev) => {
-      return {
-        ...prev,
-        upgrades,
-        totalPrice: calculateTotalPrice(prev.size, upgrades, prev.quantity),
-      };
-    });
-  };
-
-  // --- Update quantity ---
-  const updateQuantity = (quantity: number) => {
-    setCartItem((prev) => {
-      return {
-        ...prev,
-        quantity,
-        totalPrice: calculateTotalPrice(prev.size, prev.upgrades, quantity),
-      };
-    });
-  };
-
+  // Upgrade property updaters
   const updateBindingColor = (color: string | null) => {
-    setCartItem((prev) => {
-      const hasBinding = prev.upgrades.some((u) => u.id === "binding");
-      if (!hasBinding) return prev;
-      return {
-        ...prev,
-        upgrades: prev.upgrades.map((u) =>
-          u.id === "binding" ? { ...u, props: { ...u.props, color } } : u,
-        ),
-      };
-    });
-  };
-
-  const updateDesign = (designImage: string | null) => {
-    setCartItem((prev) => {
-      return { ...prev, designImage };
-    });
+    createUpgradePropsUpdater(setCartItem, "binding")({ color });
   };
 
   const updateBlockingColor = (color: string[], random: boolean) => {
+    createUpgradePropsUpdater(setCartItem, "blocking")({ color, random });
+  };
+
+  const updateQualityPreservedColor = (color: string) => {
+    createUpgradePropsUpdater(setCartItem, "quiltedPreserve")({ color });
+  };
+
+  const updateEmbroidery = (zones: any) => {
+    createUpgradePropsUpdater(setCartItem, "embroidery")({ zones });
+  };
+
+  // Complex updaters
+  const updateSize = (size: BlanketSize) => {
+    setCartItem((prev) => ({
+      ...prev,
+      size,
+      totalPrice: calculateTotalPrice(size, prev.upgrades, prev.quantity),
+    }));
+  };
+
+  const updateUpgrades = (id: string) => {
     setCartItem((prev) => {
-      const hasBlocking = prev.upgrades.some((u) => u.id === "blocking");
-      if (!hasBlocking) return prev;
+      const currentIds = prev.upgrades.map((u) => u.id);
+      const isSelected = currentIds.includes(id);
+
+      const newIds = isSelected
+        ? handleUpgradeRemoval(currentIds, id)
+        : handleUpgradeAddition(currentIds, id);
+
+      const finalUpgrades = mapUpgrades(newIds, prev.upgrades);
+
       return {
         ...prev,
-        upgrades: prev.upgrades.map((u) =>
-          u.id === "blocking"
-            ? { ...u, props: { ...u.props, color, random } }
-            : u,
-        ),
+        upgrades: finalUpgrades,
+        totalPrice: calculateTotalPrice(prev.size, finalUpgrades, prev.quantity),
       };
     });
   };
 
-  const updateEmbroidery = (zones:any) => {
-    setCartItem((prev) => {
-      const hasEmbroidery = prev.upgrades.some((u) => u.id === "embroidery");
-      if (!hasEmbroidery) return prev;
-      return {
-        ...prev,
-        upgrades: prev.upgrades.map((u) =>
-          u.id === "embroidery" ? { ...u, props: { ...u.props, zones } } : u,
-        ),
-      };
-    });
+  const updateQuantity = (quantity: number) => {
+    setCartItem((prev) => ({
+      ...prev,
+      quantity,
+      totalPrice: calculateTotalPrice(prev.size, prev.upgrades, quantity),
+    }));
   };
 
-  // --- Clear ---
+  const updateCornerImage = (index: number, image: string) => {
+    setCartItem((prev) => ({
+      ...prev,
+      upgrades: prev.upgrades.map((u) => {
+        if (u.id === "cornerstonesSingle" || u.id === "cornerstonesDouble") {
+          return {
+            ...u,
+            props: {
+              ...u.props,
+              cornerImages: {
+                ...(u.props?.cornerImages || {}),
+                [index]: image,
+              },
+            },
+          };
+        }
+        return u;
+      }),
+    }));
+  };
+
   const clearCart = () => {
     setCartItem(initialState);
     clearCartStorage();
   };
 
-  // --- Get total ---
-  const getCartTotal = () => (cartItem ? cartItem.totalPrice : 0);
-  const hasFringe = cartItem.upgrades?.some((u) => u.id === "fringeBorder");
-  const hasBinding = cartItem.upgrades?.some((u) => u.id === "binding");
-  const isQualityPreserve = cartItem.upgrades?.some(
-    (u) => u.id === "quiltedPreserve",
-  );
-  const isCornerstones = cartItem?.upgrades?.some(
-    (u) => u.id === "cornerstonesSingle" || u.id === "cornerstonesDouble",
-  );
-  const hasBlocking = cartItem?.upgrades?.some((u) => u.id === "blocking");
-  const hasEmbroidery = cartItem?.upgrades?.some((u) => u.id === "embroidery");
+  const getCartTotal = () => cartItem.totalPrice;
+
+  // Computed flags
+  const hasFringe = hasUpgrade(cartItem.upgrades, "fringeBorder");
+  const hasBindingFlag = hasUpgrade(cartItem.upgrades, "binding");
+  const isQualityPreserve = hasUpgrade(cartItem.upgrades, "quiltedPreserve");
+  const isCornerstones = hasUpgrade(cartItem.upgrades, "cornerstonesSingle") || 
+                         hasUpgrade(cartItem.upgrades, "cornerstonesDouble");
+  const hasBlockingFlag = hasUpgrade(cartItem.upgrades, "blocking");
+  const hasEmbroideryFlag = hasUpgrade(cartItem.upgrades, "embroidery");
+
   return (
     <CartContext.Provider
       value={{
@@ -235,11 +287,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         updateBlockingColor,
         updateEmbroidery,
         hasFringe,
-        hasBlocking,
-        hasBinding,
+        hasBlocking: hasBlockingFlag,
+        hasBinding: hasBindingFlag,
         isQualityPreserve,
         isCornerstones,
-        hasEmbroidery,
+        hasEmbroidery: hasEmbroideryFlag,
+        updateQualityPreservedColor,
       }}
     >
       {children}

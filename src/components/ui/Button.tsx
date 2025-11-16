@@ -13,6 +13,7 @@ const Button = ({
     <button
       type={type}
       className={`bg-primary border-primary hover:text-primary group animate rounded-lg border-1 font-medium text-white hover:bg-transparent ${className}`}
+      disabled={isLoading}
     >
       {isLoading ? (
         <span className="inline-block size-5 animate-spin rounded-full border-2 border-white group-hover:border-[var(--color-primary)] !border-t-transparent"></span>

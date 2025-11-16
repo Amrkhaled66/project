@@ -6,32 +6,29 @@ import MainDashButton from "src/components/ui/MainDashButton";
 import { useCart } from "src/context/cart.context";
 import Toast from "src/components/ui/Toast";
 import { motion } from "framer-motion";
-import { useDesign } from "src/context/desgin.context";
+import UploadImage from "src/components/ui/UploadImage";
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   onAddItem: (item: { id: string; image: string }) => void;
-  onDeleteItem: (id: string) => void;
   isItemExits: (id: string) => boolean;
   itemsLength: number;
-  onUpdateConrnerImage: (image: string | null) => void;
 };
 
 export default function AddPhotosModel({
   isOpen,
   onClose,
   onAddItem,
-  onDeleteItem,
   isItemExits,
   itemsLength,
-  onUpdateConrnerImage,
 }: Props) {
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<"photos" | "armcandy">("photos");
   const {
     cartItem: { cornerImage },
   } = useCart();
-  const { cartItem, isCornerstones } = useCart();
+  const { cartItem } = useCart();
   const {
     size: { cols, rows },
   } = cartItem;
@@ -68,12 +65,8 @@ export default function AddPhotosModel({
     onClose();
   };
 
-  const handleCornerImageSelect = (src: string) => {
-    setSelected([src]);
-    onUpdateConrnerImage(src);
-  };
-
-  const currentImages = activeTab === "armcandy" ? cornerImages : images;
+  const currentImages =
+    activeTab === "photos" ? [...uploadedImages, ...images] : cornerImages;
 
   return (
     <Model isOpen={isOpen} onClose={onClose}>
@@ -91,10 +84,7 @@ export default function AddPhotosModel({
 
         {/* Tabs */}
         <div className="relative flex w-full items-center gap-2 border-b border-neutral-200">
-          {[
-            { id: "photos", label: "Photos" },
-            ...(isCornerstones ? [{ id: "armcandy", label: "Arm Candy" }] : []),
-          ].map((tab) => {
+          {[{ id: "photos", label: "Photos" }].map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <button
@@ -128,8 +118,15 @@ export default function AddPhotosModel({
           })}
         </div>
 
+        <div className="flex items-center gap-3">
+          <UploadImage
+            onUpload={(imgs) => {
+              setUploadedImages((prev) => [...imgs, ...prev]);
+            }}
+          />
+        </div>
         {/* Images Grid */}
-        <div className="flex max-h-[100px] flex-wrap gap-3 overflow-y-auto rounded-xl bg-neutral-100 px-4 py-3">
+        <div className="flex max-h-[230px] flex-wrap gap-3 overflow-y-auto rounded-xl bg-neutral-100 px-4 py-3">
           {currentImages.map((src, index) => {
             const isSelected =
               activeTab === "armcandy"
@@ -140,9 +137,9 @@ export default function AddPhotosModel({
 
             const handleClick = () => {
               if (activeTab === "armcandy") {
-                handleCornerImageSelect(src); // single select
+                (src: string) => console.log(src);
               } else if (!exists) {
-                toggleSelect(src); // multi select
+                toggleSelect(src);
               }
             };
 

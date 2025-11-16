@@ -10,10 +10,9 @@ import { useForm } from "src/hooks/useForm";
 import { useRegister } from "src/hooks/auth/useRegister";
 import { useAuth } from "src/context/auth.context";
 import { useNavigate } from "react-router-dom";
-import { useCart } from "src/context/cart.context";
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
-  const registerMutation = useRegister();
+  const { mutate, isPending } = useRegister();
   const { login } = useAuth();
   const { values, errors, handleChange, handleSubmit, updateError } = useForm({
     initialValues: {
@@ -26,7 +25,7 @@ const SignupPage: React.FC = () => {
     },
     validate: signupValidation,
     onSubmit: async (values) => {
-      registerMutation.mutate(values, {
+      mutate(values, {
         onSuccess: (data) => {
           login(data.user, data.token);
           Alert({
@@ -119,7 +118,7 @@ const SignupPage: React.FC = () => {
             />
           </div>
 
-          <Button type="submit" className="py-2.5">
+          <Button isLoading={isPending} type="submit" className="py-2.5">
             Sign Up
           </Button>
           <p

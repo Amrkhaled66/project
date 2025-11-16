@@ -6,15 +6,17 @@ interface CanvasBackProps {
   cols: number;
   rows: number;
   backgingColor: string | null;
+  bindingColor: string | null;
 }
 
 const CanvasBack: React.FC<CanvasBackProps> = ({
   cols,
   rows,
   backgingColor,
+  bindingColor
 }) => {
   const backing = backingColors.find((c) => c.name === backgingColor);
-
+  const { hasBinding } = useCart();
   return (
     <div
       style={{
@@ -25,7 +27,14 @@ const CanvasBack: React.FC<CanvasBackProps> = ({
         gridTemplateRows: `repeat(${rows}, minmax(0, 100px))`,
       }}
       className="relative mx-auto grid w-fit p-5 drop-shadow-xl"
-    ></div>
+    >
+      {hasBinding && (
+        <div
+          className="absolute inset-0 border-1"
+          style={{ borderColor: bindingColor || "#000" }}
+        />
+      )}
+    </div>
   );
 };
 

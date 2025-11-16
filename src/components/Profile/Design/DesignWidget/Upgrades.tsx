@@ -1,17 +1,15 @@
 import { upgrades } from "src/data/upgrades";
 import DesginContainer from "../DesginContainer";
 import priceFormmater from "src/utils/priceFormmater";
-import { useState } from "react";
+import { useCart } from "src/context/cart.context";
 type AddonsCheckboxProps = {
   selectedUpgrades: string[];
-  onToggleUpgrade: (id: string) => void;
 };
 
 export default function AddonsCheckbox({
   selectedUpgrades,
-  onToggleUpgrade,
 }: AddonsCheckboxProps) {
-
+  const { updateUpgrades } = useCart();
   return (
     <DesginContainer header="Upgrades" className="">
       <div className="space-y-2">
@@ -28,7 +26,7 @@ export default function AddonsCheckbox({
                   <input
                     type="checkbox"
                     checked={checked}
-                    onChange={() => onToggleUpgrade(item.id)}
+                    onChange={() => updateUpgrades(item.id)}
                     className="mr-2.5 accent-black"
                   />
                   <strong className="text-sm text-neutral-900">
