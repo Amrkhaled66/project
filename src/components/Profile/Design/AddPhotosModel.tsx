@@ -118,13 +118,13 @@ export default function AddPhotosModel({
           })}
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <UploadImage
             onUpload={(imgs) => {
               setUploadedImages((prev) => [...imgs, ...prev]);
             }}
           />
-        </div>
+        </div> */}
         {/* Images Grid */}
         <div className="flex max-h-[230px] flex-wrap gap-3 overflow-y-auto rounded-xl bg-neutral-100 px-4 py-3">
           {currentImages.map((src, index) => {

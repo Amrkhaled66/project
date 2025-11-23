@@ -1,6 +1,6 @@
 // src/components/Canvas/CanvasFront.tsx
 
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 
 import Corners from "../DesignWidget/Corners";
@@ -13,8 +13,11 @@ import { useCartFlags } from "src/context/cartFlags.context";
 // -------------------------------------------------------
 // Memoized Components
 // -------------------------------------------------------
-const EmptyCell = React.memo(() => (
-  <div className="aspect-square border border-dashed border-gray-400 bg-neutral-200/30" />
+const EmptyCell = React.memo(({ cellSize }: { cellSize: number }) => (
+  <div
+    className="rounded-md border border-dashed border-gray-300 bg-neutral-200/40"
+   
+  />
 ));
 
 const MemoCorners = React.memo(Corners);
@@ -55,6 +58,7 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
   } = useCartFlags();
 
   const totalCells = size.rows * size.cols;
+  const gridRef = useRef<HTMLDivElement | null>(null);
 
   // -------------------------------------------------------
   // Placeholder cells
@@ -82,21 +86,20 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
     [bindingColor],
   );
 
-  // Adaptive cell size based on grid dimensions
+  const getCellSize = () => {
+    const maxDimension = Math.max(size.cols, size.rows);
+    if (maxDimension <= 3) return 100; // 3x3 or smaller: 100px cells
+    if (maxDimension <= 4) return 85; // 4x4: 85px cells
+    if (maxDimension <= 5) return 70; // 5x5: 70px cells
+    return 60; // 6x6 or larger: 60px cells
+  };
   const gridStyle = useMemo(() => {
     // Smaller cells for larger grids to keep canvas compact
-    const getCellSize = () => {
-      const maxDimension = Math.max(size.cols, size.rows);
-      if (maxDimension <= 3) return 100; // 3x3 or smaller: 100px cells
-      if (maxDimension <= 4) return 85;  // 4x4: 85px cells
-      if (maxDimension <= 5) return 70;  // 5x5: 70px cells
-      return 60; // 6x6 or larger: 60px cells
-    };
 
     const cellSize = getCellSize();
-    const gap = 8; // gap-2 in Tailwind
-    const padding = 32; // p-4 (16px * 2) in Tailwind
-    
+    const gap = 8;
+    const padding = 32;
+
     return {
       gridTemplateColumns: `repeat(${size.cols}, 1fr)`,
       gridTemplateRows: `repeat(${size.rows}, 1fr)`,
@@ -110,9 +113,7 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
     <>
       <div
         ref={canvasRef}
-        className={`relative overflow-hidden ${
-          hasFringe ? "p-7" : "p-5"
-        } drop-shadow-x`}
+        className={`drop-shadow-x relative overflow-hidden p-5`}
         style={borderStyle}
       >
         {hasBinding && (
@@ -120,32 +121,31 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
         )}
 
         {isCornerstones && <MemoCorners />}
-        {hasEmbroidery && <MemoEmbroidery />}
 
         <SortableContext items={sortableIds} strategy={rectSortingStrategy}>
           {isQualityPreserve && <MemoQualityPreservedEffect />}
-          {hasBlocking && <MemoBlocking rows={size.rows} cols={size.cols} />}
 
-          {hasFringe && (
-            <div
-              className="absolute inset-[19px]"
-              style={{
-                border: `8px solid ${blanketColor}`,
-                pointerEvents: "none",
-              }}
-            />
-          )}
-
-          <div className="mx-auto grid h-fit gap-2 p-4" style={gridStyle}>
+          <div
+            ref={gridRef}
+            className={`animate mx-auto grid h-fit gap-2 overflow-hidden p-1 ${hasFringe && "p-4"}`}
+            style={gridStyle}
+          >
             {items.map((item) => (
               <GridItem key={item.id} {...item} onDelete={onDeleteItem} />
             ))}
 
+            {hasEmbroidery && <MemoEmbroidery />}
+
             {placeholders.map((i) => (
-              <EmptyCell key={`empty-${i}`} />
+              <EmptyCell cellSize={getCellSize()} key={`empty-${i}`} />
             ))}
           </div>
+
+          {/* ⚡ NOW call blocking AFTER the grid is rendered */}
         </SortableContext>
+        {hasBlocking && (
+          <MemoBlocking gridRef={gridRef} rows={size.rows} cols={size.cols} />
+        )}
       </div>
     </>
   );

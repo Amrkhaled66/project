@@ -21,8 +21,9 @@ import BlockingColor from "src/components/Profile/Design/DesignWidget/BlockingCo
 import Text from "src/components/Profile/Design/DesignWidget/Text";
 import QualityPreserveColor from "src/components/Profile/Design/DesignWidget/QualityPreservedColor";
 import CornersPool from "src/components/Profile/Design/DesignWidget/CornersPool";
+import CustomPanelTab from "src/components/Profile/Design/DesignWidget/CustomPanel";
 
-type TabId = "size" | "colors" | "upgrades" | "preview" | "text" | "corners";
+type TabId = "size" | "colors" | "upgrades" | "preview" | "text" | "corners" | "customPanel";
 
 interface Tab {
   id: TabId;
@@ -90,7 +91,8 @@ export default function BlanketDesigner() {
     hasBlocking,
     hasEmbroidery,
     isQualityPreserve,
-    isCornerstones
+    isCornerstones,
+     hasCustomPanel
   } = useCart();
   
   const { handleDragEnd } = useDesign();
@@ -143,6 +145,12 @@ export default function BlanketDesigner() {
         component: <CornersPool />,
         isActive: isCornerstones,
       },
+      {
+        id: "customPanel",
+        label: "Custom Panel",
+        component: <CustomPanelTab />,
+        isActive: hasCustomPanel
+      }
     ],
     [hasBinding, hasBlocking, hasEmbroidery, isQualityPreserve, selectedUpgrades]
   );

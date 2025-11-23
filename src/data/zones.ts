@@ -21,7 +21,7 @@ export const embroideryZones = [
     id: "left-top",
     style: {
       top: "20%",
-      left: "4%",
+      left: "2%",
       transform: "rotate(-90deg)",
       transformOrigin: "left center"
     }
@@ -31,7 +31,7 @@ export const embroideryZones = [
     id: "left-center",
     style: {
       top: "50%",
-      left: "4%",
+      left: "5%",
       transform: "rotate(-90deg) translateY(-50%)",
       transformOrigin: "left center"
     }
@@ -41,7 +41,7 @@ export const embroideryZones = [
     id: "left-bottom",
     style: {
       bottom: "20%",
-      left: "-1%",
+      left: "2%",
       transform: "rotate(-90deg)",
       transformOrigin: "left center"
     }
@@ -63,7 +63,7 @@ export const embroideryZones = [
     id: "right-center",
     style: {
       top: "50%",
-      right: "2%",
+      right: "0%",
       transform: "rotate(90deg) translateY(50%)",
       transformOrigin: "right center"
     }

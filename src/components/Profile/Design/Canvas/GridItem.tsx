@@ -43,7 +43,6 @@ function GridItem({
         isDragging ? "opacity-80 scale-[1.02]" : "transition hover:shadow-md"
       }`}
     >
-      {/* REAL IMAGE - added will-change for GPU acceleration */}
       <img
         src={image}
         alt={id}
@@ -54,7 +53,6 @@ function GridItem({
         style={{ willChange: isDragging ? "transform" : "auto" }}
       />
 
-      {/* DELETE BUTTON - uses CSS :hover via group-hover */}
       <button
         onClick={(e) => {
           e.stopPropagation();

@@ -1,88 +1,116 @@
 // src/components/upgrades/Blocking.tsx
-import React, { useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useCart } from "src/context/cart.context";
-import { DEFAULT_COLORS } from "src/data/colors";
 
 interface BlockingProps {
   rows: number;
   cols: number;
+  gridRef: React.RefObject<HTMLDivElement | null>;
 }
 
-const Blocking: React.FC<BlockingProps> = ({ rows, cols }) => {
+const BLOCK_SIZE = 14;
+
+const Blocking: React.FC<BlockingProps> = ({ rows, cols, gridRef }) => {
   const { cartItem } = useCart();
 
+  // Get the blocking upgrade from the cart
   const blockingUpgrade = cartItem.upgrades.find((u) => u.id === "blocking");
 
-  const colors =
+  const colors: string[] =
     blockingUpgrade?.props?.color?.length > 0
       ? blockingUpgrade?.props?.color
-      : DEFAULT_COLORS;
+      : ["#000"];
 
-  const isRandom = blockingUpgrade?.props?.random ?? false;
+  const isRandom: boolean = blockingUpgrade?.props?.random ?? false;
 
+  const [intersections, setIntersections] = useState<
+    { top: number; left: number; color: string }[]
+  >([]);
+
+  // COLOR SYSTEM — same as original logic
   const getColor = (index: number) =>
     isRandom
       ? colors[Math.floor(Math.random() * colors.length)]
-      : colors[0] || "#000000";
+      : colors[index % colors.length] || "#000";
 
-  // Memoize blocks calculation for performance
-  const blocks = useMemo(() => {
-    const blockList = [];
+  useEffect(() => {
+  if (!gridRef.current) return;
 
-    // Adaptive cell size matching CanvasFront.tsx logic
-    const getCellSize = () => {
-      const maxDimension = Math.max(rows, cols);
-      if (maxDimension <= 3) return 100;
-      if (maxDimension <= 4) return 85;
-      if (maxDimension <= 5) return 70;
-      return 60;
-    };
+  const grid = gridRef.current;
 
-    const cellSize = getCellSize();
-    const gridPadding = 16; // p-4 from parent grid
-    const gridGap = 8; // gap-2 from parent grid
-    const blockSize = 16; // Size of blocking square
+  const calculateIntersections = () => {
+    const children = Array.from(grid.children);
+    if (children.length === 0) return;
 
-    // Blocking squares should appear at intersections
-    // For a grid with N cells, there are N-1 intersections
+    const gridRect = grid.getBoundingClientRect();
+
+    const cellRects = children
+      .slice(0, cols)
+      .map((el) => el.getBoundingClientRect());
+
+    const rowRects = children
+      .filter((_, i) => i % cols === 0)
+      .map((el) => el.getBoundingClientRect());
+
+    const blocks: any[] = [];
+
     for (let r = 0; r < rows - 1; r++) {
       for (let c = 0; c < cols - 1; c++) {
-        // Calculate exact intersection point
-        // Position = padding + (cellSize + gap) * (index + 1) - blockSize/2
-        const top =
-          gridPadding + (cellSize + gridGap) * (r + 1) - blockSize + 20;
-        const left =
-          gridPadding + (cellSize + gridGap) * (c + 1) - blockSize + 20;
+        const x = cellRects[c].right - gridRect.left + 23;
+        const y = rowRects[r].bottom - gridRect.top + 26;
 
-        blockList.push({
-          id: `block-${r}-${c}`,
-          top,
-          left,
+        blocks.push({
+          left: x - BLOCK_SIZE / 2,
+          top: y - BLOCK_SIZE / 2,
           color: getColor(r * cols + c),
         });
       }
     }
 
-    return blockList;
-  }, [rows, cols, colors, isRandom]);
+    setIntersections(blocks);
+  };
+
+  // 🔥 1. Calculate right away
+  calculateIntersections();
+
+  // 🔥 2. Recalculate when grid Resizes
+  const resizeObserver = new ResizeObserver(() => {
+    calculateIntersections();
+  });
+  resizeObserver.observe(grid);
+
+  // 🔥 3. Recalculate when children change (items dragged/added)
+  const mutationObserver = new MutationObserver(() => {
+    calculateIntersections();
+  });
+  mutationObserver.observe(grid, {
+    childList: true,
+    subtree: true,
+  });
+
+  return () => {
+    resizeObserver.disconnect();
+    mutationObserver.disconnect();
+  };
+}, [rows, cols, gridRef, colors, isRandom]);
+
 
   return (
     <>
-      {blocks.map((block) => (
+      {intersections.map((b, i) => (
         <div
-          key={block.id}
-          className="pointer-events-none absolute"
+          key={i}
+          className="absolute animate pointer-events-none"
           style={{
-            top: `${block.top}px`,
-            left: `${block.left}px`,
-            width: "16px",
-            height: "16px",
-            backgroundColor: block.color,
+            top: `${b.top}px`,
+            left: `${b.left}px`,
+            width: `${BLOCK_SIZE}px`,
+            height: `${BLOCK_SIZE}px`,
+            backgroundColor: b.color,
             borderRadius: "2px",
-            border: "1px solid rgba(0, 0, 0, 0.1)",
-            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-            zIndex: 60,
-            transition: "background-color 300ms",
+            // border: "1px solid rgba(0,0,0,0.15)`,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+            zIndex: 50,
           }}
         />
       ))}

@@ -49,16 +49,6 @@ const DesignArea = () => {
             Add
           </button>
 
-          {/* <button
-            className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm text-gray-600 transition-all hover:bg-gray-200"
-            onClick={() => {
-              // optional Auto Layout logic
-            }}
-          >
-            <Sparkles className="size-4" />
-            Auto
-          </button> */}
-
           <button
             onClick={
               !backingColor
@@ -77,14 +67,6 @@ const DesignArea = () => {
             <FlipHorizontal className="size-4" />
             Flip
           </button>
-
-          {/* <button
-            onClick={() => setItems([])}
-            className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm text-gray-700 transition-all hover:bg-red-50 hover:text-red-600"
-          >
-            <Trash2 className="size-4" />
-            Clear
-          </button> */}
         </div>
 
         {/* Canvas Centered */}

@@ -42,9 +42,13 @@ type CartContextType = {
   updateCornerImage: (index: number, image: string) => void;
   updateEmbroidery: (zones: any) => void;
   updateQualityPreservedColor: (color: string) => void;
+  updateCustomPanelProps: (props: Record<string, any>) => void;
+  deleteCornerImage: (index: number) => void;
   hasFringe: boolean;
   hasBlocking: boolean;
+  hasCustomPanel: boolean;
   hasBinding: boolean;
+  hasDoubleCorner: boolean;
   hasEmbroidery: boolean;
   isQualityPreserve: boolean;
   isCornerstones: boolean;
@@ -178,6 +182,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const updateBackingColor = createSimpleUpdater(setCartItem, "backingColor");
   const updateBorderColor = createSimpleUpdater(setCartItem, "borderColor");
   const updateDesign = createSimpleUpdater(setCartItem, "designImage");
+const updateCustomPanelProps = (props: Record<string, any>) => {
+  createUpgradePropsUpdater(setCartItem, "customPanel")(props);
+};
 
   // Upgrade property updaters
   const updateBindingColor = (color: string | null) => {
@@ -253,6 +260,27 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     }));
   };
 
+  const deleteCornerImage = (index: number) => {
+    setCartItem((prev) => ({
+      ...prev,
+      upgrades: prev.upgrades.map((u) => {
+        if (u.id === "cornerstonesSingle" || u.id === "cornerstonesDouble") {
+          return {
+            ...u,
+            props: {
+              ...u.props,
+              cornerImages: {
+                ...(u.props?.cornerImages || {}),
+                [index]: null,
+              },
+            },
+          };
+        }
+        return u;
+      }),
+    }));
+  }
+
   const clearCart = () => {
     setCartItem(initialState);
     clearCartStorage();
@@ -266,8 +294,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const isQualityPreserve = hasUpgrade(cartItem.upgrades, "quiltedPreserve");
   const isCornerstones = hasUpgrade(cartItem.upgrades, "cornerstonesSingle") || 
                          hasUpgrade(cartItem.upgrades, "cornerstonesDouble");
+  const hasDoubleCorner= hasUpgrade(cartItem.upgrades, "cornerstonesDouble");
   const hasBlockingFlag = hasUpgrade(cartItem.upgrades, "blocking");
   const hasEmbroideryFlag = hasUpgrade(cartItem.upgrades, "embroidery");
+const hasCustomPanel = hasUpgrade(cartItem.upgrades, "customPanels");
 
   return (
     <CartContext.Provider
@@ -285,14 +315,18 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         updateBindingColor,
         updateCornerImage,
         updateBlockingColor,
+        updateCustomPanelProps,
         updateEmbroidery,
         hasFringe,
+        hasDoubleCorner,
         hasBlocking: hasBlockingFlag,
+        hasCustomPanel,
         hasBinding: hasBindingFlag,
         isQualityPreserve,
         isCornerstones,
         hasEmbroidery: hasEmbroideryFlag,
         updateQualityPreservedColor,
+        deleteCornerImage
       }}
     >
       {children}

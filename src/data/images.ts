@@ -1,20 +1,5 @@
-import img from "src/assets/react.svg";
 
 export const images = [
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135158_100x100.jpg?v=1663042959",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135220_100x100.jpg?v=1663042961",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135114_100x100.jpg?v=1663042959",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_134610_100x100.jpg?v=1663042949",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_134924_100x100.jpg?v=1663042955",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135136_100x100.jpg?v=1663042958",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135136_100x100.jpg?v=1663042958",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135136_100x100.jpg?v=1663042958",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135136_100x100.jpg?v=1663042958",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135136_100x100.jpg?v=1663042958",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135136_100x100.jpg?v=1663042958",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135136_100x100.jpg?v=1663042958",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135136_100x100.jpg?v=1663042958",
-  "https://www.jerseyblanket.com/cdn/shop/files/20220905_135136_100x100.jpg?v=1663042958",
   "https://images.unsplash.com/photo-1756291822310-ec60c0a4b0c5?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0fHx8ZW58MHx8fHx8",
   "https://images.unsplash.com/photo-1761839259112-aaea03db3633?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw4fHx8ZW58MHx8fHx8",
   "https://images.unsplash.com/photo-1702751424429-2f718d574e96?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw3fHx8ZW58MHx8fHx8",
