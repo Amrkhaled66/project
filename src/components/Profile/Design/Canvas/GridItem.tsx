@@ -39,7 +39,7 @@ function GridItem({
       style={style}
       {...attributes}
       {...listeners}
-      className={`group relative aspect-square cursor-grab overflow-hidden ${
+      className={`group  aspect-square cursor-grab overflow-hidden ${
         isDragging ? "opacity-80 scale-[1.02]" : "transition hover:shadow-md"
       }`}
     >
@@ -58,7 +58,7 @@ function GridItem({
           e.stopPropagation();
           onDelete(id);
         }}
-        className="absolute right-1 top-1 rounded-full bg-black/50 p-1 text-white opacity-0 transition hover:bg-red-600 group-hover:opacity-100"
+        className="absolute right-1 top-1 rounded-full bg-black/50 p-1 text-white opacity-0 sm:opcatity-100 transition hover:bg-red-600 group-hover:opacity-100"
       >
         <X className="size-4" />
       </button>

@@ -127,7 +127,7 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
 
           <div
             ref={gridRef}
-            className={`animate mx-auto grid h-fit gap-2 overflow-hidden p-1 ${hasFringe && "p-4"}`}
+            className={`animate relative mx-auto grid h-fit gap-2 overflow-hidden  ${hasFringe && "p-4"}`}
             style={gridStyle}
           >
             {items.map((item) => (
@@ -141,11 +141,10 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
             ))}
           </div>
 
-          {/* ⚡ NOW call blocking AFTER the grid is rendered */}
-        </SortableContext>
         {hasBlocking && (
           <MemoBlocking gridRef={gridRef} rows={size.rows} cols={size.cols} />
         )}
+        </SortableContext>
       </div>
     </>
   );

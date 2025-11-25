@@ -9,11 +9,16 @@ interface BlockingProps {
 }
 
 const BLOCK_SIZE = 14;
+// لازم يكون نفس قيمة gap اللي في Tailwind (gap-2 = 8px)
+const GRID_GAP = 8;
+// p-4 = 16px padding من كل جانب لو الـ Fringe شغال
+const FRINGE_PADDING = 16;
+
+type Block = { top: number; left: number; color: string };
 
 const Blocking: React.FC<BlockingProps> = ({ rows, cols, gridRef }) => {
   const { cartItem } = useCart();
 
-  // Get the blocking upgrade from the cart
   const blockingUpgrade = cartItem.upgrades.find((u) => u.id === "blocking");
 
   const colors: string[] =
@@ -23,84 +28,92 @@ const Blocking: React.FC<BlockingProps> = ({ rows, cols, gridRef }) => {
 
   const isRandom: boolean = blockingUpgrade?.props?.random ?? false;
 
-  const [intersections, setIntersections] = useState<
-    { top: number; left: number; color: string }[]
-  >([]);
+  const [intersections, setIntersections] = useState<Block[]>([]);
 
-  // COLOR SYSTEM — same as original logic
   const getColor = (index: number) =>
     isRandom
       ? colors[Math.floor(Math.random() * colors.length)]
       : colors[index % colors.length] || "#000";
 
   useEffect(() => {
-  if (!gridRef.current) return;
+    if (!gridRef.current) return;
 
-  const grid = gridRef.current;
+    const grid = gridRef.current;
+    const parent = grid.parentElement as HTMLElement | null;
+    if (!parent) return;
 
-  const calculateIntersections = () => {
-    const children = Array.from(grid.children);
-    if (children.length === 0) return;
+    const recalcBlocks = () => {
+      const gridRect = grid.getBoundingClientRect();
+      const parentRect = parent.getBoundingClientRect();
 
-    const gridRect = grid.getBoundingClientRect();
+      // هل فيه p-4 مفعّلة ولا لأ
+      const hasFringePadding = grid.classList.contains("p-4");
+      const innerPadding = hasFringePadding ? FRINGE_PADDING : 0;
 
-    const cellRects = children
-      .slice(0, cols)
-      .map((el) => el.getBoundingClientRect());
+      // حجم الشبكة مقابل حواف الكونتينر اللي فيها البلوكات
+      const offsetLeft = gridRect.left - parentRect.left;
+      const offsetTop = gridRect.top - parentRect.top;
 
-    const rowRects = children
-      .filter((_, i) => i % cols === 0)
-      .map((el) => el.getBoundingClientRect());
+      const innerWidth = gridRect.width - innerPadding * 2;
+      const innerHeight = gridRect.height - innerPadding * 2;
 
-    const blocks: any[] = [];
-
-    for (let r = 0; r < rows - 1; r++) {
-      for (let c = 0; c < cols - 1; c++) {
-        const x = cellRects[c].right - gridRect.left + 23;
-        const y = rowRects[r].bottom - gridRect.top + 26;
-
-        blocks.push({
-          left: x - BLOCK_SIZE / 2,
-          top: y - BLOCK_SIZE / 2,
-          color: getColor(r * cols + c),
-        });
+      if (rows <= 1 || cols <= 1) {
+        setIntersections([]);
+        return;
       }
-    }
 
-    setIntersections(blocks);
-  };
+      const cellWidth =
+        (innerWidth - GRID_GAP * (cols - 1)) / cols;
+      const cellHeight =
+        (innerHeight - GRID_GAP * (rows - 1)) / rows;
 
-  // 🔥 1. Calculate right away
-  calculateIntersections();
+      const blocks: Block[] = [];
 
-  // 🔥 2. Recalculate when grid Resizes
-  const resizeObserver = new ResizeObserver(() => {
-    calculateIntersections();
-  });
-  resizeObserver.observe(grid);
+      // بنحسب نقطة تقاطع بين كل صف وعمود
+      // (rows - 1) * (cols - 1) بلوك
+      for (let r = 0; r < rows - 1; r++) {
+        for (let c = 0; c < cols - 1; c++) {
+          // خط العمود بعد العمود c
+          const xInsideGrid =
+            innerPadding + (c + 1) * cellWidth + c * GRID_GAP+3;
+          // خط الصف بعد الصف r
+          const yInsideGrid =
+            innerPadding + (r + 1) * cellHeight + r * GRID_GAP+3;
 
-  // 🔥 3. Recalculate when children change (items dragged/added)
-  const mutationObserver = new MutationObserver(() => {
-    calculateIntersections();
-  });
-  mutationObserver.observe(grid, {
-    childList: true,
-    subtree: true,
-  });
+          const centerX = offsetLeft + xInsideGrid;
+          const centerY = offsetTop + yInsideGrid;
 
-  return () => {
-    resizeObserver.disconnect();
-    mutationObserver.disconnect();
-  };
-}, [rows, cols, gridRef, colors, isRandom]);
+          blocks.push({
+            left: centerX - BLOCK_SIZE / 2,
+            top: centerY - BLOCK_SIZE / 2,
+            color: getColor(r * (cols - 1) + c),
+          });
+        }
+      }
 
+      setIntersections(blocks);
+    };
+
+    // نحسب مرة في الأول
+    recalcBlocks();
+
+    // لو الشبكة نفسها حجمها اتغيّر (resize)
+    const resizeObserver = new ResizeObserver(() => {
+      recalcBlocks();
+    });
+    resizeObserver.observe(grid);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [rows, cols, gridRef, colors, isRandom]);
 
   return (
     <>
       {intersections.map((b, i) => (
         <div
           key={i}
-          className="absolute animate pointer-events-none"
+          className="absolute pointer-events-none"
           style={{
             top: `${b.top}px`,
             left: `${b.left}px`,
@@ -108,7 +121,6 @@ const Blocking: React.FC<BlockingProps> = ({ rows, cols, gridRef }) => {
             height: `${BLOCK_SIZE}px`,
             backgroundColor: b.color,
             borderRadius: "2px",
-            // border: "1px solid rgba(0,0,0,0.15)`,
             boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
             zIndex: 50,
           }}
