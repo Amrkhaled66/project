@@ -14,50 +14,74 @@ import MainLayout from "./layouts/MainLayout";
 import DashBoardLayout from "./layouts/DashBoardLayout";
 import ScrollToTop from "./components/ui/ScroolToTop";
 
+// Guards
+import CartGuard from "./middleware/CartGuard";
 import AuthRoutes from "./middleware/AuthRoutes";
 import OnlyGuestRoute from "./middleware/onlyGuestUser";
+
 import { DesignProvider } from "src/context/desgin.context";
+import { AxiosProvider } from "src/context/axiosProvider";
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
+      <AxiosProvider>
+        <ScrollToTop />
+        <Routes>
+          {/* Public Layout */}
+          <Route path="/" element={<MainLayout />}>
+            <Route
+              index
+              element={
+                <OnlyGuestRoute>
+                  <Home />
+                </OnlyGuestRoute>
+              }
+            />
+          </Route>
+
+          {/* Redirect */}
           <Route
-            index
-            element={
-              <OnlyGuestRoute>
-                <Home />
-              </OnlyGuestRoute>
-            }
+            path="/profile"
+            element={<Navigate to="/profile/dashboard" />}
           />
-        </Route>
-        <Route path="/profile" element={<Navigate to="/profile/dashboard" />} />
-        <Route
-          path="/profile"
-          element={
-            <AuthRoutes>
-              <DashBoardLayout />
-            </AuthRoutes>
-          }
-        >
-          <Route index path="dashboard" element={<Dashboard />} />
-          <Route path="uploads" element={<Uploads />} />
-          <Route path="cart" element={<Cart />} />
-          <Route path="user-profile" element={<UserProfile />} />
-          <Route path="orders" element={<Orders />} />
+
+          {/* Dashboard Layout */}
           <Route
-            path="desgin"
+            path="/profile"
             element={
-              <DesignProvider>
-                <Design />
-              </DesignProvider>
+              <AuthRoutes>
+                <DashBoardLayout />
+              </AuthRoutes>
             }
-          />
-        </Route>
-        <Route path="/login" element={<LoginPage />}></Route>
-        <Route path="/register" element={<SignupPage />}></Route>
-      </Routes>
+          >
+            <Route index path="dashboard" element={<Dashboard />} />
+            <Route path="uploads" element={<Uploads />} />
+            <Route
+              path="cart"
+              element={
+                <CartGuard>
+                  <Cart />
+                </CartGuard>
+              }
+            />
+            <Route path="user-profile" element={<UserProfile />} />
+            <Route path="orders" element={<Orders />} />
+            <Route
+              path="desgin"
+              element={
+                <DesignProvider>
+                  <Design />
+                </DesignProvider>
+              }
+            />
+          </Route>
+
+          {/* Auth Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<SignupPage />} />
+        </Routes>
+      </AxiosProvider>
     </BrowserRouter>
   );
 }

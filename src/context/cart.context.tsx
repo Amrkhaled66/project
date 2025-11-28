@@ -62,7 +62,7 @@ export const initialState: CartItem = {
   borderColor: null,
   upgrades: [],
   quantity: 1,
-  totalPrice: 0,
+  totalPrice: BLANKET_SIZES[0].price,
   designImage: null,
   backingColor: null,
   cornerImage: null,

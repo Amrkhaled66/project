@@ -1,27 +1,61 @@
-import React from "react";
 import FormInput from "src/components/ui/FormInput";
 import MainDashButton from "src/components/ui/MainDashButton";
-import { useProfileForm } from "src/hooks/useProfileForm";
+import { useForm } from "src/hooks/useForm";
+import { useUpdateUserProfile } from "src/hooks/queries/profile.queries";
+import { updateProfileValidation } from "src/utils/validations/updateProfileValidation";
+import Alert from "src/components/ui/Alert";
+import { useAuth } from "src/context/auth.context";
+import PasswordInput from "src/components/ui/PasswordInput";
 
 export default function UpdateInfoForm() {
-  const { values, errors, handleChange, handleSubmit, isSubmitting } =
-    useProfileForm({
-      // you can preload user data here
-      initial: { firstName: "", lastName: "", email: "" },
-      onSubmit: async (vals) => {
-        // Replace with your API call
-        const res = await fetch("/api/profile", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(vals),
-        });
-        if (!res.ok) throw new Error("Failed to update profile");
-      },
-    });
+  const { mutate, isPending } = useUpdateUserProfile();
+  const {
+    authData: { user },
+    updateUser
+  } = useAuth();
+  const { firstName, lastName, phone } = user || {
+    firstName: "",
+    lastName: "",
+    phone: "",
+  };
+  const { values, errors, handleChange, handleSubmit } = useForm({
+    initialValues: {
+      firstName,
+      lastName,
+      phone,
+      password: "",
+    },
+
+    validate: updateProfileValidation,
+
+    onSubmit: (vals) => {
+      mutate(vals, {
+        onSuccess: (data) => {
+          updateUser(data.data)
+          Alert({
+            title: "Profile Updated",
+            text: "Your profile information has been successfully updated.",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+        },
+        onError: () => {
+          Alert({
+            title: "Profile Update Failed",
+            text: "There was an error updating your profile. Please try again later.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        },
+      });
+    },
+  });
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white sm:p-6">
-      {/* Layout: single column on mobile, two columns from lg+ */}
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-xl border-neutral-200 bg-white sm:p-6 lg:border"
+    >
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         {/* Inputs */}
         <div className="flex flex-col gap-6 lg:col-span-3">
@@ -32,74 +66,67 @@ export default function UpdateInfoForm() {
               name="firstName"
               placeholder="Jane"
               value={values.firstName}
-              onChange={(e: any) =>
-                handleChange("firstName", e.target?.value ?? e)
-              }
+              onChange={handleChange}
               error={errors.firstName}
             />
+
             <FormInput
               label="Last Name"
               name="lastName"
               placeholder="Doe"
               value={values.lastName}
-              onChange={(e: any) =>
-                handleChange("lastName", e.target?.value ?? e)
-              }
+              onChange={handleChange}
               error={errors.lastName}
             />
           </div>
 
-          {/* Email */}
+          {/* Phone */}
           <FormInput
-            label="Email Address"
-            name="email"
-            type="email"
-            placeholder="john.doe@example.com"
-            value={values.email}
-            onChange={(e: any) => handleChange("email", e.target?.value ?? e)}
-            error={errors.email}
+            label="Phone"
+            name="phone"
+            type="number"
+            placeholder="555-555-5555"
+            value={values.phone}
+            onChange={handleChange}
+            error={errors.phone}
           />
 
-          {/* Password */}
-          <FormInput
+          {/* Password (optional) */}
+          <PasswordInput
             label="Change Password"
             name="password"
-            type="password"
             placeholder="*******************"
             value={values.password}
-            onChange={(e: any) =>
-              handleChange("password", e.target?.value ?? e)
-            }
+            onChange={handleChange}
             error={errors.password}
           />
         </div>
 
-        {/* Side panel: text + button (stacks on mobile) */}
+        {/* Side panel */}
         <div className="flex flex-col items-center justify-between gap-4 lg:col-span-2 lg:gap-8">
           <p className="text-center text-base font-light text-neutral-600 sm:text-lg">
             Your account details are used for order processing, shipping, and
             communication. Please keep them up to date.
           </p>
 
-          {/* sticky action on mobile */}
           <div className="w-full">
             <div className="sticky bottom-3 lg:hidden">
               <MainDashButton
-                text={isSubmitting ? "Saving..." : "Save Your Edits"}
-                onClick={handleSubmit}
-                disabled={isSubmitting}
+                text={"Save Your Edits"}
+                type="submit"
+                isLoading={isPending}
               />
             </div>
             <div className="hidden lg:block">
               <MainDashButton
-                text={isSubmitting ? "Saving..." : "Save Your Edits"}
-                onClick={handleSubmit}
-                disabled={isSubmitting}
+                text={"Save Your Edits"}
+                type="submit"
+                isLoading={isPending}
               />
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </form>
   );
 }

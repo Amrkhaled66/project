@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 export type ProfileValues = {
   firstName: string;
   lastName: string;
-  email: string;
+  phone: string;
   password: string; // optional update
 };
 
@@ -18,7 +18,7 @@ export function useProfileForm(opts: UseProfileFormOpts = {}) {
   const [values, setValues] = useState<ProfileValues>({
     firstName: initial.firstName || "",
     lastName:  initial.lastName  || "",
-    email:     initial.email     || "",
+    phone:     initial.phone     || "",
     password:  "",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof ProfileValues,string>>>({});
@@ -34,7 +34,7 @@ export function useProfileForm(opts: UseProfileFormOpts = {}) {
     const e: Partial<Record<keyof ProfileValues,string>> = {};
     if (!v.firstName.trim()) e.firstName = "First name is required.";
     if (!v.lastName.trim())  e.lastName  = "Last name is required.";
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.email)) e.email = "Enter a valid email.";
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.phone)) e.phone = "Enter a valid phone.";
     if (v.password && v.password.length < 8) e.password = "Min 8 characters.";
     return e;
   }, []);

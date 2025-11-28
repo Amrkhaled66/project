@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "src/context/auth.context";
+
 const AuthRoutes = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated } = useAuth();
 

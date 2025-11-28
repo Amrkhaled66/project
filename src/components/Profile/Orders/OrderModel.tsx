@@ -1,30 +1,44 @@
-import Order from "src/types/Order";
 import placeholder from "../../../../public/placeholder.png";
+import {statusColors} from "src/utils/defaultSettings";
 
 interface Props {
-  order: Order;
+  order: any;
   onClose: () => void;
 }
 
 const OrderModal = ({ order, onClose }: Props) => {
-  const { item } = order;
+  const cart =
+    typeof order.cartSnapshot === "string"
+      ? JSON.parse(order.cartSnapshot)
+      : order.cartSnapshot;
+
+  const placedDate = new Date(order.createdAt).toLocaleDateString();
+
 
   return (
     <section
       role="dialog"
       aria-modal="true"
       aria-labelledby="order-modal-title"
-      className="w-full rounded-2xl border overflow-y-auto max-h-[80vh] border-neutral-200 bg-white shadow-xl"
+      className="w-full max-h-[85vh] overflow-y-auto rounded-2xl border border-neutral-200 bg-white shadow-xl"
     >
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 border-b border-neutral-200 p-5">
-        <div>
-          <h2 id="order-modal-title" className="text-lg font-semibold">
+      <div className="flex items-start justify-between border-b border-neutral-200 p-6">
+        <div className="space-y-1">
+          <h2 id="order-modal-title" className="text-xl font-semibold">
             Order #{order.id}
           </h2>
-          <p className="text-xs text-neutral-600">Placed on {order.date}</p>
-          <p className="text-xs text-neutral-600">Status: {order.status}</p>
+          <p className="text-xs text-neutral-500">Placed on {placedDate}</p>
+
+          <span
+            className={`inline-block rounded-full px-3 py-1 text-[11px] font-medium mt-1 capitalize ${
+              statusColors[order.status as keyof typeof statusColors] || "bg-neutral-100 text-neutral-700"
+            }`}
+          >
+            {order.status}
+          </span>
         </div>
+
         <button
           onClick={onClose}
           aria-label="Close"
@@ -42,66 +56,82 @@ const OrderModal = ({ order, onClose }: Props) => {
       </div>
 
       {/* Content */}
-      <div className="p-5 space-y-5">
+      <div className="p-6 space-y-8">
         {/* Design Preview */}
-        {item.designImage && (
-          <div>
-            <p className="mb-1 text-sm font-medium text-neutral-700">Design Preview</p>
-            <img
-              src={placeholder}
-              alt="Design"
-              className="w-full max-h-64 rounded-xl object-cover border border-neutral-200"
-            />
-          </div>
-        )}
+        <div>
+          <p className="mb-2 text-sm font-medium text-neutral-700">Design Preview</p>
 
-        {/* Item Info */}
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-neutral-900">Item Details</h3>
-          <div className="flex items-center gap-4">
-            <div
-              className="size-14 rounded-lg bg-neutral-100 ring-1 ring-neutral-200"
-              style={{ backgroundColor: item.color || "#eee" }}
-              title={`Blanket Color: ${item.color}`}
+          <div className="rounded-xl overflow-hidden border border-neutral-200 bg-neutral-50">
+            <img
+              src={order.designImage || placeholder}
+              alt="Design"
+              className="w-full object-cover max-h-72"
             />
-            <div className="flex-1 text-sm text-neutral-800 space-y-1">
-              <p>Size: <span className="font-medium">{item.size}</span></p>
-              <p>Quantity: <span className="font-medium">{item.quantity}</span></p>
-              {item.borderColor && (
-                <p>
-                  Border Color:{" "}
-                  <span
-                    className="inline-block size-4 rounded-full border"
-                    style={{ backgroundColor: item.borderColor }}
-                  />
-                </p>
-              )}
-              {item.upgrades.length > 0 && (
-                <p>
-                  Upgrades:{" "}
-                  <span className="font-medium">
-                    {item.upgrades.map((u) => u.name).join(", ")}
-                  </span>
-                </p>
-              )}
-              <p>Total Price: <span className="font-semibold">${item.totalPrice}</span></p>
-            </div>
           </div>
         </div>
 
-        {/* Estimated Delivery */}
-        <p className="text-sm text-neutral-600">
-          Estimated Delivery:{" "}
-          <span className="font-medium text-neutral-800">
-            {order.estimatedDeliveryDate}
-          </span>
-        </p>
+        {/* Item Details */}
+        <div>
+          <h3 className="text-sm font-semibold text-neutral-900 mb-3">Item Details</h3>
 
-        {/* Payment Method */}
-        <p className="text-sm text-neutral-600">
-          Payment Option:{" "}
-          <span className="font-medium text-neutral-800">{order.paymentOption}</span>
-        </p>
+          <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 space-y-3">
+            {/* Row 1 */}
+            <div className="flex justify-between text-sm text-neutral-700">
+              <span>Size</span>
+              <span className="font-medium">{cart.size?.name}</span>
+            </div>
+
+            {/* Row 2 */}
+            <div className="flex justify-between text-sm text-neutral-700">
+              <span>Quantity</span>
+              <span className="font-medium">{cart.quantity}</span>
+            </div>
+
+            {/* Border Color */}
+            {cart.borderColor && (
+              <div className="flex justify-between text-sm text-neutral-700">
+                <span>Border Color</span>
+                <span
+                  className="size-5 rounded-full border inline-block"
+                  style={{ backgroundColor: cart.borderColor }}
+                />
+              </div>
+            )}
+
+            {/* Blanket Color */}
+            <div className="flex justify-between text-sm text-neutral-700">
+              <span>Blanket Color</span>
+              <span
+                className="size-5 rounded-full border inline-block"
+                style={{ backgroundColor: cart.color }}
+              />
+            </div>
+
+            {/* Upgrades */}
+            {cart.upgrades?.length > 0 && (
+              <div>
+                <span className="block text-sm text-neutral-700 mb-1">Upgrades</span>
+
+                <div className="flex flex-wrap gap-2">
+                  {cart.upgrades.map((u: any, idx: number) => (
+                    <span
+                      key={idx}
+                      className="px-2 py-1 rounded-lg text-[11px] bg-neutral-200 text-neutral-800"
+                    >
+                      {u.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Price */}
+            <div className="flex justify-between pt-3 border-t border-neutral-200 text-sm">
+              <span className="text-neutral-700">Total Price</span>
+              <span className="font-semibold text-neutral-900">${order.totalPrice}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

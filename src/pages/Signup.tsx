@@ -4,7 +4,7 @@ import PasswordInput from "src/components/ui/PasswordInput";
 import Button from "src/components/ui/Button";
 import Alert from "src/components/ui/Alert";
 
-import signupValidation from "src/utils/signupValidation";
+import signupValidation from "src/utils/validations/signupValidation";
 
 import { useForm } from "src/hooks/useForm";
 import { useRegister } from "src/hooks/auth/useRegister";

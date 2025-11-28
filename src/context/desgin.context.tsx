@@ -15,6 +15,8 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { GridItemType } from "src/components/Profile/Design/Canvas/GridItem";
 import { useCart } from "src/context/cart.context";
 import { CanvasHandle } from "src/components/Profile/Design/Canvas/Canvas";
+import compressImage from "src/utils/CompressImage";
+import base64ToFile from "src/utils/base64ToFile ";
 
 const STORAGE_KEY = "blanket-design-items";
 
@@ -47,7 +49,7 @@ export const DesignProvider = ({ children }: { children: ReactNode }) => {
   const selectedSizeId = cartItem.size?.id ?? "Lap";
   const borderColor = cartItem.borderColor ?? null;
   const blanketColor = cartItem.color ?? null;
-
+  const upgrades = cartItem.upgrades;
   // -------------------------------------------------------
   // Load from localStorage on mount
   // -------------------------------------------------------
@@ -82,19 +84,19 @@ export const DesignProvider = ({ children }: { children: ReactNode }) => {
     (item: GridItemType) => {
       setItems((prev) => [...prev, item]);
     },
-    [setItems]
+    [setItems],
   );
 
   const handleDeleteItem = useCallback(
     (id: string) => {
       setItems((prev) => prev.filter((item) => item.id !== id));
     },
-    [setItems]
+    [setItems],
   );
 
   const isItemExits = useCallback(
     (id: string) => items.some((item) => item.id === id),
-    [items]
+    [items],
   );
 
   const handleDragEnd = useCallback(
@@ -128,7 +130,7 @@ export const DesignProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     },
-    [setItems, updateCornerImage]
+    [setItems, updateCornerImage],
   );
 
   // -------------------------------------------------------
@@ -136,16 +138,21 @@ export const DesignProvider = ({ children }: { children: ReactNode }) => {
   // -------------------------------------------------------
   const upgradesKey = useMemo(
     () => cartItem.upgrades.map((u) => u.id).join(","),
-    [cartItem.upgrades]
+    [cartItem.upgrades],
   );
 
   useEffect(() => {
-    if (isDragging) return; // 🔥 Skip snapshot during drag
+    if (isDragging) return;
 
     const timeout = setTimeout(async () => {
       if (canvasRef.current) {
-        const image = await canvasRef.current.getSnapshot();
-        updateDesign(image);
+        const snapshotBase64 = await canvasRef.current.getSnapshot();
+
+        const file = base64ToFile(snapshotBase64, "design.png");
+
+        const compressedBase64 = await compressImage(file);
+
+        updateDesign(compressedBase64);
       }
     }, 500);
 
@@ -155,8 +162,8 @@ export const DesignProvider = ({ children }: { children: ReactNode }) => {
     blanketColor,
     borderColor,
     selectedSizeId,
-    upgradesKey,
-    isDragging, // NEW
+    JSON.stringify(cartItem.upgrades || {}),
+    isDragging,
   ]);
 
   // -------------------------------------------------------
@@ -184,13 +191,11 @@ export const DesignProvider = ({ children }: { children: ReactNode }) => {
       handleDragEnd,
       isItemExits,
       isDragging,
-    ]
+    ],
   );
 
   return (
-    <DesignContext.Provider value={value}>
-      {children}
-    </DesignContext.Provider>
+    <DesignContext.Provider value={value}>{children}</DesignContext.Provider>
   );
 };
 

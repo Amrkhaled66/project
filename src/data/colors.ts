@@ -1,7 +1,7 @@
 import grayBacking from "src/assets/grey.webp";
 import midnight from "src/assets/midnight.webp";
 
-export const DEFAULT_COLORS = [
+export const DEFAULT_COLORS: string[] = [
   "#c9c9c9",
   "#514d86",
   "#6b4a46",
@@ -22,7 +22,7 @@ export const DEFAULT_COLORS = [
   "#7b1bd1",
 ];
 
-export const backingColors = [
+export const backingColors: { name: string; img: string }[] = [
   {
     name: "grey",
     img: grayBacking,

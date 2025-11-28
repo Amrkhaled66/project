@@ -1,6 +1,5 @@
 import CurrentOrderCard from "src/components/Profile/Dashboard/CurrentOrderCard";
 import CurrentDesignCard from "src/components/Profile/Dashboard/CurrentDesginCard";
-import orders from "src/data/orders";
 import ProfileFeatureCard from "src/components/Profile/Dashboard/ProfileFeatureCard";
 import { motion, Variants } from "framer-motion";
 
@@ -48,7 +47,7 @@ const DashBoard = () => {
               <Skeleton className="!h-[280px] w-full sm:!h-[300px]" />
             </div>
           ) : (
-            <CurrentOrderCard order={orders[0]} />
+            <CurrentOrderCard  />
           )}
           <CurrentDesignCard />
         </div>

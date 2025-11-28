@@ -13,7 +13,7 @@ const UserProfile = () => {
         <UpdateInfoForm />
         <div className="flex flex-col gap-6">
           <OrdersTable />
-          <TransactionsTable />
+          {/* <TransactionsTable /> */}
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { ReactQueryProvider } from "src/api/client";
 import "./index.css";
 import App from "./App";
 
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ReactQueryProvider>

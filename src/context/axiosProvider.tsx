@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "src/utils/authStorage";
-import Toast from "src/components/ui/Toast";
+import Alert from "src/components/ui/Alert";
 import { axiosPrivate } from "src/api/axios";
 import { useAuth } from "src/context/auth.context";
 
@@ -10,15 +10,14 @@ const AxiosContext = createContext(axiosPrivate);
 export const AxiosProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const { logout, isAuthenticated } = useAuth();
-  // const location = useLocation();
 
   const EndedSessionModal = () =>
-    Toast(
-      "Your session has ended. Please sign in again.",
-      "error",
-      "#fff3cd",
-      "top-right",
-    );
+    Alert({
+      title: "Session Expired",
+      text: "Your session has expired. Please sign in again.",
+      icon: "warning",
+      confirmButtonText: "OK",
+    });
 
   useMemo(() => {
     const requestInterceptor = axiosPrivate.interceptors.request.use(
@@ -29,7 +28,7 @@ export const AxiosProvider = ({ children }: { children: React.ReactNode }) => {
         }
         return config;
       },
-      (error) => Promise.reject(error),
+      (error) => Promise.reject(error)
     );
 
     const responseInterceptor = axiosPrivate.interceptors.response.use(
@@ -41,7 +40,7 @@ export const AxiosProvider = ({ children }: { children: React.ReactNode }) => {
           EndedSessionModal();
         }
         return Promise.reject(error);
-      },
+      }
     );
 
     return () => {

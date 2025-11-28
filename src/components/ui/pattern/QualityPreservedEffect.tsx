@@ -28,7 +28,7 @@ const StitchTile: React.FC<StitchTileProps> = ({
 }) => {
   return (
     <div
-      className={`flex items-center justify-center ${className}`}
+      className={`flex z-100 items-center justify-center ${className}`}
       style={{ width: size, height: size }}
     >
       <StitchPattern
@@ -56,7 +56,7 @@ const QualityPreservedEffect: React.FC<PatternGridProps> = ({
 
   return (
     <div
-      className="pointer-events-none absolute inset-0"
+      className="pointer-events-none z-100 absolute inset-0"
       style={{
         display: "grid",
         gridTemplateColumns: `repeat(${cols}, ${tileSize}px)`,
