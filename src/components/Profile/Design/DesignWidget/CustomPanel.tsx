@@ -2,34 +2,36 @@ import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X } from "lucide-react";
 import Toast from "src/components/ui/Toast";
+import Pagination from "src/components/ui/Pagination";
 import { useDesign } from "src/context/desgin.context";
 import { useUploads } from "src/hooks/queries/upload.queries";
 
 const API_URL = import.meta.env.VITE_API_URL;
+const ITEMS_PER_PAGE = 12;
 
 export default function CustomPanelTab() {
   const { designData, update } = useDesign();
-  const { data: uploads = [], isLoading } = useUploads();
+
+  // ---------------- PAGINATION ----------------
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading } = useUploads(page, ITEMS_PER_PAGE);
+  const uploads = data?.data || [];
+  const pagination = data?.pagination;
 
   const customPanel = designData.upgrades.props.customPanel;
 
   // ---------------- STATE ----------------
-  const [localSelect, setLocalSelect] = useState<string[]>(
-     []
-  );
-  
+  const [localSelect, setLocalSelect] = useState<string[]>([]);
   const [localPreview, setLocalPreview] = useState<string | null>(
     customPanel.image || null
   );
-
   const [localNotes, setLocalNotes] = useState(
     customPanel.options?.notes || ""
   );
-
   const [isAddedToCanvas, setIsAddedToCanvas] = useState(
     customPanel.options?.addedToCanvas || false
   );
-
   const [isProcessing, setIsProcessing] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -64,59 +66,55 @@ export default function CustomPanelTab() {
   };
 
   // ---------------- MERGE ----------------
- const mergeImages = async () => {
-  if (localSelect.length === 0) return;
+  const mergeImages = async () => {
+    if (localSelect.length === 0) return;
 
-  setIsProcessing(true);
+    setIsProcessing(true);
 
-  try {
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
+    try {
+      const canvas = canvasRef.current!;
+      const ctx = canvas.getContext("2d")!;
+      const imgs = await Promise.all(localSelect.map(loadImage));
 
-    // imgs are HTMLImageElement[]
-    const imgs = await Promise.all(localSelect.map(loadImage));
+      const cols = Math.ceil(Math.sqrt(imgs.length));
+      const rows = Math.ceil(imgs.length / cols);
+      const cellSize = 400;
 
-    const cols = Math.ceil(Math.sqrt(imgs.length));
-    const rows = Math.ceil(imgs.length / cols);
-    const cellSize = 400;
+      canvas.width = cols * cellSize;
+      canvas.height = rows * cellSize;
 
-    canvas.width = cols * cellSize;
-    canvas.height = rows * cellSize;
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+      imgs.forEach((img, i) => {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
 
-    imgs.forEach((img, i) => {
-      const col = i % cols;
-      const row = Math.floor(i / cols);
+        ctx.drawImage(
+          img,
+          col * cellSize,
+          row * cellSize,
+          cellSize,
+          cellSize
+        );
+      });
 
-      // ✅ CORRECT: pass the Image object
-      ctx.drawImage(
-        img,
-        col * cellSize,
-        row * cellSize,
-        cellSize,
-        cellSize
-      );
-    });
+      const finalImage = canvas.toDataURL("image/png");
 
-    const finalImage = canvas.toDataURL("image/png");
+      setLocalPreview(finalImage);
 
-    setLocalPreview(finalImage);
+      update((d) => {
+        d.upgrades.props.customPanel.image = finalImage;
+        d.upgrades.props.customPanel.options.selectedPanels = localSelect;
+        d.upgrades.props.customPanel.options.addedToCanvas = false;
+      });
+    } catch (err) {
+      console.error("Merge error:", err);
+      Toast("Failed to merge images", "error", "#ff0000");
+    }
 
-    update((d) => {
-      d.upgrades.props.customPanel.image = finalImage;
-      d.upgrades.props.customPanel.options.selectedPanels = localSelect;
-      d.upgrades.props.customPanel.options.addedToCanvas = false;
-    });
-  } catch (err) {
-    console.error("Merge error:", err);
-    Toast("Failed to merge images", "error", "#ff0000");
-  }
-
-  setIsProcessing(false);
-};
-
+    setIsProcessing(false);
+  };
 
   const loadImage = (src: string) =>
     new Promise<HTMLImageElement>((resolve, reject) => {
@@ -175,38 +173,50 @@ export default function CustomPanelTab() {
           className="grid grid-cols-4 gap-1 max-h-52 overflow-y-auto rounded-xl border bg-white p-3"
         >
           {isLoading && (
-            <p className="text-sm text-gray-400">Loading images…</p>
+            <p className="text-sm text-gray-400 col-span-full">
+              Loading images…
+            </p>
           )}
 
-          {uploads.map((u: any) => {
-            const fullSrc = API_URL + u.imageUrl;
+          {!isLoading &&
+            uploads.map((u: any) => {
+              const fullSrc = API_URL + u.imageUrl;
 
-            return (
-              <motion.div
-                key={u.id}
-                whileHover={{ scale: 1.05 }}
-                onClick={() => handleSelectPanel(fullSrc)}
-                className={`relative size-[70px] rounded-lg border cursor-pointer overflow-hidden ${
-                  localSelect.includes(fullSrc)
-                    ? "border-blue-500 ring-2 ring-blue-300"
-                    : "border-gray-200"
-                }`}
-              >
-                <img
-                  src={fullSrc}
-                  className="h-full w-full object-cover"
-                />
+              return (
+                <motion.div
+                  key={u.id}
+                  whileHover={{ scale: 1.05 }}
+                  onClick={() => handleSelectPanel(fullSrc)}
+                  className={`relative size-[70px] rounded-lg border cursor-pointer overflow-hidden ${
+                    localSelect.includes(fullSrc)
+                      ? "border-blue-500 ring-2 ring-blue-300"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <img
+                    src={fullSrc}
+                    className="h-full w-full object-cover"
+                  />
 
-                {localSelect.includes(fullSrc) && (
-                  <div className="absolute top-1 right-1 h-5 w-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center">
-                    {localSelect.indexOf(fullSrc) + 1}
-                  </div>
-                )}
-              </motion.div>
-            );
-          })}
+                  {localSelect.includes(fullSrc) && (
+                    <div className="absolute top-1 right-1 h-5 w-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center">
+                      {localSelect.indexOf(fullSrc) + 1}
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
         </motion.div>
       </AnimatePresence>
+
+      {/* PAGINATION */}
+      {pagination?.pages > 1 && (
+        <Pagination
+          pageCount={pagination.pages}
+          currentPage={page}
+          onPageChange={setPage}
+        />
+      )}
 
       {/* MERGE */}
       {localSelect.length > 0 && (
