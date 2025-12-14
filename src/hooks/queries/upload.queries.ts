@@ -5,10 +5,10 @@ import {
   deleteUploadService,
 } from "src/services/upload.service";
 
-export const useUploads = () => {
+export const useUploads = (page: number, limit: number) => {
   return useQuery({
-    queryKey: ["uploads"],
-    queryFn: getUserUploadsService,
+    queryKey: ["uploads", page, limit],
+    queryFn: () => getUserUploadsService(page, limit),
   });
 };
 

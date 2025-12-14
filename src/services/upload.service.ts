@@ -12,8 +12,14 @@ const res = await axiosPrivate.post("/uploads", form);
 
 
 
-export const getUserUploadsService = async () => {
-  const res = await axiosPrivate.get("/uploads");
+export const getUserUploadsService = async (
+  page: number,
+  limit: number
+) => {
+  const res = await axiosPrivate.get("/uploads", {
+    params: { page, limit },
+  });
+
   return res.data;
 };
 
