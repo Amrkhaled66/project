@@ -1,16 +1,17 @@
 // BlanketColorSelector.tsx
-import { useCart } from "src/context/cart.context";
 import DesginContainer from "../DesginContainer";
 import { backingColors } from "src/data/colors";
+import { useDesign } from "src/context/desgin.context";
 
 export default function BackingColorSelector() {
   const {
     updateBackingColor,
-    cartItem: { backingColor },
-  } = useCart();
+    designData,
+  } = useDesign();
   const onSelectColor = (color: string) => {
     updateBackingColor(color);
   };
+  const backingColor = designData.colors.backing || null;
   return (
     <DesginContainer header="Backing Color">
       <div className="space-y-3">

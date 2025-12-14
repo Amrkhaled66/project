@@ -1,20 +1,22 @@
 // src/components/DesignWidget/QualityPreserveColor.tsx
-
-import { useCart } from "src/context/cart.context";
 import ColorSelector from "src/components/ui/ColorSelector";
+import { useDesign } from "src/context/desgin.context";
 
 export default function QualityPreserveColor() {
   const {
-    updateQualityPreservedColor,
-    cartItem: { upgrades },
-  } = useCart();
+    updateQualityPreserveColor,
+
+    designData,
+  } = useDesign();
 
   // get the selected color from upgrade props
-  const selectedColor = upgrades.find((u) => u.id === "quiltedPreserve")
-    ?.props?.color || null;
+  const selectedColor =
+    (designData.upgrades.selected.find((u) => u === "quiltedPreserve") &&
+      designData.colors.qualityPreserve) ||
+    null;
 
   const onSelectColor = (color: string) => {
-    updateQualityPreservedColor(color);
+    updateQualityPreserveColor(color);
   };
 
   return (

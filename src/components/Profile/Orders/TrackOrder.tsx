@@ -18,7 +18,6 @@ export default function TrackOrder() {
     );
   }
 
-  console.log(order)
 if (!order) {
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm flex flex-col items-center text-center gap-3">

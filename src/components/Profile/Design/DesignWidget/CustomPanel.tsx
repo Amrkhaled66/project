@@ -1,295 +1,254 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCart } from "src/context/cart.context";
-import UploadImage from "src/components/ui/UploadImage";
-import { images } from "src/data/images";
 import { Check, X } from "lucide-react";
 import Toast from "src/components/ui/Toast";
 import { useDesign } from "src/context/desgin.context";
+import { useUploads } from "src/hooks/queries/upload.queries";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function CustomPanelTab() {
-  const { cartItem, updateCustomPanelProps } = useCart();
-  const upgrade = cartItem.upgrades.find((u) => u.id === "customPanel");
-  const { handleAddItem } = useDesign();
+  const { designData, update } = useDesign();
+  const { data: uploads = [], isLoading } = useUploads();
 
-  const [mode, setMode] = useState<"upload" | "merge" | null>(
-    upgrade?.props?.mode || null
+  const customPanel = designData.upgrades.props.customPanel;
+
+  // ---------------- STATE ----------------
+  const [localSelect, setLocalSelect] = useState<string[]>(
+     []
+  );
+  
+  const [localPreview, setLocalPreview] = useState<string | null>(
+    customPanel.image || null
   );
 
-  const [preview, setPreview] = useState(upgrade?.props?.image || null);
-  const [selectedPanels, setSelectedPanels] = useState<string[]>(
-    upgrade?.props?.selectedPanels || []
+  const [localNotes, setLocalNotes] = useState(
+    customPanel.options?.notes || ""
   );
-  const [notes, setNotes] = useState(upgrade?.props?.notes || "");
+
   const [isAddedToCanvas, setIsAddedToCanvas] = useState(
-    upgrade?.props?.addedToCanvas || false
+    customPanel.options?.addedToCanvas || false
   );
 
   const [isProcessing, setIsProcessing] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-
+  // ---------------- RESET ----------------
   const resetPanel = () => {
-    setPreview(null);
-    setSelectedPanels([]);
-    setNotes("");
+    setLocalSelect([]);
+    setLocalPreview(null);
+    setLocalNotes("");
     setIsAddedToCanvas(false);
 
-    updateCustomPanelProps({
-      mode: null,
-      image: null,
-      selectedPanels: [],
-      notes: "",
-      addedToCanvas: false,
-    });
-  };
-
-  const handleModeChange = (newMode: "upload" | "merge") => {
-    if (mode !== newMode) {
-      resetPanel();
-      setMode(newMode);
-
-      updateCustomPanelProps({
-        mode: newMode,
+    update((d) => {
+      d.upgrades.props.customPanel = {
+        text: "",
         image: null,
-        selectedPanels: [],
-        addedToCanvas: false,
-      });
-    }
-  };
-
-
-  const handleUpload = (files: string[]) => {
-    const img = files[0];
-    setPreview(img);
-    setIsAddedToCanvas(false);
-
-    updateCustomPanelProps({
-      mode: "upload",
-      image: img,
-      selectedPanels: [],
-      addedToCanvas: false,
+        options: {},
+      };
     });
   };
 
-  const handleSelectPanel = (id: string) => {
-    setSelectedPanels((prev) =>
-      prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : [...prev, id]
-    );
+  // ---------------- SELECT IMAGE ----------------
+  const handleSelectPanel = (src: string) => {
+    const updated = localSelect.includes(src)
+      ? localSelect.filter((x) => x !== src)
+      : [...localSelect, src];
 
-    setIsAddedToCanvas(false);
+    setLocalSelect(updated);
+
+    update((d) => {
+      d.upgrades.props.customPanel.options.selectedPanels = updated;
+      d.upgrades.props.customPanel.options.addedToCanvas = false;
+    });
   };
 
-  const mergeImages = async () => {
-    if (selectedPanels.length === 0) return;
+  // ---------------- MERGE ----------------
+ const mergeImages = async () => {
+  if (localSelect.length === 0) return;
 
-    setIsProcessing(true);
+  setIsProcessing(true);
 
-    try {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
+  try {
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext("2d")!;
 
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+    // imgs are HTMLImageElement[]
+    const imgs = await Promise.all(localSelect.map(loadImage));
 
-      const imgs = await Promise.all(
-        selectedPanels.map((src) => {
-          return new Promise<HTMLImageElement>((resolve, reject) => {
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.onload = () => resolve(img);
-            img.onerror = reject;
-            img.src = src;
-          });
-        })
+    const cols = Math.ceil(Math.sqrt(imgs.length));
+    const rows = Math.ceil(imgs.length / cols);
+    const cellSize = 400;
+
+    canvas.width = cols * cellSize;
+    canvas.height = rows * cellSize;
+
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    imgs.forEach((img, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+
+      // ✅ CORRECT: pass the Image object
+      ctx.drawImage(
+        img,
+        col * cellSize,
+        row * cellSize,
+        cellSize,
+        cellSize
       );
+    });
 
-      const cols = Math.ceil(Math.sqrt(imgs.length));
-      const rows = Math.ceil(imgs.length / cols);
-      const cellSize = 400;
+    const finalImage = canvas.toDataURL("image/png");
 
-      canvas.width = cols * cellSize;
-      canvas.height = rows * cellSize;
+    setLocalPreview(finalImage);
 
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    update((d) => {
+      d.upgrades.props.customPanel.image = finalImage;
+      d.upgrades.props.customPanel.options.selectedPanels = localSelect;
+      d.upgrades.props.customPanel.options.addedToCanvas = false;
+    });
+  } catch (err) {
+    console.error("Merge error:", err);
+    Toast("Failed to merge images", "error", "#ff0000");
+  }
 
-      imgs.forEach((img, idx) => {
-        const col = idx % cols;
-        const row = Math.floor(idx / cols);
-        const x = col * cellSize;
-        const y = row * cellSize;
-        ctx.drawImage(img, x, y, cellSize, cellSize);
-      });
-
-      const finalImage = canvas.toDataURL("image/png");
-      setPreview(finalImage);
-      updateCustomPanelProps({
-        mode: "merge",
-        image: finalImage,
-        selectedPanels,
-        addedToCanvas: false,
-      });
-    } catch (err) {
-      Toast("Failed to merge images", "error", "#fee", "top-end");
-    }
-
-    setIsProcessing(false);
-  };
+  setIsProcessing(false);
+};
 
 
+  const loadImage = (src: string) =>
+    new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+
+  // ---------------- ADD TO CANVAS ----------------
   const handleAddToCanvas = () => {
-    if (!preview) return;
+    if (!localPreview) return;
 
-    /// 🔥 Add to canvas grid using useDesign
-    handleAddItem({
-      id: "custom-panel",
-      image: preview,
+    update((d) => {
+      d.photos.items.push({
+        id: `custom-panel-${Date.now()}`,
+        image: localPreview,
+      });
+
+      d.upgrades.props.customPanel.options.addedToCanvas = true;
+      d.upgrades.props.customPanel.options.notes = localNotes;
     });
 
     setIsAddedToCanvas(true);
-
-    updateCustomPanelProps({
-      image: preview,
-      notes,
-      addedToCanvas: true,
-    });
-
-    Toast("Custom panel added to canvas!", "success", "#d4edda", "top-end");
+    Toast("Custom panel added!", "success");
   };
 
+  // ---------------- UI ----------------
   return (
     <div className="mt-4 space-y-4">
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Custom Panel</h3>
-          <p className="text-xs text-gray-500">Upload or merge images</p>
+          <h3 className="text-lg font-semibold">Custom Panel</h3>
+          <p className="text-xs text-gray-500">
+            Merge from your uploaded images
+          </p>
         </div>
 
-        {/* Reset Button */}
-        {(preview || selectedPanels.length > 0) && (
+        {(localPreview || localSelect.length > 0) && (
           <button
             onClick={resetPanel}
-            className="flex items-center gap-1 rounded-md border border-red-200 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 transition"
+            className="flex items-center gap-1 rounded-md border border-red-200 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
           >
             <X size={12} /> Reset
           </button>
         )}
       </div>
 
-      {/* MODE TOGGLE */}
-      <div className="inline-flex rounded-lg bg-gray-100 p-1">
-        <button
-          onClick={() => handleModeChange("upload")}
-          className={`px-4 py-2 text-xs rounded-md ${
-            mode === "upload" ? "bg-white shadow" : "text-gray-500"
-          }`}
+      {/* IMAGES GRID */}
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="grid grid-cols-4 gap-1 max-h-52 overflow-y-auto rounded-xl border bg-white p-3"
         >
-          📤 Upload
-        </button>
-        <button
-          onClick={() => handleModeChange("merge")}
-          className={`px-4 py-2 text-xs rounded-md ${
-            mode === "merge" ? "bg-white shadow" : "text-gray-500"
-          }`}
-        >
-          🔗 Merge
-        </button>
-      </div>
+          {isLoading && (
+            <p className="text-sm text-gray-400">Loading images…</p>
+          )}
 
-      {/* ---------------- UPLOAD MODE ---------------- */}
-      <AnimatePresence mode="wait">
-        {mode === "upload" && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl border bg-white p-4"
-          >
-            <UploadImage onUpload={handleUpload} />
+          {uploads.map((u: any) => {
+            const fullSrc = API_URL + u.imageUrl;
 
-            {preview && (
-              <motion.img
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                src={preview}
-                className="mt-4 h-44 w-44 rounded-lg shadow object-cover mx-auto"
-              />
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ---------------- MERGE MODE ---------------- */}
-      <AnimatePresence mode="wait">
-        {mode === "merge" && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl border bg-white p-4 space-y-4"
-          >
-            <div className="grid grid-cols-4 gap-1 max-h-48 overflow-y-auto">
-              {images.map((img) => (
-                <motion.div
-                  key={img}
-                  whileHover={{ scale: 1.05 }}
-                  className={`relative cursor-pointer size-[70px] rounded-lg overflow-hidden border ${
-                    selectedPanels.includes(img)
-                      ? "border-blue-500 ring-2 ring-blue-300"
-                      : "border-gray-200"
-                  }`}
-                  onClick={() => handleSelectPanel(img)}
-                >
-                  <img src={img} className="object-cover w-full h-full" />
-
-                  {selectedPanels.includes(img) && (
-                    <div className="absolute top-1 right-1 h-5 w-5 bg-blue-600 text-white flex items-center justify-center text-xs rounded-full">
-                      {selectedPanels.indexOf(img) + 1}
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-
-            {selectedPanels.length > 0 && (
-              <button
-                onClick={mergeImages}
-                className="w-full py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
+            return (
+              <motion.div
+                key={u.id}
+                whileHover={{ scale: 1.05 }}
+                onClick={() => handleSelectPanel(fullSrc)}
+                className={`relative size-[70px] rounded-lg border cursor-pointer overflow-hidden ${
+                  localSelect.includes(fullSrc)
+                    ? "border-blue-500 ring-2 ring-blue-300"
+                    : "border-gray-200"
+                }`}
               >
-                {isProcessing ? "Merging..." : "✨ Merge Panels"}
-              </button>
-            )}
+                <img
+                  src={fullSrc}
+                  className="h-full w-full object-cover"
+                />
 
-            {preview && (
-              <motion.img
-                initial={{ scale: 0.95 }}
-                animate={{ scale: 1 }}
-                src={preview}
-                className="mt-2 h-44 w-44 rounded-lg shadow mx-auto object-cover"
-              />
-            )}
-          </motion.div>
-        )}
+                {localSelect.includes(fullSrc) && (
+                  <div className="absolute top-1 right-1 h-5 w-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center">
+                    {localSelect.indexOf(fullSrc) + 1}
+                  </div>
+                )}
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </AnimatePresence>
+
+      {/* MERGE */}
+      {localSelect.length > 0 && (
+        <button
+          onClick={mergeImages}
+          className="w-full py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+        >
+          {isProcessing ? "Merging…" : "✨ Merge Selected"}
+        </button>
+      )}
+
+      {/* PREVIEW */}
+      {localPreview && (
+        <motion.img
+          initial={{ scale: 0.95 }}
+          animate={{ scale: 1 }}
+          src={localPreview}
+          className="h-44 w-44 mx-auto rounded-lg shadow object-cover"
+        />
+      )}
 
       {/* NOTES */}
-      {preview && (
+      {localPreview && (
         <textarea
-          placeholder="Add printing notes..."
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+          value={localNotes}
+          onChange={(e) => {
+            setLocalNotes(e.target.value);
+            update((d) => {
+              d.upgrades.props.customPanel.options.notes = e.target.value;
+            });
+          }}
+          placeholder="Add notes..."
           className="w-full rounded-lg border p-3 text-sm"
           rows={2}
         />
       )}
 
       {/* ADD TO CANVAS */}
-      {preview && !isAddedToCanvas && (
+      {localPreview && !isAddedToCanvas && (
         <button
           onClick={handleAddToCanvas}
-          className="w-full py-2.5 rounded-lg text-white font-semibold bg-green-600 hover:bg-green-700 transition"
+          className="w-full py-2.5 rounded-lg bg-green-600 text-white hover:bg-green-700"
         >
           Add to Canvas
         </button>

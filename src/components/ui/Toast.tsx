@@ -5,7 +5,7 @@ import { SweetAlertIcon } from "sweetalert2";
 export default function Toast(
   title: string,
   icon: SweetAlertIcon,
-  background: string,
+  background?: string,
   position?: SweetAlertPosition,
 ) {
   return Swal.mixin({

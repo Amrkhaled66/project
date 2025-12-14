@@ -5,17 +5,37 @@ import {
   getSizeById,
   flipSizeOrientation,
 } from "src/data/blanketSizes";
-import { useCart } from "src/context/cart.context";
-import { RotateCcw } from "lucide-react"; // nice small icon for flip button
+
+import { useDesign } from "src/context/desgin.context";
+import { RotateCcw } from "lucide-react";
 
 const Sizes = () => {
-  const { updateSize, cartItem } = useCart();
-  const onSelectSize = (id: BlanketSizeId) => updateSize(getSizeById(id));
-  const selectedSize = cartItem?.size ?? getSizeById("Lap");
+  const { designData, updateCanvasSize } = useDesign();
+
+  // Correct: selectedName is actually ID
+  const { name: selectedId, cols, rows } = designData.canvas?.size ||{ name: "Lap", cols: 2, rows: 3 };
+
+const onSelectSize = (id: BlanketSizeId) => {
+  const s = getSizeById(id);
+  // Update the canvas size in the state
+  updateCanvasSize({
+    name: s.id,
+    cols: s.cols,
+    rows: s.rows,
+  });
+};
+
+
 
   const handleFlipOrientation = () => {
-    if (selectedSize.rows !== selectedSize.cols) {
-      updateSize(flipSizeOrientation(selectedSize));
+    if (rows !== cols) {
+      const flipped = flipSizeOrientation(selectedId); // MUST use ID
+
+      updateCanvasSize({
+        name: flipped.id,
+        cols: flipped.cols,
+        rows: flipped.rows,
+      });
     }
   };
 
@@ -23,8 +43,9 @@ const Sizes = () => {
     <DesginContainer header="Blanket Size" className="h-full">
       <div className="w-full space-y-3">
         {BLANKET_SIZES.map((s) => {
-          const isSelected = selectedSize.id === s.id;
-          const isFlippable = s.rows !== s.cols; // ✅ only non-square sizes can flip
+          const isSelected = selectedId === s.id; // FIX
+
+          const isFlippable = s.rows !== s.cols;
 
           return (
             <div
@@ -33,7 +54,6 @@ const Sizes = () => {
                 isSelected ? "bg-neutral-100" : "hover:bg-neutral-50"
               }`}
             >
-              {/* Radio Selector */}
               <label className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-3">
                   <input
@@ -43,6 +63,7 @@ const Sizes = () => {
                     onChange={() => onSelectSize(s.id)}
                     className="h-4 w-4 accent-black"
                   />
+
                   <span className="text-sm text-neutral-900">
                     {s.name} ({s.cols}×{s.rows})
                   </span>
@@ -53,7 +74,6 @@ const Sizes = () => {
                 </span>
               </label>
 
-              {/* ✅ Flip Button (only shows when selected & non-square) */}
               {isSelected && isFlippable && (
                 <button
                   onClick={handleFlipOrientation}

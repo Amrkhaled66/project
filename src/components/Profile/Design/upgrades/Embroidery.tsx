@@ -1,38 +1,39 @@
-import { useCart } from "src/context/cart.context";
 import { embroideryZones } from "src/data/zones";
 import type { CSSProperties } from "react";
 import { useEffect } from "react";
+import { useDesign } from "src/context/desgin.context";
+
 const EmbroideryZones = () => {
-  const { cartItem ,hasDoubleCorner,updateEmbroidery} = useCart();
+  const { designData, update } = useDesign();
 
+  const embroideryProps = designData.upgrades?.props?.embroidery;
+  const zones = embroideryProps?.zones || [];
 
-  const embroideryUpgrade = cartItem.upgrades.find(
-    (u) => u.id === "embroidery",
-  );
-
-  const zones = embroideryUpgrade?.props?.zones || [];
+  const hasDoubleCorner = designData.upgrades?.selected.includes("cornerstonesDouble");
 
   if (zones.length === 0) return null;
 
-  const existingZones = embroideryUpgrade?.props?.zones || [];
-
   useEffect(() => {
-    if (hasDoubleCorner && existingZones.length > 0) {
-      const hasCenterZone = existingZones.some((z: any) => {
+    if (hasDoubleCorner && zones.length > 0) {
+      // check if any zone is CENTER
+      const hasCenterZone = zones.some((z: any) => {
         const zone = embroideryZones.find((zone) => zone.id === z.id);
         return zone?.label.split(" ")[1] === "Center";
       });
 
       if (hasCenterZone) {
-        const filteredZones = existingZones.filter((z: any) => {
+        const filteredZones = zones.filter((z: any) => {
           const zone = embroideryZones.find((zone) => zone.id === z.id);
           return zone?.label.split(" ")[1] !== "Center";
         });
-        updateEmbroidery(filteredZones);
+
+        // update context
+        update((d) => {
+          d.upgrades.props.embroidery.zones = filteredZones;
+        });
       }
     }
   }, [hasDoubleCorner]);
-
 
   return (
     <>
@@ -42,16 +43,18 @@ const EmbroideryZones = () => {
         return (
           <div
             key={z.id}
-            style={({
-              position: "absolute",
-              color: z.color,
-              fontFamily: z.font,
-              fontSize: 14,
-              fontWeight: 600,
-              opacity: 0.9,
-              textShadow: "1px 1px 3px rgba(0,0,0,0.2)",
-              ...(zoneConfig?.style || {}),
-            } as CSSProperties)}
+            style={
+              {
+                position: "absolute",
+                color: z.color,
+                fontFamily: z.font,
+                fontSize: 14,
+                fontWeight: 600,
+                opacity: 0.9,
+                textShadow: "1px 1px 3px rgba(0,0,0,0.2)",
+                ...(zoneConfig?.style || {}),
+              } as CSSProperties
+            }
           >
             {z.text}
           </div>

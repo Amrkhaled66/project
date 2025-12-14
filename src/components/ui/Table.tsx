@@ -31,6 +31,16 @@ export default function Table<T extends { id: string | number }>({
             </thead>
 
             <tbody key={data.length} className="divide-y divide-gray-300">
+              {data.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={headers.length}
+                    className="px-4 py-6 text-center"
+                  >
+                    No data available.
+                  </td>
+                </tr>
+              )}
               {data.map((row) => (
                 <tr key={row.id} className="cursor-pointer hover:bg-black/5">
                   {headers.map((h) => {

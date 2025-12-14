@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useCart } from "src/context/cart.context";
+import { useState } from "react";
+import { useDesign } from "src/context/desgin.context"; // ✅ بدل useCart
 import { Pencil, Trash2 } from "lucide-react";
 import MainDashButton from "src/components/ui/MainDashButton";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,7 +14,10 @@ const fonts = [
 ];
 
 const Text = () => {
-  const { updateEmbroidery, cartItem, hasDoubleCorner } = useCart();
+  const { designData, update } = useDesign(); // ✅ استخدام الـ Design Context
+
+  // embroidery zones come from designData
+  const existingZones = designData.upgrades?.props?.embroidery?.zones || [];
 
   const [selectedZone, setSelectedZone] = useState(embroideryZones[0].id);
   const [font, setFont] = useState(fonts[0].value);
@@ -22,12 +25,7 @@ const Text = () => {
   const [notes, setNotes] = useState("");
   const [color, setColor] = useState("#000000");
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false); // NEW
-
-  const embroideryUpgrade = cartItem.upgrades.find(
-    (u) => u.id === "embroidery",
-  );
-  const existingZones = embroideryUpgrade?.props?.zones || [];
+  const [showForm, setShowForm] = useState(false);
 
   const resetForm = () => {
     setSelectedZone(embroideryZones[0].id);
@@ -51,13 +49,21 @@ const Text = () => {
       ? existingZones.map((z: any) => (z.id === editingId ? newZone : z))
       : [...existingZones, newZone];
 
-    updateEmbroidery(updatedZones);
+    // ✅ Update using design context
+    update((d) => {
+      d.upgrades.props.embroidery.zones = updatedZones;
+    });
+
     resetForm();
     setShowForm(false);
   };
 
   const handleDelete = (id: string) => {
-    updateEmbroidery(existingZones.filter((z: any) => z.id !== id));
+    const updated = existingZones.filter((z: any) => z.id !== id);
+
+    update((d) => {
+      d.upgrades.props.embroidery.zones = updated;
+    });
   };
 
   const handleEdit = (z: any) => {
@@ -175,8 +181,7 @@ const Text = () => {
             <div className="grid grid-cols-3 gap-2">
               {embroideryZones.map((zone) => {
                 const active = selectedZone === zone.id;
-                const isCenterd = zone.label.split(" ")[1] === "Center";
-                if (isCenterd && hasDoubleCorner) return null;
+
                 return (
                   <motion.button
                     key={zone.id}
@@ -195,6 +200,7 @@ const Text = () => {
             </div>
           </div>
 
+          {/* Font Picker */}
           <div>
             <label className="text-sm font-medium text-gray-600">
               Font Style
@@ -238,9 +244,10 @@ const Text = () => {
               />
 
               <FormInput
-                label=""
+                label="Thread Color"
                 name="threadColor"
                 type="color"
+                required
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
                 className="h-10 w-14 cursor-pointer border-none bg-transparent p-0"
@@ -256,12 +263,13 @@ const Text = () => {
           <FormInput
             label="Embroidery Text"
             name="embroideryText"
+            required
             placeholder="Enter text..."
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
 
-          {/* Notes Input */}
+          {/* Notes */}
           <FormInput
             label="Notes / Orientation"
             name="notes"
@@ -269,14 +277,12 @@ const Text = () => {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
-
           {/* Submit */}
           <MainDashButton
             text={editingId ? "Update Embroidery" : "Add Embroidery"}
             onClick={handleAddOrUpdate}
           />
 
-          {/* Cancel */}
           {existingZones.length > 0 && (
             <MainDashButton
               text="Cancel"

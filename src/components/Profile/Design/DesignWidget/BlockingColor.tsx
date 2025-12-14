@@ -1,24 +1,23 @@
-// src/components/BlanketColorSelector/BlockingColor.tsx
-import { useCart } from "src/context/cart.context";
 import ColorSelector from "src/components/ui/ColorSelector";
 import { DEFAULT_COLORS } from "src/data/colors";
+import { useDesign } from "src/context/desgin.context";
 export default function BlockingColor() {
-  const {
-    updateBlockingColor,
-    cartItem: { upgrades },
-  } = useCart();
+  const { updateBlocking, designData } = useDesign();
 
-  const blockingUpgrade = upgrades.find((u) => u.id === "blocking");
-  const selectedColor = Array.isArray(blockingUpgrade?.props?.color)
-    ? blockingUpgrade?.props?.color[0]
-    : blockingUpgrade?.props?.color || null;
+  const blockingUpgrade = designData.upgrades.selected.find(
+    (u) => u === "blocking",
+  );
+
+  const selectedColor = Array.isArray(designData.upgrades.props.blocking.colors)
+    ? designData.upgrades.props.blocking.colors[0] || null
+    : designData.upgrades.props.blocking.colors || null;
 
   const onSelectColor = (color: string) => {
-    updateBlockingColor([color], false);
+    updateBlocking([color], false);
   };
 
   const onRandomize = () => {
-    updateBlockingColor(DEFAULT_COLORS, true);
+    updateBlocking(DEFAULT_COLORS, true);
   };
 
   return (
@@ -33,7 +32,7 @@ export default function BlockingColor() {
             Random
           </button>
         }
-        selectedColor={!blockingUpgrade?.props?.random && selectedColor}
+        selectedColor={selectedColor}
         onSelectColor={onSelectColor}
       />
     </div>

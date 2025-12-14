@@ -24,7 +24,7 @@ interface DashboardSidebarProps {
 const menuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: UploadCloud, label: "Uploads", path: "/uploads" },
-  { icon: Hand, label: "Design", path: "/desgin" },
+  { icon: Hand, label: "Design", path: "/design-library" },
   { icon: User, label: "Profile", path: "/user-profile" },
   { icon: ShoppingCart, label: "Cart", path: "/cart" },
   { icon: ClipboardList, label: "Orders", path: "/orders" },

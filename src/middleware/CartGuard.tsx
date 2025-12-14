@@ -4,15 +4,11 @@ import { useCart } from "src/context/cart.context";
 import Model from "src/components/ui/Model";
 
 const CartGuard = ({ children }: { children: ReactNode }) => {
-  const { cartItem } = useCart();
+  const { cartItems } = useCart();
   const [showWarning, setShowWarning] = useState(false);
   const navigate = useNavigate();
 
-  const isInvalid =
-    !cartItem.size ||
-    !cartItem.color ||
-    !cartItem.borderColor ||
-    cartItem.quantity < 1;
+  const isInvalid = cartItems.length === 0;
 
   if (isInvalid) {
     if (!showWarning) setShowWarning(true);
@@ -23,20 +19,20 @@ const CartGuard = ({ children }: { children: ReactNode }) => {
         <Model isOpen={showWarning} onClose={() => setShowWarning(false)}>
           <div className="rounded-2xl border bg-white p-6 shadow-xl">
             <h2 className="mb-2 text-xl font-semibold">
-              Complete Your Blanket Design
+              Add a design to your cart
             </h2>
             <p className="text-sm text-neutral-600">
-              Please select a size, color, and border color before continuing.
+              Please select a design before proceeding to checkout.
             </p>
 
             <button
               className="mt-4 w-full rounded-xl bg-black px-4 py-2 text-white hover:bg-neutral-800"
               onClick={() => {
-                navigate("/profile/desgin", { replace: true });
+                navigate("/profile/design-library", { replace: true });
                 setShowWarning(false);
               }}
             >
-              Continue Designing
+              Go to Design Library
             </button>
           </div>
         </Model>

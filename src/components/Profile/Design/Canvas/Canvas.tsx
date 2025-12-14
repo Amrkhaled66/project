@@ -1,9 +1,16 @@
 // src/components/Canvas/Canvas.tsx
-import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
-import { useCart } from "src/context/cart.context";
+import {
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  useCallback,
+} from "react";
+
 import CanvasFront from "./FrontGrid";
 import CanvasBack from "./BackGrid";
 import { GridItemType } from "src/components/Profile/Design/Canvas/GridItem";
+import { useDesign } from "src/context/desgin.context";
 
 export interface CanvasHandle {
   getSnapshot: () => Promise<string>;
@@ -15,73 +22,85 @@ const Canvas = forwardRef<
     items: GridItemType[];
     onUpdateItems: (items: GridItemType[]) => void;
     onDeleteItem: (id: string) => void;
+    onDragStart?: (event: any) => void;
     onDragEnd: (event: any) => void;
     isFlipped: boolean;
   }
->(({ items, onUpdateItems, onDeleteItem, onDragEnd, isFlipped }, ref) => {
-  const canvasRef = useRef<HTMLDivElement | null>(null);
+>(
+  (
+    { items, onUpdateItems, onDeleteItem, onDragStart, onDragEnd, isFlipped },
+    ref,
+  ) => {
+    const canvasRef = useRef<HTMLDivElement | null>(null);
 
-  const { cartItem } = useCart();
-  const size = cartItem?.size;
-  const blanketColor = cartItem?.color || null;
-  const borderColor = cartItem?.borderColor || null;
-  const backgingColor = cartItem?.backingColor || null;
+    // Load from Design Context
+    const { designData } = useDesign();
+    const blanketColor = designData.colors?.blanket;
+    const borderColor = designData.colors?.border;
+    const backingColor = designData.colors?.backing;
+    const bindingColor = designData.colors?.binding;
 
-  useImperativeHandle(ref, () => ({
-    async getSnapshot() {
-      const htmlToImage = await import("html-to-image");
-      if (!canvasRef.current) return "";
-      return await htmlToImage.toJpeg(canvasRef.current, { quality: 0.85 });
-    },
-  }));
+    const { rows, cols } = designData?.canvas?.size || { rows: 2, cols: 3 };
 
-  useEffect(() => {
-    onUpdateItems([]);
-  }, [size.id]);
+    // -------------------------------------------------------
+    // SNAPSHOT EXPORT
+    // -------------------------------------------------------
+    useImperativeHandle(ref, () => ({
+      async getSnapshot() {
+        const htmlToImage = await import("html-to-image");
+        if (!canvasRef.current) return "";
+        return await htmlToImage.toJpeg(canvasRef.current, { quality: 0.85 });
+      },
+    }));
 
-  return (
-    <div className="mx-auto w-full p-5">
-      <div
-        style={{
-          transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
-          transition: "transform 0.6s",
-          transformStyle: "preserve-3d",
-        }}
-      >
+    // -------------------------------------------------------
+    // FIXED: Reset items ONLY when canvas size REALLY changes
+    // -------------------------------------------------------
+    const prevSizeRef = useRef({ rows, cols });
+
+    useEffect(() => {
+      const prev = prevSizeRef.current;
+      const sizeChanged = prev.rows !== rows || prev.cols !== cols;
+
+      if (sizeChanged) {
+        onUpdateItems(items.slice(0, rows * cols)); // Reset items only on real size change
+      }
+
+      prevSizeRef.current = { rows, cols };
+    }, [rows, cols, onUpdateItems]);
+
+    return (
+      <div className="mx-auto w-full p-5">
         <div
-          className={`mx-auto w-fit bg-transparent ${isFlipped && "min-w-[90%]"}`}
           style={{
             transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            transition: "transform 0.6s",
+            transformStyle: "preserve-3d",
           }}
         >
-          {isFlipped ? (
-            <CanvasBack
-              cols={size.cols}
-              rows={size.rows}
-              backgingColor={backgingColor}
-              bindingColor={
-                cartItem.upgrades.find((u) => u.id === "binding")?.props?.color
-              }
-            />
-          ) : (
-            <CanvasFront
-              size={size}
-              items={items}
-              onDeleteItem={onDeleteItem}
-              onDragEnd={onDragEnd}
-              blanketColor={blanketColor}
-              borderColor={borderColor}
-              bindingColor={
-                cartItem.upgrades.find((u) => u.id === "binding")?.props?.color
-              }
-              canvasRef={canvasRef}
-            />
-          )}
-    
+          <div
+            className={`mx-auto w-fit ${
+              isFlipped ? "min-w-[90%]" : "w-fit"
+            } bg-transparent`}
+            style={{
+              transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            }}
+          >
+            {isFlipped ? (
+              <CanvasBack
+                cols={cols}
+                rows={rows}
+                backgingColor={backingColor}
+                bindingColor={bindingColor}
+              />
+            ) : (
+              <CanvasFront onDeleteItem={onDeleteItem} />
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 export default Canvas;

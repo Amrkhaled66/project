@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "src/context/auth.context";
 import { useNavigate } from "react-router-dom";
-
+import { useCart } from "src/context/cart.context";
 interface DashboardHeaderProps {
   onMenuToggle: () => void;
   isSidebarOpen: boolean;
@@ -15,9 +15,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const { cartItems } = useCart();
 
   return (
-    <header className=" mx-auto w-full">
+    <header className="mx-auto w-full">
       <div className="flex items-center justify-between py-3">
         <div className="flex items-center justify-between gap-4">
           <button
@@ -37,7 +38,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </Link>
 
         <div className="flex items-center justify-center gap-3">
-          <Link className="hidden lg:block" to={"cart"}>
+          <Link className="relative hidden lg:block" to={"cart"}>
+            <div className="absolute -top-2 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+              {cartItems.reduce((total, item) => total + item.quantity, 0)}
+            </div>
+
             <ShoppingCart size={24} />
           </Link>
           <div className="relative">

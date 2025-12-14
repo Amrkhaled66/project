@@ -1,50 +1,45 @@
-import { useState } from "react";
 import { useDraggable } from "@dnd-kit/core";
-import { cornerImages as defaultCorners } from "src/data/images";
 import UploadImage from "src/components/ui/UploadImage";
-import { useCart } from "src/context/cart.context";
+import { useDesign } from "src/context/desgin.context";
+import { useUploads } from "src/hooks/queries/upload.queries";
 
 export default function CornersPool() {
-  const [Images, setImages] = useState<string[]>([...defaultCorners]);
+  const { data, isLoading } = useUploads();
+  const { designData, update } = useDesign();
 
-  const {
-    cartItem: { upgrades },
-    deleteCornerImage,
-  } = useCart();
+  // uploaded images only
+  const images: string[] = data ?? [];
 
-  // Get cornerImages as array
-  let cornerImages =
-    upgrades.find((u) => u.id === "cornerstonesSingle")?.props?.cornerImages ||
-    upgrades.find((u) => u.id === "cornerstonesDouble")?.props?.cornerImages ||
-    [];
+  // assigned corner images
+  const cornerImages = designData.upgrades?.props?.cornerstones?.images || {};
 
-  // Convert object -> array of values
-  const cornerArray = Object.values(cornerImages);
+  const cornerEntries = Object.entries(cornerImages);
 
-  // Convert object -> array of [index, value]
-  const cornerEntries = Object.entries(cornerImages); // [["0","img1"], ["2","img2"]]
-
-  const handleUpload = (images: string[]) => {
-    setImages((prev) => [...prev, ...images]);
+  const deleteCornerImage = (index: number) => {
+    update((d) => {
+      if (d.upgrades.props.cornerstones.images[index]) {
+        delete d.upgrades.props.cornerstones.images[index];
+      }
+    });
   };
 
+  if (isLoading) {
+    return <div className="p-3 text-sm text-neutral-500">Loading images…</div>;
+  }
+
+  console.log(images);
   return (
     <div className="flex flex-wrap items-center gap-4 rounded-lg bg-neutral-200 p-3">
-      <UploadImage onUpload={handleUpload} />
-
-      {Images.map((src, i) => {
-        // find if this src exists in any corner
-        const foundEntry = cornerEntries.find(([, value]) => value === src);
+      {images.map((img:any, i) => {
+        const foundEntry = cornerEntries.find(([, value]) => value === img.imageUrl);
         const isSelected = !!foundEntry;
-
-        // Corner index for deleteCornerImage()
         const selectedCornerIndex = foundEntry ? Number(foundEntry[0]) : null;
 
         return (
           <CornerImage
-            key={i}
-            id={`${src}-${i}`}
-            src={src}
+            key={img.id}
+            id={img.id}
+            src={img.imageUrl}
             isSelected={isSelected}
             cornerIndex={selectedCornerIndex}
             deleteCornerImage={deleteCornerImage}
@@ -70,7 +65,7 @@ function CornerImage({
 }) {
   const { setNodeRef, listeners, attributes, transform } = useDraggable({
     id,
-    disabled: isSelected, // disable dragging if selected
+    disabled: isSelected,
     data: { image: src, type: "corner-image" },
   });
 
@@ -87,18 +82,17 @@ function CornerImage({
         ref={setNodeRef}
         {...(!isSelected ? listeners : {})}
         {...attributes}
-        src={src}
+        src={import.meta.env.VITE_API_URL + src}
         style={style}
         className={`size-16 rounded border object-cover shadow-sm ${
           isSelected ? "pointer-events-none" : "cursor-grab"
         }`}
       />
 
-      {/* Delete button only if selected */}
       {isSelected && cornerIndex !== null && (
         <button
           onClick={() => deleteCornerImage(cornerIndex)}
-          className="absolute -top-2 -right-2 size-6 rounded-full bg-red-500 text-white text-xs flex items-center justify-center shadow"
+          className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-red-500 text-xs text-white shadow"
         >
           ✕
         </button>

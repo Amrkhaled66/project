@@ -1,11 +1,10 @@
 // BlanketColorSelector.tsx
-import { useCart } from "src/context/cart.context";
 import ColorSelector from "src/components/ui/ColorSelector";
+import { useDesign } from "src/context/desgin.context";
+
 export default function BindingColor() {
-  const {
-    updateBindingColor,
-    cartItem: { upgrades },
-  } = useCart();
+  const { updateBindingColor, designData } = useDesign();
+
   const onSelectColor = (color: string) => {
     updateBindingColor(color);
   };
@@ -13,8 +12,10 @@ export default function BindingColor() {
     <ColorSelector
       header="Binding Color"
       selectedColor={
-        upgrades.some((u) => u.id === "binding")
-          ? upgrades.find((u) => u.id === "binding")?.props?.color
+        designData?.upgrades.selected.some((u) => u === "binding")
+          ? (designData.upgrades.selected.find((u) => u === "binding") &&
+              designData.colors.binding) ||
+            null
           : null
       }
       onSelectColor={onSelectColor}

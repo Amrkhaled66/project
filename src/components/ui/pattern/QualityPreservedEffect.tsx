@@ -1,6 +1,6 @@
 import React from "react";
 import StitchPattern from "./StitchPattern";
-import { useCart } from "src/context/cart.context";
+import { useDesign } from "src/context/desgin.context";
 
 interface StitchTileProps {
   size?: number;
@@ -11,8 +11,6 @@ interface StitchTileProps {
 }
 
 interface PatternGridProps {
-  rows?: number;
-  cols?: number;
   tileSize?: number;
   strokeWidth?: number;
   dash?: string;
@@ -48,11 +46,15 @@ const QualityPreservedEffect: React.FC<PatternGridProps> = ({
   dash = "6 6",
   opacity = 0.7,
 }) => {
-  const { cartItem } = useCart();
-  const { cols, rows } = cartItem.size;
+
+  const { designData, hasQualityPreserve } = useDesign();
+
+  if (!hasQualityPreserve) return null;
+
+  const { cols, rows } = designData.canvas.size;
+
   const preservedColor =
-    cartItem.upgrades.find((u) => u.id === "quiltedPreserve")?.props?.color ||
-    "#D1D1D1";
+    designData.colors.qualityPreserve || "#D1D1D1";
 
   return (
     <div

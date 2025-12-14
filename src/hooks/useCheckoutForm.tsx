@@ -117,7 +117,6 @@ export const useCheckoutForm = () => {
     return isValid;
   };
   
-  console.log(errors);
 
   const isValid =
     form.firstName &&

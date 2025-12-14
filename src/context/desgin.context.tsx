@@ -1,208 +1,324 @@
-// src/context/design.context.tsx
-
 import {
   createContext,
   useContext,
-  useRef,
   useState,
   useEffect,
-  useMemo,
+  useRef,
   useCallback,
   ReactNode,
 } from "react";
-
+import {
+  useDesign as useDesignQuery,
+  useUpdateDesign,
+} from "src/hooks/queries/design.queries";
+import { DesignData, sizeObj } from "src/types/design.types";
 import { arrayMove } from "@dnd-kit/sortable";
-import { GridItemType } from "src/components/Profile/Design/Canvas/GridItem";
-import { useCart } from "src/context/cart.context";
-import { CanvasHandle } from "src/components/Profile/Design/Canvas/Canvas";
-import compressImage from "src/utils/CompressImage";
-import base64ToFile from "src/utils/base64ToFile ";
+import * as htmlToImage from "html-to-image";
 
-const STORAGE_KEY = "blanket-design-items";
-
-type DesignContextType = {
-  items: GridItemType[];
-  setItems: React.Dispatch<React.SetStateAction<GridItemType[]>>;
-  isAddPhotoModelOpen: boolean;
-  setIsAddPhotoModelOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  handleAddItem: (item: GridItemType) => void;
-  handleDeleteItem: (id: string) => void;
-  handleDragEnd: (event: any) => void;
-  isItemExits: (id: string) => boolean;
-  canvasRef: React.MutableRefObject<CanvasHandle | null>;
-  isDragging: boolean;
-  setIsDragging: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
+// --------------------------------------------------
+// Context
+// --------------------------------------------------
 const DesignContext = createContext<DesignContextType | undefined>(undefined);
 
-export const DesignProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<GridItemType[]>([]);
-  const [isAddPhotoModelOpen, setIsAddPhotoModelOpen] = useState(false);
-  const [isDragging, setIsDragging] = useState(false); // 🔥 NEW
+// --------------------------------------------------
+// Types
+// --------------------------------------------------
+type DesignContextType = {
+  designId: string;
+  designData: DesignData;
+  data: any;
+  update: (fn: (draft: DesignData) => void) => void;
+  isLoading: boolean;
+  isError: boolean;
 
-  const { updateDesign, cartItem, updateCornerImage } = useCart();
+  canvasRef: React.RefObject<HTMLDivElement | null>;
 
-  const canvasRef = useRef<CanvasHandle>(null);
-  const hasMountedRef = useRef(false);
+  handleDragStart: () => void;
+  handleDragEnd: (event: any) => void;
+  isDragging: boolean;
 
-  const selectedSizeId = cartItem.size?.id ?? "Lap";
-  const borderColor = cartItem.borderColor ?? null;
-  const blanketColor = cartItem.color ?? null;
-  const upgrades = cartItem.upgrades;
-  // -------------------------------------------------------
-  // Load from localStorage on mount
-  // -------------------------------------------------------
+  updateBlanketColor: (color: string | null) => void;
+  updateBorderColor: (color: string | null) => void;
+  updateBackingColor: (color: string | null) => void;
+  updateBindingColor: (color: string | null) => void;
+  updateBlocking: (colors: string[], random: boolean) => void;
+  updateQualityPreserveColor: (color: string | null) => void;
+  toggleUpgrade: (id: string) => void;
+  updateCanvasSize: (sizeObj: sizeObj) => void;
+
+  hasCornerstones: boolean;
+  hasBlocking: boolean;
+  hasEmbroidery: boolean;
+  hasCustomPanel: boolean;
+  hasQualityPreserve: boolean;
+  hasBinding: boolean;
+  hasFringe: boolean;
+};
+
+// --------------------------------------------------
+// Provider
+// --------------------------------------------------
+export const DesignProvider = ({
+  children,
+  designId,
+}: {
+  children: ReactNode;
+  designId: string;
+}) => {
+  const { data, isLoading, isError } = useDesignQuery(designId);
+  const updateMutation = useUpdateDesign();
+
+  // --------------------------------------------------
+  // State
+  // --------------------------------------------------
+  const [designData, setDesignData] = useState<DesignData>({
+    meta: { name: "Untitled Design", createdAt: null, updatedAt: null },
+    canvas: { size: { name: "Lap", rows: 2, cols: 3 }, layout: [], zoom: 1 },
+    colors: {
+      blanket: "",
+      border: "",
+      backing: "",
+      binding: "",
+      blocking: { colors: [], random: false },
+      qualityPreserve: "",
+    },
+    upgrades: {
+      selected: [],
+      props: {
+        embroidery: { zones: null },
+        blocking: { colors: [], random: false },
+        binding: { color: null },
+        customPanel: { text: "", image: null, options: {} },
+        cornerstones: { type: null, images: {} },
+      },
+    },
+    text: { items: [] },
+    preview: { image: null },
+    photos: { items: [] },
+    price: "0",
+  });
+
+  // --------------------------------------------------
+  // Refs
+  // --------------------------------------------------
+  const hydrated = useRef(false);
+  const isDragging = useRef(false);
+  const canvasRef = useRef<HTMLDivElement | null>(null);
+
+  const saveTimeout = useRef<NodeJS.Timeout | null>(null);
+  const lastSnapshot = useRef<string>("");
+  const isSaving = useRef(false);
+
+  // --------------------------------------------------
+  // Hydration - Fixed Logic
+  // --------------------------------------------------
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved) as GridItemType[]);
-      } catch {
-        setItems([]);
-      }
+    if (hydrated.current) return;
+    if (!data?.designData) return;
+
+    setDesignData(structuredClone(data.designData));
+    lastSnapshot.current = JSON.stringify(data.designData);
+    hydrated.current = true;
+  }, [data?.designData]);
+
+  // --------------------------------------------------
+  // Update helper
+  // --------------------------------------------------
+  const update = useCallback((fn: (draft: DesignData) => void) => {
+    setDesignData((prev) => {
+      const copy = structuredClone(prev);
+      fn(copy);
+      return copy;
+    });
+  }, []);
+
+  // --------------------------------------------------
+  // Preview generator (DOM → Image)
+  // --------------------------------------------------
+  const generatePreview = useCallback(async () => {
+    if (!canvasRef.current) return null;
+
+    try {
+      // Wait a tick for DOM to update with new image data
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      return await htmlToImage.toJpeg(canvasRef.current, {
+        quality: 0.85,
+        cacheBust: true, // Force fresh render
+      });
+    } catch (err) {
+      console.error("Preview generation failed", err);
+      return null;
     }
   }, []);
 
-  // -------------------------------------------------------
-  // Save items (ignore base64)
-  // -------------------------------------------------------
+  // --------------------------------------------------
+  // Autosave + Preview Update - Fixed Race Condition
+  // --------------------------------------------------
   useEffect(() => {
-    if (!hasMountedRef.current) {
-      hasMountedRef.current = true;
-      return;
-    }
+    if (!hydrated.current) return;
+    const snapshot = JSON.stringify(designData);
+    if (snapshot === lastSnapshot.current) return;
 
-    const filtered = items.filter((item) => !item.image.startsWith("data:"));
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-  }, [items]);
+    if (saveTimeout.current) clearTimeout(saveTimeout.current);
 
-  // -------------------------------------------------------
-  // Memoized Handlers
-  // -------------------------------------------------------
-  const handleAddItem = useCallback(
-    (item: GridItemType) => {
-      setItems((prev) => [...prev, item]);
-    },
-    [setItems],
-  );
+    saveTimeout.current = setTimeout(async () => {
+      if (isSaving.current) return;
+      isSaving.current = true;
 
-  const handleDeleteItem = useCallback(
-    (id: string) => {
-      setItems((prev) => prev.filter((item) => item.id !== id));
-    },
-    [setItems],
-  );
-
-  const isItemExits = useCallback(
-    (id: string) => items.some((item) => item.id === id),
-    [items],
-  );
-
-  const handleDragEnd = useCallback(
-    (event: any) => {
-      const { active, over } = event;
-
-      setIsDragging(false); // 🔥 Dragging finished — now allow updates again
-
-      if (!over) return;
-
-      const activeType = active.data.current?.type;
-      const overId = over.id;
-
-      // Corner image drag
-      if (activeType === "corner-image") {
-        const cornerIndex = Number(overId.replace("corner-", ""));
-        const imageUrl = active.data.current?.image;
-
-        updateCornerImage(cornerIndex, imageUrl);
+      const previewImage = await generatePreview();
+      if (!previewImage) {
+        isSaving.current = false;
         return;
       }
 
-      // Grid item sorting
-      if (activeType === "grid-item") {
-        if (active.id !== over.id) {
-          setItems((prev) => {
-            const oldIndex = prev.findIndex((i) => i.id === active.id);
-            const newIndex = prev.findIndex((i) => i.id === over.id);
-            return arrayMove(prev, oldIndex, newIndex);
+      setDesignData((prev) => {
+        setDesignData((prev) => {
+          const next = {
+            ...prev,
+            preview: { image: previewImage },
+          };
+
+          updateMutation.mutate({
+            id: designId,
+            payload: next,
           });
+
+          lastSnapshot.current = JSON.stringify(next);
+          isSaving.current = false;
+
+          return next;
+        });
+
+        const next = {
+          ...prev,
+          preview: { image: previewImage },
+        };
+
+        updateMutation.mutate({
+          id: designId,
+          payload: next,
+        });
+
+        lastSnapshot.current = JSON.stringify(next);
+        isSaving.current = false;
+
+        return next;
+      });
+    }, 600);
+
+    return () => {
+      if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    };
+  }, [designData, designId]);
+
+  // --------------------------------------------------
+  // Drag handlers
+  // --------------------------------------------------
+  const handleDragStart = () => {
+    isDragging.current = true;
+  };
+
+  const handleDragEnd = (event: any) => {
+    isDragging.current = false;
+
+    const { active, over } = event;
+    if (!over) return;
+
+    const type = active.data.current?.type;
+
+    if (type === "grid-item") {
+      update((d) => {
+        const list = d.photos.items;
+        const oldIndex = list.findIndex((i) => i.id === active.id);
+        const newIndex = list.findIndex((i) => i.id === over.id);
+        if (oldIndex >= 0 && newIndex >= 0) {
+          d.photos.items = arrayMove(list, oldIndex, newIndex);
         }
-      }
-    },
-    [setItems, updateCornerImage],
+      });
+    }
+
+    if (type === "corner-image") {
+      const url = active.data.current?.image;
+      const index = Number(String(over.id).replace("corner-", ""));
+      update((d) => {
+        d.upgrades.props.cornerstones.images[index] = url;
+      });
+    }
+  };
+
+  // --------------------------------------------------
+  // Flags
+  // --------------------------------------------------
+  const hasCornerstones = designData.upgrades?.selected.some((u) =>
+    ["cornerstonesSingle", "cornerstonesDouble"].includes(u),
   );
 
-  // -------------------------------------------------------
-  // Optimized Snapshot Generator
-  // -------------------------------------------------------
-  const upgradesKey = useMemo(
-    () => cartItem.upgrades.map((u) => u.id).join(","),
-    [cartItem.upgrades],
-  );
+  // --------------------------------------------------
+  // Context value
+  // --------------------------------------------------
+  const value: DesignContextType = {
+    designId,
+    designData,
+    update,
+    isLoading,
+    isError,
+    data,
+    canvasRef,
+
+    handleDragStart,
+    handleDragEnd,
+    isDragging: isDragging.current,
+
+    updateBlanketColor: (c) => update((d) => (d.colors.blanket = c)),
+    updateBorderColor: (c) => update((d) => (d.colors.border = c)),
+    updateBackingColor: (c) => update((d) => (d.colors.backing = c)),
+    updateBindingColor: (c) => update((d) => (d.colors.binding = c)),
+    updateBlocking: (colors, random) =>
+      update((d) => {
+        d.colors.blocking.colors = colors;
+        d.colors.blocking.random = random;
+      }),
+    updateQualityPreserveColor: (c) =>
+      update((d) => (d.colors.qualityPreserve = c)),
+    toggleUpgrade: (id) =>
+      update((d) => {
+        const list = d.upgrades.selected;
+        d.upgrades.selected = list.includes(id)
+          ? list.filter((x) => x !== id)
+          : [...list, id];
+      }),
+    updateCanvasSize: (sizeObj: sizeObj) =>
+      update((d) => {
+        d.canvas.size = structuredClone(sizeObj);
+      }),
+
+    hasCornerstones,
+    hasBlocking: designData.upgrades?.selected.includes("blocking"),
+    hasEmbroidery: designData.upgrades?.selected.includes("embroidery"),
+    hasCustomPanel: designData.upgrades?.selected.includes("customPanels"),
+    hasQualityPreserve:
+      designData.upgrades?.selected.includes("quiltedPreserve"),
+    hasBinding: designData.upgrades?.selected.includes("binding"),
+    hasFringe: designData.upgrades?.selected.includes("fringe"),
+  };
 
   useEffect(() => {
-    if (isDragging) return;
-
-    const timeout = setTimeout(async () => {
-      if (canvasRef.current) {
-        const snapshotBase64 = await canvasRef.current.getSnapshot();
-
-        const file = base64ToFile(snapshotBase64, "design.png");
-
-        const compressedBase64 = await compressImage(file);
-
-        updateDesign(compressedBase64);
-      }
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, [
-    items,
-    blanketColor,
-    borderColor,
-    selectedSizeId,
-    JSON.stringify(cartItem.upgrades || {}),
-    isDragging,
-  ]);
-
-  // -------------------------------------------------------
-  // Memoized Provider Value
-  // -------------------------------------------------------
-  const value = useMemo(
-    () => ({
-      items,
-      setItems,
-      isAddPhotoModelOpen,
-      setIsAddPhotoModelOpen,
-      handleAddItem,
-      handleDeleteItem,
-      handleDragEnd,
-      isItemExits,
-      canvasRef,
-      isDragging, // 🔥 expose dragging state
-      setIsDragging, // 🔥 expose setter
-    }),
-    [
-      items,
-      isAddPhotoModelOpen,
-      handleAddItem,
-      handleDeleteItem,
-      handleDragEnd,
-      isItemExits,
-      isDragging,
-    ],
-  );
+    console.log("🟡 STATE photos.items:", designData.photos.items);
+  }, [designData.photos.items]);
 
   return (
     <DesignContext.Provider value={value}>{children}</DesignContext.Provider>
   );
 };
 
+// --------------------------------------------------
+// Hook
+// --------------------------------------------------
 export const useDesign = () => {
-  const context = useContext(DesignContext);
-  if (!context) {
-    throw new Error("useDesign must be used within a DesignProvider");
+  const ctx = useContext(DesignContext);
+  if (!ctx) {
+    throw new Error("useDesign must be used within DesignProvider");
   }
-  return context;
+  return ctx;
 };

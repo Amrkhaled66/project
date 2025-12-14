@@ -1,29 +1,47 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { Link } from "react-router-dom";
 
 import MainDashButton from "src/components/ui/MainDashButton";
 import DesginArea from "src/components/Profile/Design/DesignArea";
-import { useCart } from "src/context/cart.context";
-import { useDesign } from "src/context/desgin.context";
 import priceFormmater from "src/utils/priceFormmater";
 
-// Widget Components
-import BorderColor from "src/components/Profile/Design/DesignWidget/BorderColor";
-import BlanketColor from "src/components/Profile/Design/DesignWidget/BlanketColor";
-import Upgrades from "src/components/Profile/Design/DesignWidget/Upgrades";
-import Preview from "src/components/Profile/Design/DesignWidget/Preview";
 import Sizes from "src/components/Profile/Design/DesignWidget/Sizes";
+import BlanketColor from "src/components/Profile/Design/DesignWidget/BlanketColor";
+import BorderColor from "src/components/Profile/Design/DesignWidget/BorderColor";
 import BackingColorSelector from "src/components/Profile/Design/DesignWidget/BackingColor";
 import BindingColor from "src/components/Profile/Design/DesignWidget/BindingColor";
 import BlockingColor from "src/components/Profile/Design/DesignWidget/BlockingColor";
-import Text from "src/components/Profile/Design/DesignWidget/Text";
 import QualityPreserveColor from "src/components/Profile/Design/DesignWidget/QualityPreservedColor";
+import { Navigate } from "react-router-dom";
+
+import Upgrades from "src/components/Profile/Design/DesignWidget/Upgrades";
+import Text from "src/components/Profile/Design/DesignWidget/Text";
+import Preview from "src/components/Profile/Design/DesignWidget/Preview";
 import CornersPool from "src/components/Profile/Design/DesignWidget/CornersPool";
 import CustomPanelTab from "src/components/Profile/Design/DesignWidget/CustomPanel";
 
-type TabId = "size" | "colors" | "upgrades" | "preview" | "text" | "corners" | "customPanel";
+import { useDesign } from "src/context/desgin.context";
+import { useCart } from "src/context/cart.context"; // only for checkout price
+
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
+type TabId =
+  | "size"
+  | "colors"
+  | "upgrades"
+  | "preview"
+  | "text"
+  | "corners"
+  | "customPanel";
 
 interface Tab {
   id: TabId;
@@ -32,14 +50,13 @@ interface Tab {
   isActive: boolean;
 }
 
-// Separate component for cleaner tab rendering
-const TabButton = ({ 
-  tab, 
-  isActive, 
-  onClick 
-}: { 
-  tab: Tab; 
-  isActive: boolean; 
+const TabButton = ({
+  tab,
+  isActive,
+  onClick,
+}: {
+  tab: Tab;
+  isActive: boolean;
   onClick: () => void;
 }) => (
   <button
@@ -53,17 +70,12 @@ const TabButton = ({
       <motion.div
         layoutId="activeTabUnderline"
         className="bg-primary absolute right-0 bottom-0 left-0 h-[2px] rounded-full"
-        transition={{
-          type: "spring",
-          stiffness: 500,
-          damping: 30,
-        }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
       />
     )}
   </button>
 );
 
-// Separate component for the color grid
 const ColorGrid = ({
   hasBinding,
   hasBlocking,
@@ -73,7 +85,7 @@ const ColorGrid = ({
   hasBlocking: boolean;
   isQualityPreserve: boolean;
 }) => (
-  <div className="grid  gap-4">
+  <div className="grid gap-4">
     <BlanketColor />
     <BorderColor />
     {hasBinding && <BindingColor />}
@@ -84,30 +96,39 @@ const ColorGrid = ({
 );
 
 export default function BlanketDesigner() {
+  /** ------------------------------
+   *  NEW: DESIGN CONTEXT STATE
+   *  ------------------------------ */
   const {
-    cartItem,
-    getCartTotal,
+    designData,
     hasBinding,
     hasBlocking,
     hasEmbroidery,
-    isQualityPreserve,
-    isCornerstones,
-     hasCustomPanel
-  } = useCart();
-  
-  const { handleDragEnd } = useDesign();
+    hasCornerstones,
+    hasCustomPanel,
+    hasQualityPreserve,
+    handleDragEnd,
+    isLoading,
+    isError,
+    data,
+  } = useDesign();
+  /** ------------------------------
+   * STILL USING CART FOR PRICE
+   * ------------------------------ */
+  const { getCartTotal } = useCart();
+  const total = getCartTotal();
+
   const [activeTab, setActiveTab] = useState<TabId>("size");
 
-  const total = getCartTotal();
-  const selectedUpgrades = cartItem?.upgrades?.map((u) => u.id) ?? [];
+  const selectedUpgrades = designData?.upgrades?.selected ?? [];
 
   const tabs = useMemo<Tab[]>(
     () => [
-      { 
-        id: "size", 
-        label: "Size", 
-        component: <Sizes />, 
-        isActive: true 
+      {
+        id: "size",
+        label: "Size",
+        component: <Sizes />,
+        isActive: true,
       },
       {
         id: "colors",
@@ -116,7 +137,7 @@ export default function BlanketDesigner() {
           <ColorGrid
             hasBinding={hasBinding}
             hasBlocking={hasBlocking}
-            isQualityPreserve={isQualityPreserve}
+            isQualityPreserve={hasQualityPreserve}
           />
         ),
         isActive: true,
@@ -127,11 +148,11 @@ export default function BlanketDesigner() {
         component: <Upgrades selectedUpgrades={selectedUpgrades} />,
         isActive: true,
       },
-      { 
-        id: "preview", 
-        label: "Preview", 
-        component: <Preview />, 
-        isActive: true 
+      {
+        id: "preview",
+        label: "Preview",
+        component: <Preview />,
+        isActive: true,
       },
       {
         id: "text",
@@ -143,25 +164,36 @@ export default function BlanketDesigner() {
         id: "corners",
         label: "Corners",
         component: <CornersPool />,
-        isActive: isCornerstones,
+        isActive: hasCornerstones,
       },
       {
         id: "customPanel",
         label: "Custom Panel",
         component: <CustomPanelTab />,
-        isActive: hasCustomPanel
-      }
+        isActive: hasCustomPanel,
+      },
     ],
-    [hasBinding, hasBlocking, hasEmbroidery, isQualityPreserve, selectedUpgrades]
+    [
+      hasBinding,
+      hasBlocking,
+      hasEmbroidery,
+      hasQualityPreserve,
+      hasCornerstones,
+      hasCustomPanel,
+      selectedUpgrades,
+    ],
   );
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
 
-  const activeTabs = tabs.filter((tab) => tab.isActive);
-  const activeTabContent = tabs.find((tab) => tab.id === activeTab)?.component;
+  const activeTabs = tabs.filter((t) => t.isActive);
+  const activeTabContent = tabs.find((t) => t.id === activeTab)?.component;
 
+  if (isError) {
+    return <Navigate replace to="/profile/design-library" />;
+  }
   return (
     <DndContext
       sensors={sensors}
@@ -169,48 +201,76 @@ export default function BlanketDesigner() {
       onDragEnd={handleDragEnd}
     >
       <div className="mx-auto min-h-dvh space-y-4">
-        {/* Header */}
-        <header className="page-header flex items-center justify-between font-bold">
-          <p>
-            Total: <span>{priceFormmater(total)}</span>
-          </p>
-          <Link to="/profile/cart">
-            <MainDashButton className="!w-fit px-4" text="Check Out" />
-          </Link>
-        </header>
+        {/* ---------------- HEADER ---------------- */}
+        {isLoading ? (
+          <header className="page-header flex items-center justify-between">
+            <Skeleton width={120} height={24} />
+            <Skeleton width={100} height={36} />
+          </header>
+        ) : (
+          <header className="page-header flex items-center justify-between font-bold">
+            <p>
+              Total: <span>{priceFormmater(Number(designData?.price))}</span>
+            </p>
+            {/* checkout button if needed */}
+          </header>
+        )}
 
         <div className="flex flex-col gap-x-6 gap-y-4 lg:flex-row">
-          {/* Left: Design Preview */}
-          <DesginArea />
+          {/* ---------------- LEFT SIDE (CANVAS / DESIGN AREA) ---------------- */}
+          <div className="flex-1">
+            {isLoading ? (
+              <div className="w-full space-y-3">
+                <Skeleton height={45} width={"60%"} borderRadius={8} />
+                <Skeleton height={380} borderRadius={12} />
+                <Skeleton height={25} width={"40%"} />
+              </div>
+            ) : (
+              <DesginArea />
+            )}
+          </div>
 
-          {/* Right: Tabbed Controls */}
+          {/* ---------------- RIGHT SIDE (TABS / SETTINGS PANEL) ---------------- */}
           <aside className="sticky top-2 flex h-fit w-full flex-col space-y-4 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm lg:w-[40%]">
-            {/* Tabs Header */}
-            <nav className="relative flex w-full flex-wrap gap-1 border-b border-neutral-200">
-              {activeTabs.map((tab) => (
-                <TabButton
-                  key={tab.id}
-                  tab={tab}
-                  isActive={activeTab === tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                />
-              ))}
+            {/* Tabs Skeleton */}
+            <nav className="relative flex w-full flex-wrap gap-1 border-b border-neutral-200 pb-2">
+              {isLoading
+                ? [...Array(4)].map((_, i) => (
+                    <Skeleton key={i} width={80} height={28} borderRadius={6} />
+                  ))
+                : activeTabs.map((tab) => (
+                    <TabButton
+                      key={tab.id}
+                      tab={tab}
+                      isActive={activeTab === tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                    />
+                  ))}
             </nav>
 
-            {/* Tabs Content */}
-            <div className="py-3">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  {activeTabContent}
-                </motion.div>
-              </AnimatePresence>
-            </div>
+            {/* Tab Content Skeleton */}
+            {isLoading ? (
+              <div className="mt-4 space-y-4">
+                <Skeleton height={35} />
+                <Skeleton height={35} />
+                <Skeleton height={35} />
+                <Skeleton height={220} />
+              </div>
+            ) : (
+              <div className="py-3">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    {activeTabContent}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            )}
           </aside>
         </div>
       </div>

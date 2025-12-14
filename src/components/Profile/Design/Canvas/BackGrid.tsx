@@ -1,7 +1,7 @@
 // src/components/Canvas/CanvasBack.tsx
 import React from "react";
 import { backingColors } from "src/data/colors";
-import { useCart } from "src/context/cart.context";
+import { useDesign } from "src/context/desgin.context";
 interface CanvasBackProps {
   cols: number;
   rows: number;
@@ -16,7 +16,7 @@ const CanvasBack: React.FC<CanvasBackProps> = ({
   bindingColor
 }) => {
   const backing = backingColors.find((c) => c.name === backgingColor);
-  const { hasBinding } = useCart();
+  const { hasBinding } = useDesign();
   return (
     <div
       style={{
@@ -30,7 +30,7 @@ const CanvasBack: React.FC<CanvasBackProps> = ({
     >
       {hasBinding && (
         <div
-          className="absolute inset-0 border-1"
+          className="absolute inset-0 border-2"
           style={{ borderColor: bindingColor || "#000" }}
         />
       )}

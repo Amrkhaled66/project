@@ -3,17 +3,20 @@ const Button = ({
   children,
   type = "button",
   isLoading = false,
+  onClick
 }: {
   className?: string;
   children?: React.ReactNode;
   type?: "submit" | "reset" | "button" | undefined;
   isLoading?: boolean;
+  onClick?:()=>void;
 }) => {
   return (
     <button
       type={type}
-      className={`bg-primary border-primary hover:text-primary group animate rounded-lg border-1 font-medium text-white hover:bg-transparent ${className}`}
+      className={`bg-primary px-3 py-2 border-primary hover:text-primary group animate rounded-lg border-1 font-medium text-white hover:bg-transparent ${className}`}
       disabled={isLoading}
+      onClick={onClick}
     >
       {isLoading ? (
         <span className="inline-block size-5 animate-spin rounded-full border-2 border-white group-hover:border-[var(--color-primary)] !border-t-transparent"></span>

@@ -1,12 +1,12 @@
 // BorderColorSelector.tsx
 import ColorSelector from "src/components/ui/ColorSelector";
-import { useCart } from "src/context/cart.context";
+import { useDesign } from "src/context/desgin.context";
 export default function BorderColorSelector() {
-  const { updateBorderColor, cartItem } = useCart();
+ const {updateBorderColor , designData } = useDesign();
   const onSelectColor = (color: string) => {
     updateBorderColor(color);
-  }
-  const selectedColor = cartItem?.borderColor ?? null;
+  };
+  const selectedColor = designData?.colors.border ?? null;
   return (
     <ColorSelector
       header="Bordering"

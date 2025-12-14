@@ -7,3 +7,4 @@ export { default as Orders } from "./profile/Orders";
 export { default as Design } from "./profile/Design";
 export { default as LoginPage } from "./Login";
 export { default as SignupPage } from "./Signup";
+export { default as DesignLibrary } from "./profile/DesignLibrary";

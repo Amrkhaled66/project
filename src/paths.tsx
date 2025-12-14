@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import {
   Home,
   Dashboard,
@@ -9,6 +9,7 @@ import {
   Design,
   LoginPage,
   SignupPage,
+  DesignLibrary,
 } from "./pages";
 import MainLayout from "./layouts/MainLayout";
 import DashBoardLayout from "./layouts/DashBoardLayout";
@@ -66,13 +67,13 @@ export default function AppRouter() {
               }
             />
             <Route path="user-profile" element={<UserProfile />} />
+            <Route path="design-library" element={<DesignLibrary />} />
             <Route path="orders" element={<Orders />} />
+
             <Route
-              path="desgin"
+              path="design/:id"
               element={
-                <DesignProvider>
-                  <Design />
-                </DesignProvider>
+                <DesignWithIdWrapper />
               }
             />
           </Route>
@@ -83,5 +84,15 @@ export default function AppRouter() {
         </Routes>
       </AxiosProvider>
     </BrowserRouter>
+  );
+}
+
+// Component to handle design id and pass it to DesignProvider
+function DesignWithIdWrapper() {
+  const { id } = useParams();  // Get the id from the URL using useParams
+  return (
+    <DesignProvider designId={id || ""}>  {/* Pass the id to the DesignProvider */}
+      <Design />
+    </DesignProvider>
   );
 }

@@ -39,7 +39,7 @@ export const upgrades = [
     price: 25.0,
   },
   {
-    id: "fringeBorder",
+    id: "fringe",
     name: "Fringe Border",
     description: "Add a decorative fringe to the border.",
     price: 22.0,

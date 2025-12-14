@@ -1,100 +1,106 @@
-// src/components/Profile/Dashboard/CurrentDesignCard.tsx
-import { useCart } from "src/context/cart.context";
 import { ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import priceFormmater from "src/utils/priceFormmater";
-import { initialState, CartItem } from "src/context/cart.context";
-const isInitialCart = (item: CartItem, initial: CartItem): boolean => {
-  return (
-    item.size.id === initial.size.id &&
-    item.color === initial.color &&
-    item.borderColor === initial.borderColor &&
-    item.quantity === initial.quantity &&
-    item.totalPrice === initial.totalPrice &&
-    item.designImage === initial.designImage &&
-    item.upgrades.length === 0 // نكتفي بأن القائمة فاضية
-  );
-};
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
+import { useCart } from "src/context/cart.context";
+import { useLatestDesign } from "src/hooks/queries/design.queries";
+import priceFormatter from "src/utils/priceFormmater";
 
 const CurrentDesignCard = () => {
-  const { cartItem, getCartTotal } = useCart();
+  const { cartItems } = useCart();
+  const { data: latestDesign, isLoading, isError } = useLatestDesign();
 
-  if (isInitialCart(cartItem, initialState)) {
+  // ----------------------------------
+  // Loading state
+  // ----------------------------------
+  if (isLoading) {
+    return <CurrentDesignSkeleton />;
+  }
+
+  // ----------------------------------
+  // Error / Empty
+  // ----------------------------------
+  if (isError || !latestDesign) {
     return null;
   }
 
+  // ----------------------------------
+  // Cart relation
+  // ----------------------------------
+  const cartItem = cartItems.find(
+    (item) => item.designId === latestDesign.id
+  );
+
+  const quantity = cartItem?.quantity ?? 0;
+  const totalPrice = latestDesign.price * quantity;
+
+  // ----------------------------------
+  // Render
+  // ----------------------------------
   return (
-    <div className="animate flex w-full flex-col space-y-6 rounded-xl border-2 bg-white py-4 shadow-md hover:shadow-lg">
+    <div className="flex w-full flex-col space-y-6 rounded-xl border-2 bg-white py-4 shadow-md transition hover:shadow-lg">
       {/* Header */}
       <div className="flex items-center gap-3 px-4">
         <ImageIcon />
-        <p className="text-xl font-semibold">Your Design In Progress</p>
+        <p className="text-xl font-semibold">
+          Your Design In Progress
+        </p>
       </div>
 
-      {/* Main content: image + info */}
+      {/* Content */}
       <div className="flex flex-col gap-4 px-4 md:flex-row">
-        {/* Design image */}
+        {/* Image */}
         <div className="flex-shrink-0">
-          {cartItem.designImage ? (
+          {latestDesign.previewImage ? (
             <img
-              src={cartItem.designImage}
-              alt="Design Preview"
-              className="h-32 w-auto rounded-lg border object-contain"
+              src={latestDesign.previewImage}
+              alt={latestDesign.name}
+              className="h-32 w-40 rounded-lg border object-contain"
             />
           ) : (
-            <div className="flex h-32 w-40 items-center justify-center rounded-lg border bg-gray-100 text-center text-sm text-gray-400">
-              No Design Image
+            <div className="flex h-32 w-40 items-center justify-center rounded-lg border bg-gray-100 text-sm text-gray-400">
+              No Preview
             </div>
           )}
         </div>
 
-        {/* Details */}
-        <div className="flex flex-col justify-between gap-2 text-sm">
-          <div className="grid grid-cols-2 gap-2">
+        {/* Info */}
+        <div className="flex flex-1 flex-col justify-between gap-2 text-sm">
+          <div className="space-y-1">
+            <p className="font-semibold text-base">
+              {latestDesign.name}
+            </p>
+
             <p>
-              <strong>Size:</strong> {cartItem.size.name}
+              Price:{" "}
+              <span className="font-medium">
+                {priceFormatter(latestDesign.price)}
+              </span>
             </p>
+
             <p>
-              <strong>Quantity:</strong> {cartItem.quantity}
-            </p>
-            <p className="flex items-center gap-1">
-              <strong>Blanket Color:</strong>
-              <div
-                className="size-4 rounded-full border"
-                style={{ backgroundColor: cartItem.color || "#ccc" }}
-              />
-            </p>
-            <p className="flex items-center gap-1">
-              <strong>Border:</strong>
-              <div
-                className="size-4 rounded-full border"
-                style={{ backgroundColor: cartItem.borderColor || "#ccc" }}
-              />
+              Quantity in cart:{" "}
+              <span className="font-medium">
+                {quantity}
+              </span>
             </p>
           </div>
 
-          {cartItem.upgrades.length > 0 && (
-            <div>
-              <p className="text-sm font-semibold">Upgrades:</p>
-              <ul className="ml-4 list-disc text-sm text-gray-700">
-                {cartItem.upgrades.map((up) => (
-                  <li key={up.id}>
-                    {up.name} (+{up.price} EGP)
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {quantity > 0 && (
+            <p className="pt-1 text-sm font-semibold">
+              Total:{" "}
+              <span>
+                {priceFormatter(totalPrice)}
+              </span>
+            </p>
           )}
-
-          <p className="pt-1 text-sm font-semibold">
-            Total: <span>{priceFormmater(getCartTotal())}</span>
-          </p>
         </div>
       </div>
 
-      {/* Action button */}
+      {/* Action */}
       <Link
-        to="/profile/desgin"
+        to={`/profile/design/${latestDesign.id}`}
         className="mx-auto w-[90%] rounded-xl border border-black/70 bg-black py-3 text-center text-white transition hover:bg-white hover:text-black lg:w-[80%]"
       >
         Complete Your Design
@@ -104,3 +110,42 @@ const CurrentDesignCard = () => {
 };
 
 export default CurrentDesignCard;
+
+
+const CurrentDesignSkeleton = () => {
+  return (
+    <div className="flex w-full flex-col space-y-6 rounded-xl border-2 bg-white py-4 shadow-md">
+      {/* Header */}
+      <div className="flex items-center gap-3 px-4">
+        <Skeleton circle width={24} height={24} />
+        <Skeleton width={220} height={22} />
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-col gap-4 px-4 md:flex-row">
+        {/* Image */}
+        <Skeleton
+          width={160}
+          height={128}
+          className="rounded-lg"
+        />
+
+        {/* Info */}
+        <div className="flex flex-1 flex-col justify-between gap-2">
+          <div className="space-y-2">
+            <Skeleton width="60%" height={18} />
+            <Skeleton width="40%" height={16} />
+            <Skeleton width="50%" height={16} />
+          </div>
+
+          <Skeleton width="30%" height={18} />
+        </div>
+      </div>
+
+      {/* Button */}
+      <div className="px-4">
+        <Skeleton height={48} className="rounded-xl" />
+      </div>
+    </div>
+  );
+};

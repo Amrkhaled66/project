@@ -23,7 +23,6 @@ const CheckoutForm = ({ onChangeTab }: { onChangeTab: (tab: Tab) => void }) => {
   }
 };
 
-  console.log(errors)
   return (
     <div className="space-y-6">
       <h2 className="page-header text-2xl font-semibold sm:text-3xl">

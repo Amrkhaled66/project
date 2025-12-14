@@ -1,12 +1,12 @@
 // BlanketColorSelector.tsx
 import ColorSelector from "src/components/ui/ColorSelector";
-import { useCart } from "src/context/cart.context";
+import { useDesign } from "src/context/desgin.context";
 export default function BlanketColorSelector() {
-  const { updateColor, cartItem } = useCart();
+  const { updateBlanketColor, designData } = useDesign();
   const onSelectColor = (color: string) => {
-    updateColor(color);
+    updateBlanketColor(color);
   };
-  const selectedColor = cartItem?.color ?? null;
+  const selectedColor = designData?.colors.blanket ?? null;
   return (
     <ColorSelector
       header="Sashing"

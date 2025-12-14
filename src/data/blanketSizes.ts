@@ -46,12 +46,13 @@ export const getSizeById = (id: BlanketSizeId) =>
  * ✅ Smart function to flip orientation
  * - Swaps rows ↔ cols and width ↔ height ifue
  */
-export const flipSizeOrientation = (size: BlanketSize): BlanketSize => {
+export const flipSizeOrientation = (size: BlanketSizeId): BlanketSize => {
+  const sizeDef = getSizeById(size);
   return {
-    ...size,
-    width: size.height,
-    height: size.width,
-    rows: size.cols,
-    cols: size.rows,
+    ...sizeDef,
+    width: sizeDef.height,
+    height: sizeDef.width,
+    rows: sizeDef.cols,
+    cols: sizeDef.rows,
   };
 };
