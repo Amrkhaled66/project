@@ -4,12 +4,11 @@ import { useEffect } from "react";
 import { useDesign } from "src/context/desgin.context";
 
 const EmbroideryZones = () => {
-  const { designData, update } = useDesign();
+  const { designData, update,hasDoubleCorner } = useDesign();
 
   const embroideryProps = designData.upgrades?.props?.embroidery;
   const zones = embroideryProps?.zones || [];
 
-  const hasDoubleCorner = designData.upgrades?.selected.includes("cornerstonesDouble");
 
   if (zones.length === 0) return null;
 

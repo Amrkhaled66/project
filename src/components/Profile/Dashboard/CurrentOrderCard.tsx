@@ -9,7 +9,7 @@ const CurrentOrderCard = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-fit w-full flex-col space-y-6 rounded-xl border-2 bg-white p-4 shadow-md">
+      <div className="flex h-fit animate w-full flex-col space-y-6 rounded-xl border-2 bg-white p-4 shadow-md">
         <div className="flex items-center gap-3 px-2">
           <Skeleton circle height={32} width={32} />
           <Skeleton height={20} width={180} />
@@ -86,10 +86,10 @@ const CurrentOrderCard = () => {
           </p>
         </div>
 
-        <p className="px-4 text-sm lg:text-base">
+        {/* <p className="px-4 text-sm lg:text-base">
           <span>Estimated Delivery Time: </span>
           <span>{order.estimatedDeliveryDate || "Not available yet"}</span>
-        </p>
+        </p> */}
       </div>
     </div>
   );

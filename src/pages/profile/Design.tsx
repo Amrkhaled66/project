@@ -7,9 +7,8 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { Link } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
-import MainDashButton from "src/components/ui/MainDashButton";
 import DesginArea from "src/components/Profile/Design/DesignArea";
 import priceFormmater from "src/utils/priceFormmater";
 
@@ -20,25 +19,27 @@ import BackingColorSelector from "src/components/Profile/Design/DesignWidget/Bac
 import BindingColor from "src/components/Profile/Design/DesignWidget/BindingColor";
 import BlockingColor from "src/components/Profile/Design/DesignWidget/BlockingColor";
 import QualityPreserveColor from "src/components/Profile/Design/DesignWidget/QualityPreservedColor";
-import { Navigate } from "react-router-dom";
+import Button from "src/components/ui/Button";
 
 import Upgrades from "src/components/Profile/Design/DesignWidget/Upgrades";
 import Text from "src/components/Profile/Design/DesignWidget/Text";
-import Preview from "src/components/Profile/Design/DesignWidget/Preview";
 import CornersPool from "src/components/Profile/Design/DesignWidget/CornersPool";
 import CustomPanelTab from "src/components/Profile/Design/DesignWidget/CustomPanel";
 
 import { useDesign } from "src/context/desgin.context";
-import { useCart } from "src/context/cart.context"; // only for checkout price
+import { useUpdateDesign } from "src/hooks/queries/design.queries";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
+import { toBlob } from "html-to-image";
+/* -------------------------------------------------------------------------- */
+/* Types                                                                      */
+/* -------------------------------------------------------------------------- */
 type TabId =
   | "size"
   | "colors"
   | "upgrades"
-  | "preview"
   | "text"
   | "corners"
   | "customPanel";
@@ -50,6 +51,9 @@ interface Tab {
   isActive: boolean;
 }
 
+/* -------------------------------------------------------------------------- */
+/* UI Components                                                              */
+/* -------------------------------------------------------------------------- */
 const TabButton = ({
   tab,
   isActive,
@@ -95,12 +99,16 @@ const ColorGrid = ({
   </div>
 );
 
+/* -------------------------------------------------------------------------- */
+/* Page Component                                                             */
+/* -------------------------------------------------------------------------- */
 export default function BlanketDesigner() {
-  /** ------------------------------
-   *  NEW: DESIGN CONTEXT STATE
-   *  ------------------------------ */
+  const { id: designId } = useParams<{ id: string }>();
+  const updateMutation = useUpdateDesign();
+
   const {
     designData,
+    canvasRef,
     hasBinding,
     hasBlocking,
     hasEmbroidery,
@@ -110,18 +118,18 @@ export default function BlanketDesigner() {
     handleDragEnd,
     isLoading,
     isError,
-    data,
+    hasChanged,
+    price,
   } = useDesign();
-  /** ------------------------------
-   * STILL USING CART FOR PRICE
-   * ------------------------------ */
-  const { getCartTotal } = useCart();
-  const total = getCartTotal();
+
 
   const [activeTab, setActiveTab] = useState<TabId>("size");
 
   const selectedUpgrades = designData?.upgrades?.selected ?? [];
 
+  /* ------------------------------------------------------------------------ */
+  /* Tabs                                                                     */
+  /* ------------------------------------------------------------------------ */
   const tabs = useMemo<Tab[]>(
     () => [
       {
@@ -146,12 +154,6 @@ export default function BlanketDesigner() {
         id: "upgrades",
         label: "Upgrades",
         component: <Upgrades selectedUpgrades={selectedUpgrades} />,
-        isActive: true,
-      },
-      {
-        id: "preview",
-        label: "Preview",
-        component: <Preview />,
         isActive: true,
       },
       {
@@ -194,6 +196,34 @@ export default function BlanketDesigner() {
   if (isError) {
     return <Navigate replace to="/profile/design-library" />;
   }
+
+  const generatePreviewBlob = async (): Promise<Blob | null> => {
+    if (!canvasRef?.current) return null;
+
+    try {
+      return await toBlob(canvasRef.current, {
+        type: "image/webp",
+        quality: 0.85,
+        pixelRatio: 2,
+        cacheBust: true,
+      });
+    } catch (error) {
+      console.error("Failed to generate WebP preview", error);
+      return null;
+    }
+  };
+
+  const handleUpdate = async() => {
+    const previewBlob = await generatePreviewBlob();
+    updateMutation.mutate({
+      id: designId || "",
+      payload: { designData },
+      preview: previewBlob
+    });
+  };
+  /* ------------------------------------------------------------------------ */
+  /* Render                                                                   */
+  /* ------------------------------------------------------------------------ */
   return (
     <DndContext
       sensors={sensors}
@@ -201,7 +231,7 @@ export default function BlanketDesigner() {
       onDragEnd={handleDragEnd}
     >
       <div className="mx-auto min-h-dvh space-y-4">
-        {/* ---------------- HEADER ---------------- */}
+        {/* Header */}
         {isLoading ? (
           <header className="page-header flex items-center justify-between">
             <Skeleton width={120} height={24} />
@@ -210,29 +240,34 @@ export default function BlanketDesigner() {
         ) : (
           <header className="page-header flex items-center justify-between font-bold">
             <p>
-              Total: <span>{priceFormmater(Number(designData?.price))}</span>
+              Total: <span>{priceFormmater(Number(price))}</span>
             </p>
-            {/* checkout button if needed */}
+            <Button
+              disabled={!hasChanged}
+              isLoading={updateMutation.isPending}
+              onClick={handleUpdate}
+            >
+              Save Your Updates
+            </Button>
           </header>
         )}
 
         <div className="flex flex-col gap-x-6 gap-y-4 lg:flex-row">
-          {/* ---------------- LEFT SIDE (CANVAS / DESIGN AREA) ---------------- */}
+          {/* Canvas */}
           <div className="flex-1">
             {isLoading ? (
               <div className="w-full space-y-3">
-                <Skeleton height={45} width={"60%"} borderRadius={8} />
+                <Skeleton height={45} width="60%" borderRadius={8} />
                 <Skeleton height={380} borderRadius={12} />
-                <Skeleton height={25} width={"40%"} />
+                <Skeleton height={25} width="40%" />
               </div>
             ) : (
               <DesginArea />
             )}
           </div>
 
-          {/* ---------------- RIGHT SIDE (TABS / SETTINGS PANEL) ---------------- */}
+          {/* Sidebar */}
           <aside className="sticky top-2 flex h-fit w-full flex-col space-y-4 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm lg:w-[40%]">
-            {/* Tabs Skeleton */}
             <nav className="relative flex w-full flex-wrap gap-1 border-b border-neutral-200 pb-2">
               {isLoading
                 ? [...Array(4)].map((_, i) => (
@@ -248,7 +283,6 @@ export default function BlanketDesigner() {
                   ))}
             </nav>
 
-            {/* Tab Content Skeleton */}
             {isLoading ? (
               <div className="mt-4 space-y-4">
                 <Skeleton height={35} />

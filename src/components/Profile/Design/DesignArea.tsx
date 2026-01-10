@@ -1,60 +1,84 @@
-import DesginContainer from "./DesginContainer";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { CirclePlus, FlipHorizontal } from "lucide-react";
+
+import DesginContainer from "./DesginContainer";
 import Canvas from "./Canvas/Canvas";
 import AddPhotosModel from "./AddPhotosModel";
-import { useContext, useState, useCallback } from "react";
-import { useDesign } from "src/context/desgin.context"; // Import the DesignContext
-import { useCart } from "src/context/cart.context";
-import Toast from "src/components/ui/Toast";
 
+import { useDesign } from "src/context/desgin.context";
+import Toast from "src/components/ui/Toast";
 const DesignArea = () => {
-  const { designData, update, handleDragStart, handleDragEnd } = useDesign();
+  const { designData, update } = useDesign();
 
   const items = designData?.photos?.items ?? [];
   const backingColor = designData?.colors?.backing;
 
-  const [isFlipped, setIsFlipped] = useState<boolean>(false);
+  const [isFlipped, setIsFlipped] = useState(false);
   const [isAddPhotoModelOpen, setIsAddPhotoModelOpen] = useState(false);
 
+  /* ------------------------------------------------------------------------ */
+  /* Refs                                                                    */
+  /* ------------------------------------------------------------------------ */
+  const previewDirtyRef = useRef(false);
+
+  /* ------------------------------------------------------------------------ */
+  /* Flip                                                                     */
+  /* ------------------------------------------------------------------------ */
+  
   const toggleFlipped = () => {
+    previewDirtyRef.current = true;
     setIsFlipped((prev) => !prev);
   };
 
-  // --------------------------------------------
-  // ADD ITEM
-  // --------------------------------------------
-  const handleUpdateItems = useCallback((newItems: any) => {
-    update((d) => {
-      d.photos.items = newItems;
-    });
-  }, [update]);
+  /* ------------------------------------------------------------------------ */
+  /* Update items                                                             */
+  /* ------------------------------------------------------------------------ */
+  const handleUpdateItems = useCallback(
+    (newItems: any[]) => {
+      previewDirtyRef.current = true;
+      update((d) => {
+        d.photos.items = newItems;
+      });
+    },
+    [update],
+  );
 
-  // --------------------------------------------
-  // DELETE ITEM
-  // --------------------------------------------
+  /* ------------------------------------------------------------------------ */
+  /* Delete item                                                              */
+  /* ------------------------------------------------------------------------ */
   const handleDeleteItem = (id: string) => {
+    previewDirtyRef.current = true;
     update((d) => {
       d.photos.items = d.photos.items.filter((i) => i.id !== id);
     });
   };
 
-  // --------------------------------------------
-  // Check if item exists
-  // --------------------------------------------
-  const isItemExits = (id: string) =>
-    designData?.photos?.items.some((i) => i.id === id);
+  /* ------------------------------------------------------------------------ */
+  /* Upload preview on unmount                                                */
+  /* ------------------------------------------------------------------------ */
+  // useEffect(() => {
+  //   return () => {
+  //     console.log(designData)
+  //   };
+  // }, [location.pathname]);
 
+  /* ------------------------------------------------------------------------ */
+  /* Render                                                                   */
+  /* ------------------------------------------------------------------------ */
   return (
     <DesginContainer
       className="!h-fit flex-1"
-      subHeader="Create a personalized blanket with your favorite memories"
       header="Design Your Blanket"
+      subHeader="Create a personalized blanket with your favorite memories"
     >
       <div className="flex flex-col gap-4">
-        {/* Top Toolbar */}
+        {/* Toolbar */}
         <div className="mx-auto flex items-center gap-3 rounded-md bg-neutral-100 px-3 py-2 shadow-sm">
           <button
-            onClick={() => setIsAddPhotoModelOpen(true)}
+            onClick={() => {
+              previewDirtyRef.current = true;
+              setIsAddPhotoModelOpen(true);
+            }}
             className="bg-primary/90 hover:bg-primary flex items-center gap-1 rounded-md px-3 py-1.5 text-sm text-white transition-all"
           >
             <CirclePlus className="size-4" />
@@ -87,8 +111,6 @@ const DesignArea = () => {
             items={items}
             isFlipped={isFlipped}
             onDeleteItem={handleDeleteItem}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
             onUpdateItems={handleUpdateItems}
           />
         </div>

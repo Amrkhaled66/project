@@ -1,137 +1,140 @@
-import placeholder from "../../../../public/placeholder.png";
-import {statusColors} from "src/utils/defaultSettings";
-
+import { ORDER_STATUS } from "src/utils/defaultSettings";
+import { X } from "lucide-react";
 interface Props {
   order: any;
   onClose: () => void;
 }
 
+
+/* ---------- Small Helpers ---------- */
+const Row = ({ label, value }: { label: string; value?: string | number }) => (
+  <div className="flex justify-between text-sm">
+    <span className="text-neutral-600">{label}</span>
+    <span className="font-medium">{value ?? "—"}</span>
+  </div>
+);
+
+const ColorRow = ({ label, color }: { label: string; color?: string }) =>
+  color ? (
+    <div className="flex items-center justify-between text-sm">
+      <span className="text-neutral-600">{label}</span>
+      <span
+        className="inline-block size-5 rounded-full border"
+        style={{ backgroundColor: color }}
+      />
+    </div>
+  ) : null;
+
+/* ---------- Component ---------- */
 const OrderModal = ({ order, onClose }: Props) => {
-  const cart =
-    typeof order.cartSnapshot === "string"
-      ? JSON.parse(order.cartSnapshot)
-      : order.cartSnapshot;
-
-  const placedDate = new Date(order.createdAt).toLocaleDateString();
-
+  const placedDate = order.createdAt
+    ? new Date(order.createdAt).toLocaleDateString()
+    : "—";
+    console.log(order)
 
   return (
-    <section
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="order-modal-title"
-      className="w-full max-h-[85vh] overflow-y-auto rounded-2xl border border-neutral-200 bg-white shadow-xl"
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between border-b border-neutral-200 p-6">
+    <section className="max-h-[85vh] w-full overflow-y-auto rounded-2xl border border-neutral-200 bg-white shadow-xl">
+      {/* ================= Header ================= */}
+      <div className="flex items-start justify-between border-b p-6">
         <div className="space-y-1">
-          <h2 id="order-modal-title" className="text-xl font-semibold">
-            Order #{order.id}
+          <h2 className="text-xl font-semibold">
+            Order #{order.id.slice(0, 8)}
           </h2>
+
           <p className="text-xs text-neutral-500">Placed on {placedDate}</p>
 
           <span
-            className={`inline-block rounded-full px-3 py-1 text-[11px] font-medium mt-1 capitalize ${
-              statusColors[order.status as keyof typeof statusColors] || "bg-neutral-100 text-neutral-700"
+            className={`inline-block rounded-full px-3 py-1 text-[11px] font-medium ${
+              ORDER_STATUS[
+                order.status as keyof typeof ORDER_STATUS
+              ].color
             }`}
           >
             {order.status}
           </span>
         </div>
 
-        <button
-          onClick={onClose}
-          aria-label="Close"
-          className="rounded-xl border border-neutral-200 bg-white p-2 text-neutral-700 shadow-sm hover:bg-neutral-50"
-        >
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
-            <path
-              d="M6 6l12 12M18 6L6 18"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
+        <button className="p-1 drop-shadow-xl bg-white rounded-full" onClick={onClose}>
+          <X size={16} />
         </button>
       </div>
 
-      {/* Content */}
-      <div className="p-6 space-y-8">
-        {/* Design Preview */}
-        <div>
-          <p className="mb-2 text-sm font-medium text-neutral-700">Design Preview</p>
+      {/* ================= Content ================= */}
+      <div className="space-y-6 p-6">
+        {order.items?.map((item: any, index: number) => {
+          const design = item.designSnapshot;
 
-          <div className="rounded-xl overflow-hidden border border-neutral-200 bg-neutral-50">
-            <img
-              src={order.designImage || placeholder}
-              alt="Design"
-              className="w-full object-cover max-h-72"
-            />
-          </div>
-        </div>
+          return (
+            <div
+              key={item.id}
+              className="space-y-4 rounded-xl border border-neutral-200 bg-neutral-50 p-4"
+            >
+              {/* Item Header */}
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-neutral-900">
+                  Item #{index + 1}
+                </h3>
 
-        {/* Item Details */}
-        <div>
-          <h3 className="text-sm font-semibold text-neutral-900 mb-3">Item Details</h3>
-
-          <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 space-y-3">
-            {/* Row 1 */}
-            <div className="flex justify-between text-sm text-neutral-700">
-              <span>Size</span>
-              <span className="font-medium">{cart.size?.name}</span>
-            </div>
-
-            {/* Row 2 */}
-            <div className="flex justify-between text-sm text-neutral-700">
-              <span>Quantity</span>
-              <span className="font-medium">{cart.quantity}</span>
-            </div>
-
-            {/* Border Color */}
-            {cart.borderColor && (
-              <div className="flex justify-between text-sm text-neutral-700">
-                <span>Border Color</span>
-                <span
-                  className="size-5 rounded-full border inline-block"
-                  style={{ backgroundColor: cart.borderColor }}
+                {design?.price && (
+                  <span className="text-sm font-medium text-neutral-800">
+                    ${design.price}
+                  </span>
+                )}
+              </div>
+              {/* Content */}{" "}
+              <div>
+                <img
+                  src={import.meta.env.VITE_API_URL + design?.previewImage}
+                  alt="Design"
+                  className="mx-auto aspect-square max-h-72 border"
                 />
               </div>
-            )}
+              {/* Basic Info */}
+              <div className="space-y-2">
+                <Row label="Design Name" value={design?.name} />
 
-            {/* Blanket Color */}
-            <div className="flex justify-between text-sm text-neutral-700">
-              <span>Blanket Color</span>
-              <span
-                className="size-5 rounded-full border inline-block"
-                style={{ backgroundColor: cart.color }}
-              />
-            </div>
-
-            {/* Upgrades */}
-            {cart.upgrades?.length > 0 && (
-              <div>
-                <span className="block text-sm text-neutral-700 mb-1">Upgrades</span>
-
-                <div className="flex flex-wrap gap-2">
-                  {cart.upgrades.map((u: any, idx: number) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-1 rounded-lg text-[11px] bg-neutral-200 text-neutral-800"
-                    >
-                      {u.name}
-                    </span>
-                  ))}
-                </div>
+                <Row
+                  label="Size"
+                  value={
+                    design?.canvas?.size
+                      ? `${design.canvas.size.name} (${design.canvas.size.rows}×${design.canvas.size.cols})`
+                      : undefined
+                  }
+                />
               </div>
-            )}
+              {/* Colors */}
+              <div className="space-y-2">
+                <ColorRow
+                  label="Blanket Color"
+                  color={design?.colors?.blanket}
+                />
+                <ColorRow label="Border Color" color={design?.colors?.border} />
+              </div>
+              {/* Embroidery */}
+              {design?.upgrades?.props?.embroidery?.zones?.length > 0 && (
+                <div>
+                  <p className="mb-1 text-sm font-medium">Embroidery</p>
 
-            {/* Price */}
-            <div className="flex justify-between pt-3 border-t border-neutral-200 text-sm">
-              <span className="text-neutral-700">Total Price</span>
-              <span className="font-semibold text-neutral-900">${order.totalPrice}</span>
+                  <ul className="space-y-1 text-xs text-neutral-700">
+                    {design.upgrades.props.embroidery.zones.map((zone: any) => (
+                      <li key={zone.id}>
+                        <span className="font-medium">{zone.id}</span>:{" "}
+                        {zone.text}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
-          </div>
-        </div>
+          );
+        })}
+
+        {/* Empty State */}
+        {(!order.items || order.items.length === 0) && (
+          <p className="text-sm text-neutral-500">
+            No items found in this order.
+          </p>
+        )}
       </div>
     </section>
   );

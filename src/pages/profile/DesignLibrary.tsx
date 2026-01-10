@@ -43,7 +43,7 @@ export default function DesignLibraryPage() {
   const getItemQuantity = (designId: string) =>
     cartItems.find((item) => item.designId === designId)?.quantity ?? 0;
 
-  const handleEdit = (id: string) => navigate(`/profile/design/${id}`);
+  const handleEdit = (id: string) => navigate(`/profile/design-library/${id}`);
 
   const handleAddToCart = (design: any) => {
     addOrIncrease({
@@ -77,7 +77,7 @@ export default function DesignLibraryPage() {
 
   const handleCreate = async (name: string) => {
     const res = await createDesign.mutateAsync(name);
-    navigate(`/profile/design/${res.id}`);
+    navigate(`/profile/design-library/${res.id}`);
   };
 
   // ----------------------------
@@ -164,7 +164,7 @@ export default function DesignLibraryPage() {
 
                     {design?.previewImage ? (
                       <img
-                        src={design.previewImage}
+                        src={import.meta.env.VITE_API_URL+design.previewImage}
                         alt={design.name}
                         className="h-full w-full object-contain"
                       />

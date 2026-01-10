@@ -1,49 +1,50 @@
 import { useState } from "react";
-import Table from "src/components/ui/Table";
-import { Eye } from "lucide-react";
+import { Eye, Link } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useLatestThreeOrders } from "src/hooks/queries/orders.queries";
-import { statusColors } from "src/utils/defaultSettings";
+
+import Table from "src/components/ui/Table";
 import Model from "src/components/ui/Model";
 import OrderModal from "src/components/Profile/Orders/OrderModel";
 
-const OrdersTable = () => {
-  const { data, isPending, isError } = useLatestThreeOrders();
+import { useLatestThreeOrders } from "src/hooks/queries/orders.queries";
+import { ORDER_STATUS } from "src/utils/defaultSettings";
 
+const OrdersTable = () => {
+  const { data = [], isPending, isError } = useLatestThreeOrders();
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
 
+  /* ---------------- Table Headers ---------------- */
   const headers = [
-    { key: "id", label: "Order Id" },
-    { key: "totalPrice", label: "Amount" },
-    { key: "item", label: "Item" },
+    { key: "id", label: "Order ID" },
+    { key: "amount", label: "Amount" },
     { key: "placed", label: "Placed" },
-
+    { key: "invoice Link", label: "Invoice Link" },
     {
       key: "status",
       label: "Status",
       render: (value: string) => {
         const colorClass =
-          statusColors[value as keyof typeof statusColors] ||
-          "bg-gray-100 text-gray-700";
+          (typeof value === "string" &&
+            ORDER_STATUS[value.toLowerCase() as keyof typeof ORDER_STATUS]) ||
+          "bg-neutral-100 text-neutral-700";
 
         return (
           <span
-            className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${colorClass}`}
+            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${colorClass}`}
           >
             {value}
           </span>
         );
       },
     },
-
     {
       key: "actions",
       label: "",
       render: (_: any, row: any) => (
         <button
-          className="text-gray-500 hover:text-gray-700"
-          onClick={() => setSelectedOrder(row)}
+          className="text-neutral-500 hover:text-neutral-700"
+          onClick={() => setSelectedOrder(row.original)}
         >
           <Eye size={18} />
         </button>
@@ -51,14 +52,12 @@ const OrdersTable = () => {
     },
   ];
 
-  // -------------------------------------------
-  // 🔄 Skeleton Loading
-  // -------------------------------------------
+  /* ---------------- Loading State ---------------- */
   if (isPending) {
     const skeletonRows = Array.from({ length: 3 }).map((_, i) => ({
-      id: `skeleton-${i}`, // MUST be a string/number
-      totalPrice: <Skeleton width={80} />,
-      item: <Skeleton width={90} />,
+      id: `skeleton-${i}`,
+      amount: <Skeleton width={80} />,
+      item: <Skeleton width={100} />,
       placed: <Skeleton width={80} />,
       status: <Skeleton width={90} />,
       actions: <Skeleton width={40} />,
@@ -67,9 +66,7 @@ const OrdersTable = () => {
     return <Table label="My Orders" headers={headers} data={skeletonRows} />;
   }
 
-  // -------------------------------------------
-  // ❌ Error
-  // -------------------------------------------
+  /* ---------------- Error State ---------------- */
   if (isError) {
     return (
       <div className="rounded-xl border border-neutral-200 bg-white p-6 text-center shadow-sm">
@@ -78,25 +75,28 @@ const OrdersTable = () => {
     );
   }
 
-  // -------------------------------------------
-  // 🟢 Transform data for table rows
-  // -------------------------------------------
-  const rows = (data || []).map((order: any) => {
-    const cart =
-      typeof order.cartSnapshot === "string"
-        ? JSON.parse(order.cartSnapshot)
-        : order.cartSnapshot;
+  /* ---------------- Data Mapping ---------------- */
+  const rows = data.map((order: any) => {
+    const firstItem = order.items?.[0];
+    const design = firstItem?.designSnapshot;
 
     return {
-      id: order.id,
-      totalPrice: `$${order.totalPrice}`,
-      item: cart?.size?.name || "Blanket",
-      placed: new Date(order.createdAt).toLocaleDateString(),
+      id: order.id.slice(0, 8),
+      amount: `$${order.totalPrice}`,
+      placed: order.createdAt
+        ? new Date(order.createdAt).toLocaleDateString()
+        : "—",
       status: order.status,
-      actions: order,
-      cartSnapshot: order.cartSnapshot,
-      designImage: order.designImage,
-      createdAt: order.createdAt,
+      "invoice Link":  <a
+          href={order.invoiceUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-1 underline"
+        >
+          <Link size={14} /> Invoice
+        </a>,
+      actions: null,
+      original: order,
     };
   });
 

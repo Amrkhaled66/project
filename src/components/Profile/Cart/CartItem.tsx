@@ -29,7 +29,7 @@ const CartItem = ({ item }: CartItemProps) => {
       <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md bg-gray-100">
         {item.previewImage ? (
           <img
-            src={item.previewImage}
+            src={import.meta.env.VITE_API_URL+item.previewImage}
             alt={item.name}
             className="h-full w-full object-cover"
           />

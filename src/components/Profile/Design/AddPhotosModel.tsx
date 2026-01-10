@@ -5,7 +5,7 @@ import { X, Check } from "lucide-react";
 import MainDashButton from "src/components/ui/MainDashButton";
 import Toast from "src/components/ui/Toast";
 import { useDesign } from "src/context/desgin.context";
-import { useUploads } from "src/hooks/queries/upload.queries";
+import { useMyUploads } from "src/hooks/queries/upload.queries";
 
 const ITEMS_PER_PAGE = 12;
 const API_URL = import.meta.env.VITE_API_URL;
@@ -22,7 +22,7 @@ export default function AddPhotosModel({
   // ---------------- PAGINATION ----------------
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useUploads(page, ITEMS_PER_PAGE);
+  const { data, isLoading } = useMyUploads(page, ITEMS_PER_PAGE);
   const uploads = data?.data || [];
   const pagination = data?.pagination;
 

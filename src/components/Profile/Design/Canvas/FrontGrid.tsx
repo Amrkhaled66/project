@@ -42,7 +42,6 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
     hasFringe,
     canvasRef
   } = useDesign(); // Access flags and data directly from DesignContext
-
   const { canvas, photos, colors } = designData;
   const { size } = canvas;
 
@@ -104,6 +103,7 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
     };
   }, [size?.cols, size?.rows, blanketColor]);
 
+  
   return (
     <div
       ref={canvasRef}

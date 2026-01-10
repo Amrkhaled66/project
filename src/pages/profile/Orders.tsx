@@ -29,9 +29,9 @@ const Orders = () => {
           ) : lastOrder ? (
             <div className="inline-flex items-center gap-2 rounded-xl border border-neutral-200 bg-white/70 px-4 py-2 text-sm shadow-sm backdrop-blur">
               <span className="font-medium">Last order:</span>
-              <span className="rounded-lg bg-neutral-900 px-2 py-1 text-white">
+              {/* <span className="rounded-lg bg-neutral-900 px-2 py-1 text-white">
                 #{lastOrder.id}
-              </span>
+              </span> */}
               <span className="text-neutral-500">
                 • Placed on {new Date(lastOrder.createdAt).toLocaleDateString()}
               </span>

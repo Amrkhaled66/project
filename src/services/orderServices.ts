@@ -1,13 +1,10 @@
 import { axiosPrivate } from "src/api/axios";
+import { CreateOrderPayload } from "src/types/Order";
 
 // ------------------------
 // Create New Order
 // ------------------------
-export const createOrderService = async (orderData: {
-  totalPrice: number;
-  cartSnapshot: any;
-  designImage?: string | null;
-}) => {
+export const createOrderService = async (orderData: CreateOrderPayload) => {
   const { data } = await axiosPrivate.post("/orders", orderData);
   return data;
 };

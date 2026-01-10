@@ -34,9 +34,6 @@ export interface DesignData {
     selected: string[];
     props: {
       embroidery: { zones: any };
-      blocking: { colors: string[]; random: boolean };
-      binding: { color: string | null };
-      customPanel: { text: string; image: string | null; options: any };
       cornerstones: {
         type: string | null;
         images: Record<number, string | null>;
@@ -46,10 +43,6 @@ export interface DesignData {
 
   text: {
     items: any[];
-  };
-
-  preview: {
-    image: string | null;
   };
 
   photos: {
@@ -64,6 +57,7 @@ export interface Design {
   name: string;
   previewImageUrl?: string;
   designData: DesignData;
+  price: string;
   createdAt: string;
   updatedAt: string;
 }

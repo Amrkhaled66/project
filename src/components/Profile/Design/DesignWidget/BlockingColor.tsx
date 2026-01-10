@@ -8,9 +8,9 @@ export default function BlockingColor() {
     (u) => u === "blocking",
   );
 
-  const selectedColor = Array.isArray(designData.upgrades.props.blocking.colors)
-    ? designData.upgrades.props.blocking.colors[0] || null
-    : designData.upgrades.props.blocking.colors || null;
+  const selectedColor = Array.isArray(designData.colors.blocking)
+    ? designData.colors.blocking[0] || null
+    : designData.colors.blocking || null;
 
   const onSelectColor = (color: string) => {
     updateBlocking([color], false);

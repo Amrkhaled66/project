@@ -12,4 +12,11 @@ export const axiosPrivate = axios.create({
   withCredentials: true,
 });
 
+export const axiosAdmin = axios.create({
+  baseURL: import.meta.env.VITE_ADMIN_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 export default axiosInstance;

@@ -1,13 +1,14 @@
 import { useLatestOrder } from "src/hooks/queries/orders.queries";
 import placeholder from "../../../../public/placeholder.png";
 import Skeleton from "react-loading-skeleton";
-import {
-  PackageSearch 
-} from "lucide-react";
-import { steps } from "src/utils/defaultSettings";
+import { PackageSearch } from "lucide-react";
+import { ORDER_STATUS } from "src/utils/defaultSettings";
+import priceFormmater from "src/utils/priceFormmater";
+
 export default function TrackOrder() {
   const { data: order, isLoading } = useLatestOrder();
 
+  /* -------------------- LOADING -------------------- */
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
@@ -18,68 +19,89 @@ export default function TrackOrder() {
     );
   }
 
-if (!order) {
-  return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm flex flex-col items-center text-center gap-3">
-      <div className="rounded-full bg-neutral-100 p-4">
-        <PackageSearch className="h-8 w-8 text-neutral-500" />
+  /* -------------------- EMPTY -------------------- */
+  if (!order) {
+    return (
+      <div className="flex flex-col items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-6 text-center shadow-sm">
+        <div className="rounded-full bg-neutral-100 p-4">
+          <PackageSearch className="h-8 w-8 text-neutral-500" />
+        </div>
+
+        <h2 className="text-lg font-semibold">No Active Orders</h2>
+
+        <p className="max-w-[240px] text-sm text-neutral-600">
+          Once you place an order, you’ll be able to track it here in real time.
+        </p>
       </div>
+    );
+  }
 
-      <h2 className="text-lg font-semibold">No Active Orders</h2>
+  /* -------------------- DERIVED DATA -------------------- */
 
-      <p className="text-sm text-neutral-600 max-w-[240px]">
-        Once you place an order, you’ll be able to track it here in real time.
-      </p>
-    </div>
+  // Build steps dynamically from enum UI map
+  const steps = Object.entries(ORDER_STATUS)
+    .filter(([status]) => !["CANCELLED", "REFUNDED"].includes(status))
+    .sort(([, a], [, b]) => a.stepOrder - b.stepOrder)
+    .map(([key, config]) => ({
+      key,
+      ...config,
+    }));
+
+  // Current step index
+  const currentIndex = steps.findIndex(
+    (step) => step.key === order.status
   );
-}
 
-  const cart =
-    typeof order.cartSnapshot === "string"
-      ? JSON.parse(order.cartSnapshot)
-      : order.cartSnapshot;
+  // Progress percentage
+  const progress =
+    currentIndex >= 0
+      ? (currentIndex / (steps.length - 1)) * 100
+      : 0;
 
-  const index = steps.findIndex((s) => s.key === order.status);
-  const progress = (index / (steps.length - 1)) * 100;
-
-  const image = order.designImage || placeholder;
+  const image =
+    order.items[0]?.designSnapshot?.previewImage || placeholder;
 
   const placedDate = new Date(order.createdAt).toLocaleDateString();
 
+  const statusUI = ORDER_STATUS[order.status];
+
+  /* -------------------- UI -------------------- */
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white shadow-sm">
-      {/* HEADER */}
+      {/* ==================== HEADER ==================== */}
       <div className="flex items-start gap-4 p-6">
         <img
-          src={image}
+          src={import.meta.env.VITE_API_URL + image}
           alt="Order"
-          className="size-20 rounded-xl object-cover ring-1 ring-neutral-200"
+          className="size-20 object-cover ring-1 ring-neutral-200"
         />
 
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h2 className="truncate text-xl font-semibold">Order #{order.id}</h2>
+            <h2 className="truncate  font-semibold">
+              Order #{order.id}
+            </h2>
 
-            <span
-              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                order.status === "delivered"
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-blue-100 text-blue-700"
-              }`}
-            >
-              {steps[index]?.label}
-            </span>
+            {statusUI && (
+              <span
+                className={`rounded-full px-2.5 py-0.5 text-center text-[10px] text-nowrap font-medium ${statusUI.color}`}
+              >
+                {statusUI.label}
+              </span>
+            )}
           </div>
 
-          <p className="mt-1 text-sm text-neutral-600">Placed on {placedDate}</p>
+          <p className="mt-1 text-sm text-neutral-600">
+            Placed on {placedDate}
+          </p>
 
           <p className="mt-2 line-clamp-2 text-sm text-neutral-800">
-            {cart?.size?.name} — ${order.totalPrice}
+            {priceFormmater(order.totalPrice)}
           </p>
         </div>
       </div>
 
-      {/* TRACKER */}
+      {/* ==================== TRACKER ==================== */}
       <div className="border-t border-neutral-200 p-6">
         <h3 className="mb-4 text-sm font-semibold text-neutral-900">
           Order Status
@@ -87,28 +109,28 @@ if (!order) {
 
         <div className="relative ml-10 h-72">
           {/* Static Track */}
-          <div className="absolute left-0 top-3 bottom-3 w-0.5 bg-neutral-200" />
+          <div className="absolute top-3 bottom-3 left-0 w-0.5 bg-neutral-200" />
 
           {/* Progress Fill */}
           <div
-            className="absolute left-0 top-3 w-0.5 bg-neutral-900 rounded-full transition-all"
+            className="absolute top-3 left-0 w-0.5 rounded-full bg-neutral-900 transition-all"
             style={{ height: `${progress}%` }}
           />
 
           {/* Steps */}
           <ul
-            className="grid h-full relative"
+            className="relative grid h-full"
             style={{ gridTemplateRows: `repeat(${steps.length}, 1fr)` }}
           >
             {steps.map((step, i) => {
               const Icon = step.icon;
-              const done = i <= index;
+              const done = i <= currentIndex;
 
               return (
                 <li key={step.key} className="relative">
                   {/* Dot */}
                   <span
-                    className={`absolute -left-[7px] top-1/2 size-3.5 -translate-y-1/2 rounded-full ring-2 ring-white shadow ${
+                    className={`absolute top-1/2 -left-[7px] size-3.5 -translate-y-1/2 rounded-full shadow ring-2 ring-white ${
                       done ? "bg-neutral-900" : "bg-neutral-300"
                     }`}
                   />
@@ -135,7 +157,7 @@ if (!order) {
                       </span>
 
                       <span className="text-xs text-neutral-500">
-                        {i === index
+                        {i === currentIndex
                           ? "In progress"
                           : done
                           ? "Completed"
@@ -150,7 +172,7 @@ if (!order) {
         </div>
       </div>
 
-      {/* FOOTER */}
+      {/* ==================== FOOTER ==================== */}
       <div className="flex items-center justify-between border-t bg-neutral-50 p-4">
         <p className="text-xs text-neutral-600">Need help?</p>
 
@@ -161,4 +183,3 @@ if (!order) {
     </div>
   );
 }
-

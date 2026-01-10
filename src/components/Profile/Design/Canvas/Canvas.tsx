@@ -22,36 +22,21 @@ const Canvas = forwardRef<
     items: GridItemType[];
     onUpdateItems: (items: GridItemType[]) => void;
     onDeleteItem: (id: string) => void;
-    onDragStart?: (event: any) => void;
-    onDragEnd: (event: any) => void;
     isFlipped: boolean;
   }
 >(
   (
-    { items, onUpdateItems, onDeleteItem, onDragStart, onDragEnd, isFlipped },
+    { items, onUpdateItems, onDeleteItem, isFlipped },
     ref,
   ) => {
-    const canvasRef = useRef<HTMLDivElement | null>(null);
 
     // Load from Design Context
     const { designData } = useDesign();
-    const blanketColor = designData.colors?.blanket;
-    const borderColor = designData.colors?.border;
+
     const backingColor = designData.colors?.backing;
     const bindingColor = designData.colors?.binding;
 
     const { rows, cols } = designData?.canvas?.size || { rows: 2, cols: 3 };
-
-    // -------------------------------------------------------
-    // SNAPSHOT EXPORT
-    // -------------------------------------------------------
-    useImperativeHandle(ref, () => ({
-      async getSnapshot() {
-        const htmlToImage = await import("html-to-image");
-        if (!canvasRef.current) return "";
-        return await htmlToImage.toJpeg(canvasRef.current, { quality: 0.85 });
-      },
-    }));
 
     // -------------------------------------------------------
     // FIXED: Reset items ONLY when canvas size REALLY changes

@@ -1,43 +1,39 @@
 import {
-  LayoutDashboard,
-  UploadCloud,
-  Hand,
-  User,
-  ShoppingCart,
-  ClipboardList,
   LucideIcon,
   ChevronLeft,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { useAuth } from "src/context/auth.context";
-interface MenuItem {
+
+export interface SidebarMenuItem {
   icon: LucideIcon;
   label: string;
   path: string;
 }
 
-interface DashboardSidebarProps {
+export interface SidebarUserInfo {
+  name?: string;
+  email?: string;
+}
+
+interface ReusableSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onOpen: () => void;
-}
-const menuItems: MenuItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: UploadCloud, label: "Uploads", path: "/uploads" },
-  { icon: Hand, label: "Design", path: "/design-library" },
-  { icon: User, label: "Profile", path: "/user-profile" },
-  { icon: ShoppingCart, label: "Cart", path: "/cart" },
-  { icon: ClipboardList, label: "Orders", path: "/orders" },
-];
 
-const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
+  menuItems: SidebarMenuItem[];
+  basePath: string;
+
+  userInfo?: SidebarUserInfo;
+}
+
+const ReusableSidebar: React.FC<ReusableSidebarProps> = ({
   isOpen,
   onClose,
   onOpen,
+  menuItems,
+  basePath,
+  userInfo,
 }) => {
-  const {
-    authData: { user },
-  } = useAuth();
   return (
     <>
       {/* Overlay for mobile */}
@@ -55,27 +51,34 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         } space-y-9 lg:translate-x-0`}
       >
         <div className="sticky top-0 h-fit space-y-5 py-5">
+          {/* Header */}
           <div className="flex items-center">
             <div className="flex items-center gap-3 px-2">
               <div className="bg-primary size-9 rounded-xl"></div>
-              {isOpen && (
+
+              {isOpen && userInfo && (
                 <div className="border-l pl-1">
-                  <p className="text-lg font-medium">{user?.firstName}</p>
-                  <p className="text-xs font-light">{user?.email}</p>
+                  <p className="text-lg font-medium">{userInfo.name}</p>
+                  <p className="text-xs font-light">{userInfo.email}</p>
                 </div>
               )}
             </div>
+
             <div>
               <button
                 onClick={isOpen ? onClose : onOpen}
                 className="translate-x-3 rounded-lg bg-gray-500 px-1 py-1"
               >
                 <ChevronLeft
-                  className={`animate size-5 text-white ${!isOpen && "rotate-180"}`}
+                  className={`animate size-5 text-white ${
+                    !isOpen && "rotate-180"
+                  }`}
                 />
               </button>
             </div>
           </div>
+
+          {/* Menu */}
           <div className="h-full overflow-y-auto pb-4">
             <ul className="space-y-2 font-medium">
               {menuItems.map((item) => {
@@ -84,13 +87,16 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                 return (
                   <li key={item.path}>
                     <NavLink
-                      to={`/profile${item.path}`}
-                      onClick={window.innerWidth < 1024 ? onClose : () => {}}
+                      to={`${basePath}${item.path}`}
+                      onClick={window.innerWidth < 1024 ? onClose : undefined}
                       className={({ isActive }) =>
-                        `${isActive ? "bg-white text-black hover:bg-white/90" : "text-strokeFont"} group flex items-center gap-x-3 rounded-ss-3xl rounded-es-3xl p-2 ps-5 transition-colors hover:bg-gray-100`
+                        `${isActive
+                          ? "bg-white text-black hover:bg-white/90"
+                          : "text-strokeFont"
+                        } group flex items-center gap-x-3 rounded-ss-3xl rounded-es-3xl p-2 ps-5 transition-colors hover:bg-gray-100`
                       }
                     >
-                      <Icon size={20} className={""} />
+                      <Icon size={20} />
                       {isOpen && <span className="ml-3">{item.label}</span>}
                     </NavLink>
                   </li>
@@ -104,4 +110,4 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   );
 };
 
-export default DashboardSidebar;
+export default ReusableSidebar;

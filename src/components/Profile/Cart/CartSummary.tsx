@@ -1,42 +1,52 @@
+import { useMemo } from "react";
 import priceFormatter from "src/utils/priceFormmater";
-import MainDashButton from "src/components/ui/MainDashButton";
 import { useCart } from "src/context/cart.context";
+import { useStates } from "src/hooks/queries/staticData.queries";
 
-const SHIPPING_PRICE = 10;
+type Props = {
+  state: string; // state code (e.g. "CA", "NY")
+};
 
-const CartSummary = () => {
-  const { cartItems, getCartTotal } = useCart();
+const CartSummary = ({ state }: Props) => {
+  const { cartItems, cartTotal,  } = useCart();
+  const { data: states = [], isLoading } = useStates();
 
-  const cartTotal = getCartTotal();
-  const total = cartTotal + (cartItems.length > 0 ? SHIPPING_PRICE : 0);
+  /* ---------------- SHIPPING FEE ---------------- */
+  const shippingFee = useMemo(() => {
+    if (!state || cartItems.length === 0 || isLoading) return 0;
 
+    const selectedState = states.find(
+      (s: { name: string; shippingFee: number }) => s.name === state,
+    );
+
+    return selectedState?.shippingFee ?? 0;
+  }, [state, states, cartItems.length, isLoading]);
+
+  /* ---------------- TOTAL ---------------- */
+  const totalWithShipping = useMemo(() => {
+    return cartTotal() + shippingFee;
+  }, [cartTotal, shippingFee]);
+
+  /* ---------------- UI ---------------- */
   return (
-    <aside className="bg-mainProfile/10 rounded-lg border border-neutral-200 p-4 lg:sticky lg:top-6">
+    <aside className="rounded-lg border border-neutral-200 bg-mainProfile/10 p-4 lg:sticky lg:top-6">
       <h2 className="mb-3 text-xl font-semibold">Order Summary</h2>
 
       <div className="space-y-2 text-sm">
-        <p className="flex justify-between">
+        <div className="flex justify-between">
           <span>Subtotal</span>
-          <span>{priceFormatter(cartTotal)}</span>
-        </p>
+          <span>{priceFormatter(cartTotal())}</span>
+        </div>
 
-        <p className="flex justify-between">
+        <div className="flex justify-between">
           <span>Shipping</span>
-          <span>
-            {cartItems.length > 0
-              ? priceFormatter(SHIPPING_PRICE)
-              : priceFormatter(0)}
-          </span>
-        </p>
+          <span>{priceFormatter(shippingFee)}</span>
+        </div>
 
-        <p className="flex justify-between border-t pt-2 text-lg font-semibold">
+        <div className="flex justify-between border-t pt-2 text-lg font-semibold">
           <span>Total</span>
-          <span>{priceFormatter(total)}</span>
-        </p>
-      </div>
-
-      <div className="pt-4">
-        <MainDashButton text="Checkout" disabled={cartItems.length === 0} />
+          <span>{priceFormatter(totalWithShipping)}</span>
+        </div>
       </div>
     </aside>
   );

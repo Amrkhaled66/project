@@ -1,19 +1,27 @@
-import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
-import { useUploads, useDeleteUpload } from "src/hooks/queries/upload.queries";
 import Pagination from "src/components/ui/Pagination";
 
-const ITEMS_PER_PAGE = 9;
+type UploadedImagesListProps = {
+  uploads: any[];
+  isLoading: boolean;
+  isError: boolean;
+  page: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
+  onDelete: (id: string) => void;
+  isUserList?: boolean;
+};
 
-export default function UploadedImagesList() {
-  const [page, setPage] = useState(1);
-
-  const { data, isLoading, isError } = useUploads(page, ITEMS_PER_PAGE);
-  const deleteMutation = useDeleteUpload();
-
-  const uploads = data?.data || [];
-  const pagination = data?.pagination;
-
+export default function UploadedImagesList({
+  uploads,
+  isLoading,
+  isError,
+  page,
+  pageCount,
+  onPageChange,
+  onDelete,
+  isUserList,
+}: UploadedImagesListProps) {
   return (
     <div className="w-full space-y-4 rounded-2xl border border-neutral-200 bg-white/70 p-6 shadow-md backdrop-blur-sm">
       <header>
@@ -46,23 +54,27 @@ export default function UploadedImagesList() {
 
       {!isLoading && !isError && (
         <>
-          {/* Scrollable Grid */}
+          {/* Grid */}
           <div className="max-h-[420px] overflow-auto pr-1">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {uploads.map((img: any) => (
+            <div
+              className={` ${isUserList ? "grid-cols-3" : "grid-cols-6"} grid flex-wrap gap-4`}
+            >
+              {uploads.map((img) => (
                 <div
                   key={img.id}
-                  className="group relative overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-all hover:shadow-lg"
+                  className={
+                    "group relative overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-all hover:shadow-lg"
+                  }
                 >
                   <img
                     src={import.meta.env.VITE_API_URL + img.imageUrl}
-                    className="h-36 w-full object-cover transition duration-300 group-hover:scale-105"
+                    className="object-fit aspect-square size-full object-cover transition duration-300 group-hover:scale-105"
                     alt="uploaded"
                   />
 
                   <button
-                    onClick={() => deleteMutation.mutate(img.id)}
-                    className="absolute right-2 top-2 rounded-full bg-white/95 p-1.5 text-red-600 opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100 hover:scale-110"
+                    onClick={() => onDelete(img.id)}
+                    className="absolute top-2 right-2 rounded-full bg-white/95 p-1.5 text-red-600 opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100 hover:scale-110"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -79,9 +91,9 @@ export default function UploadedImagesList() {
 
           {/* Pagination */}
           <Pagination
-            pageCount={pagination?.pages || 1}
+            pageCount={pageCount}
             currentPage={page}
-            onPageChange={setPage}
+            onPageChange={onPageChange}
           />
         </>
       )}

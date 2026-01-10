@@ -6,15 +6,15 @@ import {
   getShippingOrderService,
 } from "src/services/orderServices";
 
+import { CreateOrderPayload } from "src/types/Order";
+
 export const useCreateOrder = () => {
   return useMutation({
-    mutationFn: (orderData: {
-      totalPrice: number;
-      cartSnapshot: any;
-      designImage?: string | null;
-    }) => createOrderService(orderData),
+    mutationFn: (payload: CreateOrderPayload) =>
+      createOrderService(payload),
   });
 };
+
 
 export const useLatestThreeOrders = () => {
   return useQuery({
@@ -22,13 +22,7 @@ export const useLatestThreeOrders = () => {
     queryFn: async () => {
       const data = await getLatestThreeOrdersService();
 
-      return data.map((order: any) => ({
-        ...order,
-        cartSnapshot:
-          typeof order.cartSnapshot === "string"
-            ? JSON.parse(order.cartSnapshot)
-            : order.cartSnapshot,
-      }));
+      return data.data;
     },
   });
 };

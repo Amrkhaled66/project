@@ -15,18 +15,25 @@ export function useForm<T extends Record<string, any>>({
   const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
-    const { name, value } = e.target;
+    const { name, value } = e?.target || e;
     setValues((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     const validationErrors = validate ? validate(values) : {};
     setErrors(validationErrors);
 
-    if (Object.keys(validationErrors).length === 0) {
+    // if (Object.keys(validationErrors).length === 0) {
+    //   console.log(validationErrors)
+    //   await onSubmit(values);
+    // }
+
+    const hasErrors = Object.values(validationErrors).some((error) => error);
+
+    if (!hasErrors) {
       await onSubmit(values);
     }
   };

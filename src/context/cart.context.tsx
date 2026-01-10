@@ -12,17 +12,15 @@ export type CartItem = {
   designId: string;
   name: string;
   previewImage: string | null;
-  price: number;          // ✅ added (required for totals)
+  price: number; // ✅ added (required for totals)
   quantity: number;
+
 };
 
 type CartContextType = {
   cartItems: CartItem[];
 
-  addOrIncrease: (
-    item: Omit<CartItem, "quantity">,
-    quantity?: number
-  ) => void;
+  addOrIncrease: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
 
   decreaseQuantity: (designId: string) => void;
   updateQuantity: (designId: string, quantity: number) => void;
@@ -30,9 +28,9 @@ type CartContextType = {
   removeFromCart: (designId: string) => void;
   clearCart: () => void;
 
-  getCartTotal: () => number;
   getItemTotal: (designId: string) => number;
   getCartCount: () => number;
+  cartTotal: () => number;
 };
 
 // ----------------------------------
@@ -46,9 +44,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>(
-    () => getCart() || []
-  );
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => getCart() || []);
 
   // Persist cart
   useEffect(() => {
@@ -60,18 +56,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   // ----------------------------------
   const addOrIncrease = (
     item: Omit<CartItem, "quantity">,
-    quantity: number = 1
+    quantity: number = 1,
   ) => {
     setCartItems((prev) => {
-      const index = prev.findIndex(
-        (i) => i.designId === item.designId
-      );
+      const index = prev.findIndex((i) => i.designId === item.designId);
 
       if (index !== -1) {
         return prev.map((i, idx) =>
-          idx === index
-            ? { ...i, quantity: i.quantity + quantity }
-            : i
+          idx === index ? { ...i, quantity: i.quantity + quantity } : i,
         );
       }
 
@@ -83,11 +75,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     setCartItems((prev) =>
       prev
         .map((i) =>
-          i.designId === designId
-            ? { ...i, quantity: i.quantity - 1 }
-            : i
+          i.designId === designId ? { ...i, quantity: i.quantity - 1 } : i,
         )
-        .filter((i) => i.quantity > 0)
+        .filter((i) => i.quantity > 0),
     );
   };
 
@@ -98,15 +88,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       return prev.map((i) =>
-        i.designId === designId ? { ...i, quantity } : i
+        i.designId === designId ? { ...i, quantity } : i,
       );
     });
   };
 
   const removeFromCart = (designId: string) => {
-    setCartItems((prev) =>
-      prev.filter((i) => i.designId !== designId)
-    );
+    setCartItems((prev) => prev.filter((i) => i.designId !== designId));
   };
 
   const clearCart = () => {
@@ -118,25 +106,22 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   // Calculations
   // ----------------------------------
   const getItemTotal = (designId: string) => {
-    const item = cartItems.find(
-      (i) => i.designId === designId
-    );
+    const item = cartItems.find((i) => i.designId === designId);
     return item ? item.price * item.quantity : 0;
   };
 
-  const getCartTotal = () => {
+  const cartTotal = () => {
     return cartItems.reduce(
       (total, item) => total + item.price * item.quantity,
-      0
+      0,
     );
   };
 
+
   const getCartCount = () => {
-    return cartItems.reduce(
-      (count, item) => count + item.quantity,
-      0
-    );
+    return cartItems.reduce((count, item) => count + item.quantity, 0);
   };
+  
 
   // ----------------------------------
   // Provider
@@ -150,9 +135,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         updateQuantity,
         removeFromCart,
         clearCart,
-        getCartTotal,
         getItemTotal,
         getCartCount,
+        cartTotal
       }}
     >
       {children}

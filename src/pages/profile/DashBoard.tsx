@@ -24,7 +24,6 @@ const item: Variants = {
 };
 
 const DashBoard = () => {
-  const name = "Hares";
   const isLoading = false;
   const {
     authData: { user },
@@ -65,7 +64,7 @@ const DashBoard = () => {
               title="Start New Design"
               subTitle="Begin creating your next custom blanket."
               buttonText="Create Design"
-              to={"/profile/desgin"}
+              to={"/profile/design-library"}
             />
           </motion.div>
 

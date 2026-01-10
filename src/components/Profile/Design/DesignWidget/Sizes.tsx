@@ -11,7 +11,6 @@ import { RotateCcw } from "lucide-react";
 
 const Sizes = () => {
   const { designData, updateCanvasSize } = useDesign();
-
   // Correct: selectedName is actually ID
   const { name: selectedId, cols, rows } = designData.canvas?.size ||{ name: "Lap", cols: 2, rows: 3 };
 

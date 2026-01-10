@@ -19,19 +19,13 @@ type Block = {
 };
 
 const Blocking: React.FC<BlockingProps> = ({ rows, cols, gridRef }) => {
-  const { designData } = useDesign();
+  const { designData,hasBlocking } = useDesign();
 
-  const blockingUpgrade = designData.upgrades?.props?.blocking;
 
   // ✅ memoized colors (NO new array each render)
-  const colors = useMemo<string[]>(() => {
-    if (blockingUpgrade?.colors?.length) {
-      return blockingUpgrade.colors;
-    }
-    return ["#000"];
-  }, [blockingUpgrade?.colors]);
+  const colors = designData.colors.blocking.colors;
 
-  const isRandom = blockingUpgrade?.random ?? false;
+  const isRandom = hasBlocking && colors.length > 1 && designData.colors.blocking.random;
 
   const [intersections, setIntersections] = useState<Block[]>([]);
 
@@ -104,7 +98,7 @@ const Blocking: React.FC<BlockingProps> = ({ rows, cols, gridRef }) => {
     return () => resizeObserver.disconnect();
   }, [rows, cols, getColor]); // ✅ STABLE deps only
 
-  if (!blockingUpgrade) return null;
+  if (!hasBlocking) return null;
 
   return (
     <>

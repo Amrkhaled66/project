@@ -14,7 +14,7 @@ const fonts = [
 ];
 
 const Text = () => {
-  const { designData, update } = useDesign(); // ✅ استخدام الـ Design Context
+  const { designData, update, hasDoubleCorner } = useDesign(); // ✅ استخدام الـ Design Context
 
   // embroidery zones come from designData
   const existingZones = designData.upgrades?.props?.embroidery?.zones || [];
@@ -93,64 +93,70 @@ const Text = () => {
               </h4>
 
               <div className="space-y-3 px-1">
-                {existingZones.map((z: any) => (
-                  <motion.div
-                    key={z.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    transition={{ type: "spring", stiffness: 250, damping: 18 }}
-                    className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md"
-                  >
-                    <div className="space-y-1">
-                      <p className="flex items-center gap-2 text-sm font-bold text-gray-900">
-                        {z.text}
-                        <span
-                          className="h-3 w-3 rounded-full border border-gray-300"
-                          style={{ backgroundColor: z.color }}
-                        />
-                      </p>
+                {existingZones.map((z: any) => {
+                  return (
+                    <motion.div
+                      key={z.id}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 250,
+                        damping: 18,
+                      }}
+                      className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md"
+                    >
+                      <div className="space-y-1">
+                        <p className="flex items-center gap-2 text-sm font-bold text-gray-900">
+                          {z.text}
+                          <span
+                            className="h-3 w-3 rounded-full border border-gray-300"
+                            style={{ backgroundColor: z.color }}
+                          />
+                        </p>
 
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-md bg-gray-100 px-2 py-1 text-xs text-gray-600">
-                          {z.font}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-md bg-gray-100 px-2 py-1 text-xs text-gray-600">
+                            {z.font}
+                          </span>
 
-                        <span className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-600">
-                          {
-                            embroideryZones.find((zone) => zone.id === z.id)
-                              ?.label
-                          }
-                        </span>
+                          <span className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-600">
+                            {
+                              embroideryZones.find((zone) => zone.id === z.id)
+                                ?.label
+                            }
+                          </span>
+                        </div>
+
+                        {z.notes && (
+                          <p className="text-xs text-gray-500 italic">
+                            "{z.notes}"
+                          </p>
+                        )}
                       </div>
 
-                      {z.notes && (
-                        <p className="text-xs text-gray-500 italic">
-                          "{z.notes}"
-                        </p>
-                      )}
-                    </div>
+                      <div className="flex gap-3">
+                        <motion.button
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => handleEdit(z)}
+                          className="rounded-lg bg-blue-50 p-2 text-blue-600 hover:bg-blue-100"
+                        >
+                          <Pencil size={17} />
+                        </motion.button>
 
-                    <div className="flex gap-3">
-                      <motion.button
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => handleEdit(z)}
-                        className="rounded-lg bg-blue-50 p-2 text-blue-600 hover:bg-blue-100"
-                      >
-                        <Pencil size={17} />
-                      </motion.button>
-
-                      <motion.button
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => handleDelete(z.id)}
-                        className="rounded-lg bg-red-50 p-2 text-red-600 hover:bg-red-100"
-                      >
-                        <Trash2 size={17} />
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                ))}
+                        <motion.button
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => handleDelete(z.id)}
+                          className="rounded-lg bg-red-50 p-2 text-red-600 hover:bg-red-100"
+                        >
+                          <Trash2 size={17} />
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </motion.div>
           </AnimatePresence>
@@ -180,6 +186,12 @@ const Text = () => {
 
             <div className="grid grid-cols-3 gap-2">
               {embroideryZones.map((zone) => {
+                if (
+                  (hasDoubleCorner && zone.id.includes("center")) ||
+                  existingZones.find((z: any) => z.id === zone.id)
+                )
+                  return;
+
                 const active = selectedZone === zone.id;
 
                 return (

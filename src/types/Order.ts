@@ -1,25 +1,18 @@
-interface Upgrade {
-  name: string;
-  price: string;
-}
-
-interface Item {
-  size: string;
-  color: string | null;
-  borderColor: string | null;
-  upgrades: Upgrade[];
+export type OrderItemPayload = {
+  designId: string;
   quantity: number;
-  totalPrice: number;
-  designImage: string | null;
-}
-interface Order {
-  id: number;
-  date: string;
-  amount: string;
-  item: Item;
-  paymentOption: string;
-  status: "Completed" | "In Progress" | "Pending" | "Cancelled";
-  estimatedDeliveryDate: string;
-}
+};
 
-export default Order;
+export type OrderAddressPayload = {
+  state: string;
+  city: string;
+  addressLine1: string;
+  addressLine2?: string;
+  zip: string;
+  phone: string;
+};
+
+export type CreateOrderPayload = {
+  items: OrderItemPayload[];
+  address: OrderAddressPayload;
+};

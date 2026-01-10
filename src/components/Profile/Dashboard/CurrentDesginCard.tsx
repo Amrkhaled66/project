@@ -21,16 +21,19 @@ const CurrentDesignCard = () => {
   // ----------------------------------
   // Error / Empty
   // ----------------------------------
-  if (isError || !latestDesign) {
+  if (isError) {
     return null;
+  }
+
+  if(!latestDesign) {
+    console.log("first")
+    return <NoDesignCTA />;
   }
 
   // ----------------------------------
   // Cart relation
   // ----------------------------------
-  const cartItem = cartItems.find(
-    (item) => item.designId === latestDesign.id
-  );
+  const cartItem = cartItems.find((item) => item.designId === latestDesign.id);
 
   const quantity = cartItem?.quantity ?? 0;
   const totalPrice = latestDesign.price * quantity;
@@ -43,9 +46,7 @@ const CurrentDesignCard = () => {
       {/* Header */}
       <div className="flex items-center gap-3 px-4">
         <ImageIcon />
-        <p className="text-xl font-semibold">
-          Your Design In Progress
-        </p>
+        <p className="text-xl font-semibold">Your Design In Progress</p>
       </div>
 
       {/* Content */}
@@ -54,7 +55,7 @@ const CurrentDesignCard = () => {
         <div className="flex-shrink-0">
           {latestDesign.previewImage ? (
             <img
-              src={latestDesign.previewImage}
+              src={import.meta.env.VITE_API_URL + latestDesign.previewImage}
               alt={latestDesign.name}
               className="h-32 w-40 rounded-lg border object-contain"
             />
@@ -68,31 +69,25 @@ const CurrentDesignCard = () => {
         {/* Info */}
         <div className="flex flex-1 flex-col justify-between gap-2 text-sm">
           <div className="space-y-1">
-            <p className="font-semibold text-base">
-              {latestDesign.name}
-            </p>
+            <p className="text-base font-semibold">{latestDesign.name}</p>
 
             <p>
-              Price:{" "}
+              Price:
               <span className="font-medium">
                 {priceFormatter(latestDesign.price)}
               </span>
             </p>
 
             <p>
-              Quantity in cart:{" "}
-              <span className="font-medium">
-                {quantity}
-              </span>
+              Quantity in cart:
+              <span className="font-medium">{quantity}</span>
             </p>
           </div>
 
           {quantity > 0 && (
             <p className="pt-1 text-sm font-semibold">
-              Total:{" "}
-              <span>
-                {priceFormatter(totalPrice)}
-              </span>
+              Total:
+              <span>{priceFormatter(totalPrice)}</span>
             </p>
           )}
         </div>
@@ -111,7 +106,6 @@ const CurrentDesignCard = () => {
 
 export default CurrentDesignCard;
 
-
 const CurrentDesignSkeleton = () => {
   return (
     <div className="flex w-full flex-col space-y-6 rounded-xl border-2 bg-white py-4 shadow-md">
@@ -124,11 +118,7 @@ const CurrentDesignSkeleton = () => {
       {/* Content */}
       <div className="flex flex-col gap-4 px-4 md:flex-row">
         {/* Image */}
-        <Skeleton
-          width={160}
-          height={128}
-          className="rounded-lg"
-        />
+        <Skeleton width={160} height={128} className="rounded-lg" />
 
         {/* Info */}
         <div className="flex flex-1 flex-col justify-between gap-2">
@@ -146,6 +136,33 @@ const CurrentDesignSkeleton = () => {
       <div className="px-4">
         <Skeleton height={48} className="rounded-xl" />
       </div>
+    </div>
+  );
+};
+
+
+const NoDesignCTA = () => {
+  return (
+    <div className="flex w-full flex-col items-center justify-center gap-4 rounded-xl border-2 bg-white py-10 shadow-md">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+        <ImageIcon className="h-7 w-7 text-gray-500" />
+      </div>
+
+      <div className="space-y-1 text-center">
+        <p className="text-lg font-semibold">
+          No Design Yet
+        </p>
+        <p className="text-sm text-gray-500">
+          Start creating your first design and bring it to life.
+        </p>
+      </div>
+
+      <Link
+        to="/profile/design-library"
+        className="mt-2 rounded-xl bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
+      >
+        Create New Design
+      </Link>
     </div>
   );
 };
