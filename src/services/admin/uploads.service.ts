@@ -11,7 +11,7 @@ export const uploadImagesService = async (
     form.append("userId", userId); // admin only
   }
 
-  const res = await axiosAdmin.post("/admin/uploads", form, {
+  const res = await axiosAdmin.post("/uploads", form, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
@@ -23,7 +23,7 @@ export const getUserUploadsService = async (
   limit: number,
   userId?: string
 ) => {
-  const res = await axiosAdmin.get("/admin/uploads", {
+  const res = await axiosAdmin.get("/uploads", {
     params: {
       page,
       limit,
@@ -38,7 +38,7 @@ export const deleteUploadService = async (
   id: string,
   userId?: string
 ) => {
-  const res = await axiosAdmin.delete(`/admin/uploads/${id}`, {
+  const res = await axiosAdmin.delete(`/uploads/${id}`, {
     params: {
       ...(userId && { userId }),
     },

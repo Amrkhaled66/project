@@ -5,7 +5,9 @@ import {
   uploadImagesService,
   getUserUploadsService,
   deleteUploadService
-} from "src/services/upload.service";
+} from "src/services/admin/uploads.service";
+
+ 
 
 export const useAdminUploads = (
   page: number,
