@@ -17,6 +17,7 @@ const CartItem = ({ item }: CartItemProps) => {
 
   const totalPrice = item.price * item.quantity;
 
+  console.log(item)
   return (
     <motion.div
       layout

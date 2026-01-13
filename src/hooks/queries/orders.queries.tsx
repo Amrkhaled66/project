@@ -18,7 +18,7 @@ export const useCreateOrder = () => {
 
 export const useLatestThreeOrders = () => {
   return useQuery({
-    queryKey: ["orders", "latest3"],
+    queryKey: ["latest3"],
     queryFn: async () => {
       const data = await getLatestThreeOrdersService();
 

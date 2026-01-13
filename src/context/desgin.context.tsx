@@ -270,7 +270,6 @@ export const DesignProvider = ({
       /* ---------------- Side Effects ---------------- */
 
       switch (id) {
-        /* ---- CUSTOM PANEL ---- */
         case "customPanels": {
           if (isActive) {
             d.photos.items = d.photos.items.filter(
@@ -322,13 +321,7 @@ export const DesignProvider = ({
         }),
       updateQualityPreserveColor: (c) =>
         update((d) => (d.colors.qualityPreserve = c)),
-      toggleUpgrade: (id) =>
-        update((d) => {
-          const list = d.upgrades.selected;
-          d.upgrades.selected = list.includes(id)
-            ? list.filter((x) => x !== id)
-            : [...list, id];
-        }),
+      toggleUpgrade:toggleUpgrade,
       updateCanvasSize: (sizeObj: sizeObj) =>
         update((d) => {
           d.canvas.size = structuredClone(sizeObj);

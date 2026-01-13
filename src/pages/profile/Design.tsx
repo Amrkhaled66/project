@@ -20,6 +20,7 @@ import BindingColor from "src/components/Profile/Design/DesignWidget/BindingColo
 import BlockingColor from "src/components/Profile/Design/DesignWidget/BlockingColor";
 import QualityPreserveColor from "src/components/Profile/Design/DesignWidget/QualityPreservedColor";
 import Button from "src/components/ui/Button";
+import GoastButton from "src/components/ui/GoastButton";
 
 import Upgrades from "src/components/Profile/Design/DesignWidget/Upgrades";
 import Text from "src/components/Profile/Design/DesignWidget/Text";
@@ -28,7 +29,10 @@ import CustomPanelTab from "src/components/Profile/Design/DesignWidget/CustomPan
 
 import { useDesign } from "src/context/desgin.context";
 import { useUpdateDesign } from "src/hooks/queries/design.queries";
+import { useCart } from "src/context/cart.context";
+import { useDesign as useDesignQuery } from "src/hooks/queries/design.queries";
 
+import Toast from "src/components/ui/Toast";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -105,6 +109,7 @@ const ColorGrid = ({
 export default function BlanketDesigner() {
   const { id: designId } = useParams<{ id: string }>();
   const updateMutation = useUpdateDesign();
+  const { data, isLoading: isDesignLoading } = useDesignQuery(designId);
 
   const {
     designData,
@@ -122,6 +127,7 @@ export default function BlanketDesigner() {
     price,
   } = useDesign();
 
+  const { addOrIncrease } = useCart();
 
   const [activeTab, setActiveTab] = useState<TabId>("size");
 
@@ -130,6 +136,20 @@ export default function BlanketDesigner() {
   /* ------------------------------------------------------------------------ */
   /* Tabs                                                                     */
   /* ------------------------------------------------------------------------ */
+
+
+  const handleAddToCart = (design: any) => {
+    console.log(data)
+    addOrIncrease({
+      designId: designId || " ",
+      name: data?.name || "",
+      previewImage: data?.previewImageUrl ?? null,
+      price: Number(data?.price) || 0,
+    });
+
+    Toast("Added to cart", "success", "#d1fae5", "top-end");
+  };
+
   const tabs = useMemo<Tab[]>(
     () => [
       {
@@ -213,12 +233,12 @@ export default function BlanketDesigner() {
     }
   };
 
-  const handleUpdate = async() => {
+  const handleUpdate = async () => {
     const previewBlob = await generatePreviewBlob();
     updateMutation.mutate({
       id: designId || "",
       payload: { designData },
-      preview: previewBlob
+      preview: previewBlob,
     });
   };
   /* ------------------------------------------------------------------------ */
@@ -242,13 +262,18 @@ export default function BlanketDesigner() {
             <p>
               Total: <span>{priceFormmater(Number(price))}</span>
             </p>
-            <Button
-              disabled={!hasChanged}
-              isLoading={updateMutation.isPending}
-              onClick={handleUpdate}
-            >
-              Save Your Updates
-            </Button>
+            <div className="flex gap-4">
+              <Button
+                disabled={!hasChanged}
+                isLoading={updateMutation.isPending}
+                onClick={handleUpdate}
+              >
+                Save Your Updates
+              </Button>
+              <GoastButton className="px-3" onClick={() => handleAddToCart(designData)}>
+                Add To Cart
+              </GoastButton>
+            </div>
           </header>
         )}
 
