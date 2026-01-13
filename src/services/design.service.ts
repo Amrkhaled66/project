@@ -44,7 +44,7 @@ export const DesignService = {
   id: string,
   payload: {
     name?: string;
-    designData?: DesignData;
+    designData?: Partial<DesignData>;
   },
   preview: Blob | null
 ): Promise<{ success: boolean; price: number }> => {
@@ -62,6 +62,7 @@ export const DesignService = {
     formData.append("preview", preview, "preview.webp");
   }
 
+  console.log(payload)
   const res = await axiosPrivate.put<{ success: boolean; price: number }>(
     `${BASE_URL}/${id}`,
     formData,

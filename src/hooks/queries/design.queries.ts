@@ -49,17 +49,18 @@ export const useUpdateDesign = () => {
       id: string;
       payload: {
         name?: string;
-        designData?: DesignData;
+        designData?: Partial<DesignData>;
       };
       preview?: Blob | null;
     }
   >({
-    mutationFn: ({ id, payload, preview }) => DesignService.update(id, payload, preview ?? null),
+    mutationFn: ({ id, payload, preview }) =>
+      DesignService.update(id, payload, preview ?? null),
     onSuccess: (_, variables) => {
       // 🚨 THIS IS THE IMPORTANT LINE
-      // queryClient.invalidateQueries({
-      //   queryKey: ["design", variables.id],
-      // });
+      queryClient.invalidateQueries({
+        queryKey: ["design", variables.id],
+      });
     },
   });
 };

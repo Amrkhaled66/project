@@ -18,6 +18,9 @@ import { DesignData, sizeObj } from "src/types/design.types";
 import { arrayMove } from "@dnd-kit/sortable";
 import { toBlob } from "html-to-image";
 
+import { createDesignUpdater } from "src/utils/designUpdater";
+import { calculateDesignPrice } from "src/utils/calcDesignPrice";
+
 /* -------------------------------------------------------------------------- */
 /* Context                                                                     */
 /* -------------------------------------------------------------------------- */
@@ -114,27 +117,56 @@ export const DesignProvider = ({
   const isDragging = useRef(false);
   const canvasRef = useRef<HTMLDivElement | null>(null);
 
-  const saveTimeout = useRef<NodeJS.Timeout | null>(null);
-  const lastSnapshot = useRef<string>("");
+  const updaterRef = useRef<ReturnType<
+    typeof createDesignUpdater<DesignData & Record<string, unknown>>
+  > | null>(null);
+
   /* ------------------------------------------------------------------------ */
-  /* Reset hydration when designId changes                                    */
+  /* Reset on designId change                                                  */
   /* ------------------------------------------------------------------------ */
   useEffect(() => {
     hydrated.current = false;
+    updaterRef.current = null;
     setDesignData(initialDesignState);
-    lastSnapshot.current = "";
   }, [designId]);
 
   /* ------------------------------------------------------------------------ */
-  /* Hydration from API (SAFE)                                                 */
+  /* Preview Generator                                                        */
+  /* ------------------------------------------------------------------------ */
+  const generatePreviewBlob = async (): Promise<Blob | null> => {
+    if (!canvasRef.current) return null;
+
+    try {
+      return await toBlob(canvasRef.current, {
+        type: "image/webp",
+        quality: 0.85,
+        pixelRatio: 2,
+        cacheBust: true,
+      });
+    } catch {
+      return null;
+    }
+  };
+
+  /* ------------------------------------------------------------------------ */
+  /* Hydration from API                                                        */
   /* ------------------------------------------------------------------------ */
   useEffect(() => {
     if (!data?.designData) return;
     if (hydrated.current) return;
 
-    console.log(data.designData, "fetched");
-    setDesignData(structuredClone(data.designData));
-    lastSnapshot.current = JSON.stringify(data.designData);
+    const cloned = structuredClone(data.designData);
+    setDesignData(cloned);
+
+    updaterRef.current = createDesignUpdater<
+      DesignData & Record<string, unknown>
+    >({
+      designId,
+      mutate: updateMutation.mutate,
+      generatePreview: generatePreviewBlob,
+    });
+
+    updaterRef.current.hydrate(cloned as any);
     hydrated.current = true;
   }, [data?.designData, designId]);
 
@@ -150,74 +182,20 @@ export const DesignProvider = ({
   }, []);
 
   /* ------------------------------------------------------------------------ */
-  /* Autosave (JSON ONLY, debounced)                                          */
+  /* Autosave (debounced, diff-based)                                          */
   /* ------------------------------------------------------------------------ */
-
-  const generatePreviewBlob = async (): Promise<Blob | null> => {
-    if (!canvasRef?.current) return null;
-
-    try {
-      return await toBlob(canvasRef.current, {
-        type: "image/webp",
-        quality: 0.85,
-        pixelRatio: 2,
-        cacheBust: true,
-      });
-    } catch (error) {
-      console.error("Failed to generate WebP preview", error);
-      return null;
-    }
-  };
   useEffect(() => {
-    const runAsync = async () => {
-      if (!hydrated.current) return;
-
-      const snapshot = JSON.stringify(designData);
-      if (snapshot === lastSnapshot.current) return;
-
-      if (saveTimeout.current) clearTimeout(saveTimeout.current);
-
-      const previewBlob = await generatePreviewBlob();
-      saveTimeout.current = setTimeout(() => {
-        updateMutation.mutate({
-          id: designId,
-          payload: { designData },
-          preview: previewBlob,
-        });
-
-        lastSnapshot.current = snapshot;
-      }, 5000);
-    };
-
-    runAsync();
-
-    return () => {
-      if (saveTimeout.current) clearTimeout(saveTimeout.current);
-    };
-  }, [designData, designId, updateMutation]);
+    if (!hydrated.current) return;
+    updaterRef.current?.schedule(designData as any);
+  }, [designData]);
 
   /* ------------------------------------------------------------------------ */
-  /* Manual flush save (used before navigation)                               */
+  /* Manual flush save                                                         */
   /* ------------------------------------------------------------------------ */
-
   const flushSave = useCallback(async () => {
     if (!hydrated.current) return;
-
-    console.log("previewBlob");
-    if (saveTimeout.current) {
-      clearTimeout(saveTimeout.current);
-      saveTimeout.current = null;
-    }
-    // const previewBlob = await generatePreviewBlob();
-
-    await updateMutation.mutateAsync({
-      id: designId,
-      payload: { designData },
-      // preview: previewBlob,
-    });
-
-    lastSnapshot.current = JSON.stringify(designData);
-  }, [designData, designId, updateMutation]);
+    await updaterRef.current?.flush(designData as any);
+  }, [designData]);
 
   /* ------------------------------------------------------------------------ */
   /* Drag handlers                                                            */
@@ -228,7 +206,6 @@ export const DesignProvider = ({
 
   const handleDragEnd = (event: any) => {
     isDragging.current = false;
-
     const { active, over } = event;
     if (!over) return;
 
@@ -254,36 +231,6 @@ export const DesignProvider = ({
     }
   };
 
-  const snapshot = JSON.stringify(designData);
-  const hasChanged = snapshot !== lastSnapshot.current;
-
-  const toggleUpgrade = (id: string) =>
-    update((d) => {
-      const selected = d.upgrades.selected;
-      const isActive = selected.includes(id);
-
-      /* ---------------- Toggle ---------------- */
-      d.upgrades.selected = isActive
-        ? selected.filter((x) => x !== id)
-        : [...selected, id];
-
-      /* ---------------- Side Effects ---------------- */
-
-      switch (id) {
-        case "customPanels": {
-          if (isActive) {
-            d.photos.items = d.photos.items.filter(
-              (p) => p.type !== "custom_panael",
-            );
-          }
-          break;
-        }
-
-        default:
-          break;
-      }
-    });
-
   /* ------------------------------------------------------------------------ */
   /* Flags                                                                    */
   /* ------------------------------------------------------------------------ */
@@ -291,6 +238,7 @@ export const DesignProvider = ({
     ["cornerstonesSingle", "cornerstonesDouble"].includes(u),
   );
 
+  const hasChanged = updaterRef.current?.hasPendingChanges(designData as any) || false;
   /* ------------------------------------------------------------------------ */
   /* Context value                                                            */
   /* ------------------------------------------------------------------------ */
@@ -301,7 +249,7 @@ export const DesignProvider = ({
       update,
       isLoading,
       isError,
-      price: data?.price ?? "0",
+      price: calculateDesignPrice(designData).toString(),
       canvasRef,
 
       handleDragStart,
@@ -321,7 +269,13 @@ export const DesignProvider = ({
         }),
       updateQualityPreserveColor: (c) =>
         update((d) => (d.colors.qualityPreserve = c)),
-      toggleUpgrade:toggleUpgrade,
+      toggleUpgrade: (id) =>
+        update((d) => {
+          const selected = d.upgrades.selected;
+          d.upgrades.selected = selected.includes(id)
+            ? selected.filter((x) => x !== id)
+            : [...selected, id];
+        }),
       updateCanvasSize: (sizeObj: sizeObj) =>
         update((d) => {
           d.canvas.size = structuredClone(sizeObj);

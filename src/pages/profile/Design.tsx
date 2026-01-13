@@ -31,7 +31,6 @@ import { useDesign } from "src/context/desgin.context";
 import { useUpdateDesign } from "src/hooks/queries/design.queries";
 import { useCart } from "src/context/cart.context";
 import { useDesign as useDesignQuery } from "src/hooks/queries/design.queries";
-
 import Toast from "src/components/ui/Toast";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -108,12 +107,10 @@ const ColorGrid = ({
 /* -------------------------------------------------------------------------- */
 export default function BlanketDesigner() {
   const { id: designId } = useParams<{ id: string }>();
-  const updateMutation = useUpdateDesign();
   const { data, isLoading: isDesignLoading } = useDesignQuery(designId);
 
   const {
     designData,
-    canvasRef,
     hasBinding,
     hasBlocking,
     hasEmbroidery,
@@ -125,6 +122,7 @@ export default function BlanketDesigner() {
     isError,
     hasChanged,
     price,
+    flushSave,
   } = useDesign();
 
   const { addOrIncrease } = useCart();
@@ -137,9 +135,8 @@ export default function BlanketDesigner() {
   /* Tabs                                                                     */
   /* ------------------------------------------------------------------------ */
 
-
   const handleAddToCart = (design: any) => {
-    console.log(data)
+    console.log(data);
     addOrIncrease({
       designId: designId || " ",
       name: data?.name || "",
@@ -217,29 +214,9 @@ export default function BlanketDesigner() {
     return <Navigate replace to="/profile/design-library" />;
   }
 
-  const generatePreviewBlob = async (): Promise<Blob | null> => {
-    if (!canvasRef?.current) return null;
-
-    try {
-      return await toBlob(canvasRef.current, {
-        type: "image/webp",
-        quality: 0.85,
-        pixelRatio: 2,
-        cacheBust: true,
-      });
-    } catch (error) {
-      console.error("Failed to generate WebP preview", error);
-      return null;
-    }
-  };
-
-  const handleUpdate = async () => {
-    const previewBlob = await generatePreviewBlob();
-    updateMutation.mutate({
-      id: designId || "",
-      payload: { designData },
-      preview: previewBlob,
-    });
+  const handleUpdate = () => {
+    console.log(hasChanged);
+    flushSave();
   };
   /* ------------------------------------------------------------------------ */
   /* Render                                                                   */
@@ -263,16 +240,21 @@ export default function BlanketDesigner() {
               Total: <span>{priceFormmater(Number(price))}</span>
             </p>
             <div className="flex gap-4">
-              <Button
-                disabled={!hasChanged}
-                isLoading={updateMutation.isPending}
-                onClick={handleUpdate}
-              >
+              {/* <Button disabled={!hasChanged} onClick={handleUpdate}>
                 Save Your Updates
-              </Button>
-              <GoastButton className="px-3" onClick={() => handleAddToCart(designData)}>
+              </Button> */}
+              <Button
+                className="px-3"
+                onClick={() => handleAddToCart(designData)}
+              >
                 Add To Cart
-              </GoastButton>
+              </Button>
+              {/* <GoastButton
+                className="px-3"
+                onClick={() => handleAddToCart(designData)}
+              >
+                Add To Cart
+              </GoastButton> */}
             </div>
           </header>
         )}

@@ -13,6 +13,7 @@ const Button = ({
   onClick?:()=>void;
   disabled?: boolean;
 }) => {
+  console.log(disabled,"ddd")
   return (
     <button
       type={type}
