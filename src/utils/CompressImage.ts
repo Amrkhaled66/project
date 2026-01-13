@@ -1,76 +1,60 @@
+// compressImage.ts
 const compressImage = (
   file: File,
-  maxWidth: number = 800,
-  maxHeight: number = 800,
-  quality: number = 0.85
-): Promise<string> => {
+  maxWidth = 1200,
+  maxHeight = 1200,
+  quality = 0.65,
+): Promise<File> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    
-    reader.onload = (e) => {
+
+    reader.onload = () => {
       const img = new Image();
-      
+
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d', { willReadFrequently: false });
-        
-        if (!ctx) {
-          reject(new Error('Could not get canvas context'));
-          return;
-        }
-        
-        // Calculate new dimensions while maintaining aspect ratio
         let { width, height } = img;
-        
-        if (width > height) {
-          if (width > maxWidth) {
-            height = (height * maxWidth) / width;
-            width = maxWidth;
-          }
-        } else {
-          if (height > maxHeight) {
-            width = (width * maxHeight) / height;
-            height = maxHeight;
-          }
+
+        if (width > height && width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        } else if (height > maxHeight) {
+          width = (width * maxHeight) / height;
+          height = maxHeight;
         }
-        
+
+        const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-        
-        // Draw image
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject("Canvas context error");
+
         ctx.drawImage(img, 0, 0, width, height);
-        
-        // Try WebP first (best compression + transparency support)
-        try {
-          const webpDataUrl = canvas.toDataURL('image/webp', quality);
-          
-          // Check if WebP is supported (some older browsers may not support it)
-          if (webpDataUrl.startsWith('data:image/webp')) {
-            resolve(webpDataUrl);
-            return;
-          }
-        } catch (e) {
-          // WebP not supported, fallback below
-        }
-        
-        // Fallback: Check for transparency and use PNG or JPEG
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const hasTransparency = imageData.data.some((_, i) => 
-          i % 4 === 3 && imageData.data[i] < 255
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return reject("Compression failed");
+
+            const compressedFile = new File(
+              [blob],
+              file.name.replace(/\.(png|jpe?g)$/i, ".webp"),
+              { type: blob.type },
+            );
+
+            resolve(compressedFile);
+          },
+          "image/webp",
+          quality,
         );
-        
-        const mimeType = hasTransparency ? 'image/png' : 'image/jpeg';
-        const compressedDataUrl = canvas.toDataURL(mimeType, quality);
-        
-        resolve(compressedDataUrl);
       };
-      
-      img.onerror = () => reject(new Error('Failed to load image'));
-      img.src = e.target?.result as string;
+
+      img.onerror = reject;
+      img.src = reader.result as string;
     };
-    
-    reader.onerror = () => reject(new Error('Failed to read file'));
+
+    reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 };
+
 export default compressImage;

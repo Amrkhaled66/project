@@ -95,7 +95,7 @@ const CurrentDesignCard = () => {
 
       {/* Action */}
       <Link
-        to={`/profile/design/${latestDesign.id}`}
+        to={`/profile/design-library/${latestDesign.id}`}
         className="mx-auto w-[90%] rounded-xl border border-black/70 bg-black py-3 text-center text-white transition hover:bg-white hover:text-black lg:w-[80%]"
       >
         Complete Your Design

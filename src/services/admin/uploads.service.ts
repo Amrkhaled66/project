@@ -1,14 +1,20 @@
 import { axiosAdmin } from "src/api/axios";
+import compressImage from "src/utils/CompressImage";
 
 export const uploadImagesService = async (
   files: File[],
   userId?: string
 ) => {
+  // 🔹 Compress all images here
+  const compressedFiles = await Promise.all(
+    files.map((file) => compressImage(file))
+  );
+
   const form = new FormData();
-  files.forEach((file) => form.append("files", file));
+  compressedFiles.forEach((file) => form.append("files", file));
 
   if (userId) {
-    form.append("userId", userId); // admin only
+    form.append("userId", userId);
   }
 
   const res = await axiosAdmin.post("/uploads", form, {
@@ -17,6 +23,7 @@ export const uploadImagesService = async (
 
   return res.data;
 };
+
 
 export const getUserUploadsService = async (
   page: number,
