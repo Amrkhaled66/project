@@ -55,7 +55,7 @@ export interface Design {
   id: string;
   userId: number;
   name: string;
-  previewImageUrl?: string;
+  previewImage?: string;
   designData: DesignData;
   price: string;
   createdAt: string;

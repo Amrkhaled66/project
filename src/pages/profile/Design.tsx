@@ -135,12 +135,12 @@ export default function BlanketDesigner() {
   /* Tabs                                                                     */
   /* ------------------------------------------------------------------------ */
 
-  const handleAddToCart = (design: any) => {
+  const handleAddToCart = () => {
     console.log(data);
     addOrIncrease({
       designId: designId || " ",
       name: data?.name || "",
-      previewImage: data?.previewImageUrl ?? null,
+      previewImage: data?.previewImage ?? null,
       price: Number(data?.price) || 0,
     });
 
@@ -245,7 +245,7 @@ export default function BlanketDesigner() {
               </Button> */}
               <Button
                 className="px-3"
-                onClick={() => handleAddToCart(designData)}
+                onClick={() => handleAddToCart()}
               >
                 Add To Cart
               </Button>
