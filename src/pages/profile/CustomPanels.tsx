@@ -37,7 +37,7 @@ export default function CustomPanels() {
     try {
       await uploadMutation.mutateAsync({
         files: [mergedFile],
-        type: "CUSTOME_PANAEL",
+        type: "CUSTOME_PANEL",
       });
 
       Toast(

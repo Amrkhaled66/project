@@ -39,8 +39,8 @@ function GridItem({
       style={style}
       {...attributes}
       {...listeners}
-      className={`group  aspect-square cursor-grab overflow-hidden ${
-        isDragging ? "opacity-80 scale-[1.02]" : "transition hover:shadow-md"
+      className={`group aspect-square cursor-grab overflow-hidden ${
+        isDragging ? "scale-[1.02] opacity-80" : "transition hover:shadow-md"
       }`}
     >
       <img
@@ -49,7 +49,7 @@ function GridItem({
         draggable={false}
         loading="lazy"
         decoding="async"
-        className="pointer-events-none h-full w-full select-none object-cover"
+        className="pointer-events-none h-full w-full object-cover select-none"
         style={{ willChange: isDragging ? "transform" : "auto" }}
       />
 
@@ -58,7 +58,7 @@ function GridItem({
           e.stopPropagation();
           onDelete(id);
         }}
-        className="absolute right-1 top-1 rounded-full bg-black/50 p-1 text-white opacity-0 sm:opcatity-100 transition hover:bg-red-600 group-hover:opacity-100"
+        className="sm:opcatity-100 absolute top-1 right-1 rounded-full bg-black/50 p-1 text-white opacity-0 transition group-hover:opacity-100 hover:bg-red-600"
       >
         <X className="size-4" />
       </button>

@@ -23,7 +23,7 @@ export default function UploadedImagesList({
   isUserList,
 }: UploadedImagesListProps) {
   return (
-    <div className="w-full space-y-4 rounded-2xl border border-neutral-200 bg-white/70 p-6 shadow-md backdrop-blur-sm">
+    <div className="w-full space-y-4 ">
       <header>
         <h2 className="text-lg font-semibold text-neutral-900">
           Uploaded Photos
@@ -67,7 +67,7 @@ export default function UploadedImagesList({
                   }
                 >
                   <img
-                    src={ img.imageUrl}
+                    src={img.imageUrl}
                     className="object-fit aspect-square size-full object-cover transition duration-300 group-hover:scale-105"
                     alt="uploaded"
                   />

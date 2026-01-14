@@ -19,10 +19,10 @@ const Tabs = ({
   const active = tabs.find((t) => t.key === activeTab);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 border bg-white/70 p-6 shadow-md backdrop-blur-md rounded-2xl">
       {/* Tabs Header */}
       <div
-        className="rounded-xl border bg-white"
+        className="rounded-xl border-2 bg-white"
         style={{ borderColor: "#f3f4f6" }}
       >
         <div className="flex gap-1 p-1">

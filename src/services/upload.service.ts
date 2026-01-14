@@ -2,11 +2,12 @@ import { axiosPrivate } from "src/api/axios";
 import compressImage from "src/utils/CompressImage";
 
 export const uploadImagesService = async (files: File[], type: string) => {
-  const form = new FormData();  form.append("type", type);
+  const form = new FormData();
+  form.append("type", type);
 
   // 🔹 Compress all images here
   const compressedFiles = await Promise.all(
-    files.map((file) => compressImage(file))
+    files.map((file) => compressImage(file)),
   );
   compressedFiles.forEach((file) => form.append("files", file));
 
@@ -28,7 +29,7 @@ export const getUserUploadsService = async (
       page,
       limit,
       ...(userId && { userId }),
-      type:type,
+      type: type,
     },
   });
 

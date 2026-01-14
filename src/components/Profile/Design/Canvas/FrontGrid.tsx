@@ -51,7 +51,7 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
     binding: bindingColor,
   } = colors;
   const items = photos.items;
-
+console.log(items)
   const totalCells = size?.rows * size?.cols;
   const gridRef = useRef<HTMLDivElement | null>(null);
 

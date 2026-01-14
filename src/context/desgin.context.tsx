@@ -257,7 +257,7 @@ export const DesignProvider = ({
         case "customPanels": {
           if (isActive) {
             d.photos.items = d.photos.items.filter(
-              (p) => p.type !== "custom_panael",
+              (p) => p.type !== "custom_PANEL",
             );
           }
           break;
@@ -278,6 +278,12 @@ export const DesignProvider = ({
               );
             }
           }
+
+        case "quiltedPreserve":{
+          if(!isActive){
+            d.upgrades.selected.push("binding")
+          }
+        }
 
           break;
 

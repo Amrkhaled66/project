@@ -2,24 +2,21 @@ import { useState } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import Pagination from "src/components/ui/Pagination";
 import { useDesign } from "src/context/desgin.context";
-import { useMyUploads } from "src/hooks/queries/upload.queries";
 
 const ITEMS_PER_PAGE = 16;
-const API_URL = import.meta.env.VITE_API_URL;
-
+import { useMyCorners } from "src/hooks/queries/upload.queries";
 export default function CornersPool() {
   // ---------------- PAGINATION ----------------
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useMyUploads(page, ITEMS_PER_PAGE);
+  const { data, isLoading } = useMyCorners(page, ITEMS_PER_PAGE);
   const uploads = data?.data || [];
   const pagination = data?.pagination;
 
   const { designData, update } = useDesign();
 
   // assigned corner images
-  const cornerImages =
-    designData.upgrades?.props?.cornerstones?.images || {};
+  const cornerImages = designData.upgrades?.props?.cornerstones?.images || {};
   const cornerEntries = Object.entries(cornerImages);
 
   const deleteCornerImage = (index: number) => {
@@ -31,11 +28,7 @@ export default function CornersPool() {
   };
 
   if (isLoading) {
-    return (
-      <div className="p-3 text-sm text-neutral-500">
-        Loading images…
-      </div>
-    );
+    return <div className="p-3 text-sm text-neutral-500">Loading images…</div>;
   }
 
   return (
@@ -44,13 +37,11 @@ export default function CornersPool() {
       <div className="flex flex-wrap items-center gap-4 rounded-lg bg-neutral-200 p-3">
         {uploads.map((img: any) => {
           const foundEntry = cornerEntries.find(
-            ([, value]) => value === img.imageUrl
+            ([, value]) => value === img.imageUrl,
           );
 
           const isSelected = !!foundEntry;
-          const selectedCornerIndex = foundEntry
-            ? Number(foundEntry[0])
-            : null;
+          const selectedCornerIndex = foundEntry ? Number(foundEntry[0]) : null;
 
           return (
             <CornerImage
@@ -109,7 +100,7 @@ function CornerImage({
         ref={setNodeRef}
         {...(!isSelected ? listeners : {})}
         {...attributes}
-        src={ src}
+        src={src}
         style={style}
         className={`size-16 rounded border object-cover shadow-sm ${
           isSelected ? "pointer-events-none" : "cursor-grab"

@@ -1,15 +1,21 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import useUploadForm from "src/hooks/useUploadForm";
 import FilePreviewGrid from "./FilePreviewGrid";
 import DropZone from "./Dropzone";
+import FormSelect from "src/components/ui/FormSelect";
+
+type UploadType = "panel" | "corner";
 
 type UploadFormProps = {
   maxFiles?: number;
   accept?: string;
   isLoading: boolean;
-  onUpload: (files: File[], clear: () => void) => Promise<void>;
+  onUpload: (
+    files: File[],
+    type: UploadType,
+    clear: () => void
+  ) => Promise<void>;
 };
-
 
 export default function UploadForm({
   maxFiles = 150,
@@ -17,6 +23,10 @@ export default function UploadForm({
   isLoading,
   onUpload,
 }: UploadFormProps) {
+  /* ---------------- Type ---------------- */
+  const [type, setType] = useState<UploadType>("panel");
+
+  /* ---------------- Upload Hook ---------------- */
   const {
     files,
     error,
@@ -34,6 +44,7 @@ export default function UploadForm({
 
   const disabled = files.length === 0 || isLoading;
 
+  /* ---------------- Handlers ---------------- */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     addFiles(e.target.files);
     e.currentTarget.value = "";
@@ -42,9 +53,10 @@ export default function UploadForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (disabled) return;
-    await onUpload(files, clear);
+    await onUpload(files, type, clear);
   };
 
+  /* ---------------- Previews ---------------- */
   const previews = useMemo(
     () =>
       files.map((f) => ({
@@ -68,14 +80,25 @@ export default function UploadForm({
     >
       {/* HEADER */}
       <header className="space-y-1">
-        <h2 className="text-xl font-semibold">
-          Upload from Your Device
-        </h2>
+        <h2 className="text-xl font-semibold">Upload from Your Device</h2>
         <p className="text-sm text-neutral-500">
-          Upload up to{" "}
-          <span className="font-medium">{maxFiles}</span> photos.
+          Upload up to <span className="font-medium">{maxFiles}</span> photos.
         </p>
       </header>
+
+      {/* TYPE SELECT */}
+      <FormSelect
+        label="Image Type"
+        name="type"
+        required
+        value={type}
+        onChange={(e) => setType(e.target.value as UploadType)}
+        options={[
+          { label: "Panel", value: "panel" },
+          { label: "Corner", value: "corner" },
+        ]}
+        placeholder="Select image type"
+      />
 
       {/* DROPZONE */}
       <DropZone
@@ -91,6 +114,7 @@ export default function UploadForm({
         remaining={remaining}
       />
 
+      {/* ERROR */}
       {error && (
         <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}

@@ -16,7 +16,14 @@ export const useMyUploads = (page: number, limit: number) => {
 export const useMyCustomPanels = (page: number, limit: number) => {
   return useQuery({
     queryKey: ["custom-panels", "me", page, limit],
-    queryFn: () => getUserUploadsService(1, 100, undefined, "CUSTOME_PANAEL"),
+    queryFn: () => getUserUploadsService(page, limit, undefined, "CUSTOME_PANEL"),
+  });
+};
+
+export const useMyCorners = (page: number, limit: number) => {
+  return useQuery({
+    queryKey: ["corners", "me", page, limit],
+    queryFn: () => getUserUploadsService(page, limit, undefined, "CORNER"),
   });
 };
 
@@ -34,8 +41,6 @@ export const useUploadMyImages = () => {
   });
 };
 
-
-
 export const useDeleteMyUpload = () => {
   const qc = useQueryClient();
 
@@ -43,12 +48,7 @@ export const useDeleteMyUpload = () => {
     mutationFn: (uploadId: string) => deleteUploadService(uploadId),
 
     onSuccess: () => {
-      Toast(
-        "Deleted successfully!",
-        "success",
-        "#ecfdf5",
-        "top",
-      );
+      Toast("Deleted successfully!", "success", "#ecfdf5", "top");
 
       // refresh uploads & custom panels
       qc.invalidateQueries({ queryKey: ["uploads", "me"] });
@@ -56,12 +56,7 @@ export const useDeleteMyUpload = () => {
     },
 
     onError: (err: any) => {
-      Toast(
-        err?.message || "Failed to delete item",
-        "error",
-        "#fee2e2",
-        "top",
-      );
+      Toast(err?.message || "Failed to delete item", "error", "#fee2e2", "top");
     },
   });
 };

@@ -1,24 +1,38 @@
 import { useState } from "react";
 import UploadForm from "src/components/Profile/Uploads/UploadForm";
 import UploadedImagesList from "src/components/Profile/Uploads/UploadedImagesList";
+import Tabs from "src/components/ui/Tabs";
 import {
   useUploadMyImages,
   useMyUploads,
+  useMyCorners,
   useDeleteMyUpload,
 } from "src/hooks/queries/upload.queries";
 import Toast from "src/components/ui/Toast";
+import { MAX_UPLOAD_SIZE } from "src/utils/defaultSettings";
 
 const ITEMS_PER_PAGE = 9;
-import {MAX_UPLOAD_SIZE} from "src/utils/defaultSettings";
+
+type IMAGE_TYPE = "panel" | "corner";
+
 export default function Uploads() {
-  const [page, setPage] = useState(1);
+  /* ---------------- Tabs ---------------- */
+  const [activeTab, setActiveTab] = useState<IMAGE_TYPE>("panel");
+
+  /* ---------------- Pagination ---------------- */
+  const [panelPage, setPanelPage] = useState(1);
+  const [cornerPage, setCornerPage] = useState(1);
 
   /* ---------------- Upload ---------------- */
   const uploadMutation = useUploadMyImages();
 
-  const handleUpload = async (files: File[], clear: () => void) => {
+  const handleUpload = async (
+    files: File[],
+    type: IMAGE_TYPE,
+    clear: () => void
+  ) => {
     try {
-      await uploadMutation.mutateAsync({ files, type: "panael" });
+      await uploadMutation.mutateAsync({ files, type });
       Toast("Uploaded Successfully!", "success", "#ecfdf5", "top");
       clear();
     } catch (err: any) {
@@ -26,17 +40,20 @@ export default function Uploads() {
     }
   };
 
-  /* ---------------- Fetch uploads ---------------- */
-  const { data, isLoading, isError } = useMyUploads(page, ITEMS_PER_PAGE);
+  /* ---------------- Queries ---------------- */
+  const panelsQuery = useMyUploads(panelPage, ITEMS_PER_PAGE);
+  const cornersQuery = useMyCorners(cornerPage, ITEMS_PER_PAGE);
 
+  /* ---------------- Delete ---------------- */
   const deleteMutation = useDeleteMyUpload();
+  const handleDelete = (id: string) => deleteMutation.mutate(id);
 
-  const uploads = data?.data || [];
-  const pageCount = data?.pagination?.pages || 1;
+  /* ---------------- Extract Data ---------------- */
+  const panelUploads = panelsQuery.data?.data || [];
+  const panelPages = panelsQuery.data?.pagination?.pages || 1;
 
-  const handleDelete = (id: string) => {
-    deleteMutation.mutate(id);
-  };
+  const cornerUploads = cornersQuery.data?.data || [];
+  const cornerPages = cornersQuery.data?.pagination?.pages || 1;
 
   return (
     <div className="mx-auto space-y-8">
@@ -50,21 +67,56 @@ export default function Uploads() {
 
       {/* TWO COLUMNS */}
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+        {/* UPLOAD FORM */}
         <UploadForm
-          maxFiles={MAX_UPLOAD_SIZE - data?.data.length}
+          maxFiles={
+            MAX_UPLOAD_SIZE -
+            (activeTab === "panel"
+              ? panelUploads.length
+              : cornerUploads.length)
+          }
           isLoading={uploadMutation.isPending}
           onUpload={handleUpload}
         />
 
-        <UploadedImagesList
-          uploads={uploads}
-          isLoading={isLoading}
-          isError={isError}
-          page={page}
-          pageCount={pageCount}
-          onPageChange={setPage}
-          onDelete={handleDelete}
-          isUserList
+        {/* TABS */}
+        <Tabs
+          activeTab={activeTab}
+          onChange={(key) => setActiveTab(key as IMAGE_TYPE)}
+          tabs={[
+            {
+              key: "panel",
+              label: "Panels",
+              content: (
+                <UploadedImagesList
+                  uploads={panelUploads}
+                  isLoading={panelsQuery.isLoading}
+                  isError={panelsQuery.isError}
+                  page={panelPage}
+                  pageCount={panelPages}
+                  onPageChange={setPanelPage}
+                  onDelete={handleDelete}
+                  isUserList
+                />
+              ),
+            },
+            {
+              key: "corner",
+              label: "Corners",
+              content: (
+                <UploadedImagesList
+                  uploads={cornerUploads}
+                  isLoading={cornersQuery.isLoading}
+                  isError={cornersQuery.isError}
+                  page={cornerPage}
+                  pageCount={cornerPages}
+                  onPageChange={setCornerPage}
+                  onDelete={handleDelete}
+                  isUserList
+                />
+              ),
+            },
+          ]}
         />
       </div>
     </div>

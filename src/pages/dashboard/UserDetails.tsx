@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Tabs from "src/components/ui/Tabs";
 import UserUploads from "src/components/admin/userMangment/userDetails/UserUploads";
+import priceFormmater from "src/utils/priceFormmater";
 const StatCard = ({
   title,
   value,
@@ -208,7 +209,7 @@ const UserDetails = () => {
         />
         <StatCard
           title="Total Spent"
-          value={`${stats.totalSpent} EGP`}
+          value={`${priceFormmater(stats.totalSpent)}`}
           icon={DollarSign}
           iconBg="#fef3c7"
           iconColor="#d97706"

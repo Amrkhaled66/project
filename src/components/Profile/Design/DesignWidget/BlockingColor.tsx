@@ -4,13 +4,7 @@ import { useDesign } from "src/context/desgin.context";
 export default function BlockingColor() {
   const { updateBlocking, designData } = useDesign();
 
-  const blockingUpgrade = designData.upgrades.selected.find(
-    (u) => u === "blocking",
-  );
-
-  const selectedColor = Array.isArray(designData.colors.blocking)
-    ? designData.colors.blocking[0] || null
-    : designData.colors.blocking || null;
+  const selectedColor = designData.colors.blocking.colors[0];
 
   const onSelectColor = (color: string) => {
     updateBlocking([color], false);

@@ -43,7 +43,7 @@ const CustomPanel = () => {
         d.photos.items.push({
           id: src,
           image: src,
-          type: "custom_panael",
+          type: "custom_PANEL",
         });
       });
     });
