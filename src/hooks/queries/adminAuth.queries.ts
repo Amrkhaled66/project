@@ -1,7 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { AdminAuthService } from "src/services/admin/adminAuth.service";
-import { Admin } from "src/types/admin.types"
-const ADMIN_ME_KEY = ["admin", "me"];
+import { useAuth } from "src/context/auth.context";
 
 export function useAdminLogin() {
   return useMutation({
@@ -15,19 +14,18 @@ export function useAdminRegister() {
   });
 }
 
-export function useAdminMe() {
-  return useQuery<Admin>({
-    queryKey: ADMIN_ME_KEY,
-    queryFn: AdminAuthService.me,
-    retry: false,
-  });
-}
-
 export function useAdminLogout() {
-  const queryClient = useQueryClient();
-
   return () => {
     localStorage.removeItem("admin_token");
-    queryClient.removeQueries({ queryKey: ADMIN_ME_KEY });
   };
 }
+
+export const useLoginAsUser = () => {
+  const { login } = useAuth();
+  return useMutation({
+    mutationFn: AdminAuthService.loginAsUser,
+    onSuccess: (data) => {
+      login(data.user, data.token);
+    },
+  });
+};

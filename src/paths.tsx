@@ -22,7 +22,8 @@ import {
   OrderDetails,
   UserManagement,
   UserDetails,
-  CustomPanels
+  CustomPanels,
+  LoginAsUser
 } from "./pages";
 
 import MainLayout from "./layouts/MainLayout";
@@ -112,6 +113,7 @@ export default function AppRouter() {
             <Route path="orders/:id" element={<OrderDetails />} />
             <Route path="user" element={<UserManagement />} />
             <Route path="user/:id" element={<UserDetails />} />
+            <Route path="login-as-user" element={<LoginAsUser />} />
           </Route>
 
           {/* ================= Admin Login ================= */}

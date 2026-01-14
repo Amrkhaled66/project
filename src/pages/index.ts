@@ -18,3 +18,4 @@ export { default as OrderDetails } from "./dashboard/OrderDetails";
 export { default as UserUploads } from "./dashboard/UserDetails";
 export { default as UserManagement } from "./dashboard/UserManagement";
 export { default as UserDetails } from "./dashboard/UserDetails";
+export { default as LoginAsUser } from "./dashboard/LoginAsUser";
