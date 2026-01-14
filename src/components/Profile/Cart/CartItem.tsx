@@ -9,15 +9,11 @@ type CartItemProps = {
 };
 
 const CartItem = ({ item }: CartItemProps) => {
-  const {
-    addOrIncrease,
-    decreaseQuantity,
-    removeFromCart,
-  } = useCart();
+  const { addOrIncrease, decreaseQuantity, removeFromCart } = useCart();
 
   const totalPrice = item.price * item.quantity;
 
-  console.log(item)
+  console.log(item);
   return (
     <motion.div
       layout
@@ -30,7 +26,7 @@ const CartItem = ({ item }: CartItemProps) => {
       <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md bg-gray-100">
         {item.previewImage ? (
           <img
-            src={import.meta.env.VITE_API_URL+item.previewImage}
+            src={item.previewImage}
             alt={item.name}
             className="h-full w-full object-cover"
           />
@@ -45,9 +41,7 @@ const CartItem = ({ item }: CartItemProps) => {
       <div className="flex flex-1 flex-col gap-2">
         {/* Title + Price */}
         <div className="flex items-center justify-between">
-          <p className="truncate text-lg font-semibold">
-            {item.name}
-          </p>
+          <p className="truncate text-lg font-semibold">{item.name}</p>
 
           <p className="font-medium text-gray-800">
             {priceFormatter(totalPrice)}

@@ -31,7 +31,7 @@ export default function PanelMergePreview({
       setIsMerging(true);
 
       const { blob, previewUrl } = await mergeImagesToGrid(
-        panels.map((p) => import.meta.env.VITE_API_URL + p.imageUrl),
+        panels.map((p) =>  p.imageUrl),
       );
 
       const file = new File([blob], "custom-panel.png", {

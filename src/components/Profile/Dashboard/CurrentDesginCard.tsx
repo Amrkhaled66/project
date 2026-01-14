@@ -25,8 +25,8 @@ const CurrentDesignCard = () => {
     return null;
   }
 
-  if(!latestDesign) {
-    console.log("first")
+  if (!latestDesign) {
+    console.log("first");
     return <NoDesignCTA />;
   }
 
@@ -55,7 +55,7 @@ const CurrentDesignCard = () => {
         <div className="flex-shrink-0">
           {latestDesign.previewImage ? (
             <img
-              src={import.meta.env.VITE_API_URL + latestDesign.previewImage}
+              src={latestDesign.previewImage}
               alt={latestDesign.name}
               className="h-32 w-40 rounded-lg border object-contain"
             />
@@ -140,7 +140,6 @@ const CurrentDesignSkeleton = () => {
   );
 };
 
-
 const NoDesignCTA = () => {
   return (
     <div className="flex w-full flex-col items-center justify-center gap-4 rounded-xl border-2 bg-white py-10 shadow-md">
@@ -149,9 +148,7 @@ const NoDesignCTA = () => {
       </div>
 
       <div className="space-y-1 text-center">
-        <p className="text-lg font-semibold">
-          No Design Yet
-        </p>
+        <p className="text-lg font-semibold">No Design Yet</p>
         <p className="text-sm text-gray-500">
           Start creating your first design and bring it to life.
         </p>

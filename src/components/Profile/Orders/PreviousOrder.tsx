@@ -35,7 +35,7 @@ const OrderCard = ({
   return (
     <div className="group relative flex items-start gap-3 rounded-xl border border-neutral-200 bg-white/60 p-3 transition hover:bg-neutral-50">
       <img
-        src={import.meta.env.VITE_API_URL + design?.previewImage}
+        src={design?.previewImage}
         alt="Order preview"
         className="size-16 rounded-lg object-cover ring-1 ring-neutral-200"
       />
@@ -47,7 +47,7 @@ const OrderCard = ({
           </h3>
 
           <span
-            className={`rounded-full px-2 text-center py-0.5 text-[8px] font-medium ${
+            className={`rounded-full px-2 py-0.5 text-center text-[8px] font-medium ${
               ORDER_STATUS[order.status as keyof typeof ORDER_STATUS]?.color
             }`}
           >

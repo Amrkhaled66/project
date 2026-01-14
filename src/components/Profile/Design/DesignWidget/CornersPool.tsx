@@ -109,7 +109,7 @@ function CornerImage({
         ref={setNodeRef}
         {...(!isSelected ? listeners : {})}
         {...attributes}
-        src={API_URL + src}
+        src={ src}
         style={style}
         className={`size-16 rounded border object-cover shadow-sm ${
           isSelected ? "pointer-events-none" : "cursor-grab"

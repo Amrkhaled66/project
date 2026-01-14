@@ -90,7 +90,7 @@ export default function AddPhotosModel({
 
           {!isLoading &&
             uploads.map((img: any) => {
-              const src = API_URL + img.imageUrl;
+              const src = img.imageUrl;
               const isSelected = selected.includes(src);
               const exists = items.some((item) => item.image === src);
 

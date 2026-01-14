@@ -90,7 +90,7 @@ const CustomPanel = () => {
       {/* GRID */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         {panels.map((panel) => {
-          const src = import.meta.env.VITE_API_URL + panel.imageUrl;
+          const src =  panel.imageUrl;
           const isSelected = selected.includes(src);
 
           return (

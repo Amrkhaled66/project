@@ -35,21 +35,17 @@ export default function PanelsLibrary({
   isLoading,
   isError,
 }: Props) {
-  const selectionPercentage =
-    (selectedPanels.length / MAX_SELECTION) * 100;
+  const selectionPercentage = (selectedPanels.length / MAX_SELECTION) * 100;
 
   /* ---------------- Loading ---------------- */
   if (isLoading) {
     return (
-      <div className="rounded-xl bg-gray-50 p-6 border shadow-sm space-y-4">
+      <div className="space-y-4 rounded-xl border bg-gray-50 p-6 shadow-sm">
         <Skeleton height={18} width={160} />
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton
-              key={i}
-              className="aspect-square rounded-xl"
-            />
+            <Skeleton key={i} className="aspect-square rounded-xl" />
           ))}
         </div>
       </div>
@@ -77,7 +73,7 @@ export default function PanelsLibrary({
   }
 
   return (
-    <div className="rounded-xl bg-gray-50 p-6 border shadow-sm space-y-6">
+    <div className="space-y-6 rounded-xl border bg-gray-50 p-6 shadow-sm">
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -93,7 +89,7 @@ export default function PanelsLibrary({
       </div>
 
       {/* PROGRESS BAR */}
-      <div className="h-2 w-full rounded-full bg-gray-200 overflow-hidden">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
         <div
           className={`h-full transition-all duration-300 ${
             selectedPanels.length === MAX_SELECTION
@@ -113,13 +109,10 @@ export default function PanelsLibrary({
       {/* GRID */}
       <div className="grid max-h-[220px] grid-cols-2 gap-4 overflow-y-auto px-1 sm:grid-cols-3 lg:grid-cols-4">
         {panels.map((panel) => {
-          const isSelected = selectedPanels.some(
-            (p) => p.id === panel.id,
-          );
+          const isSelected = selectedPanels.some((p) => p.id === panel.id);
 
           const disabled =
-            !isSelected &&
-            selectedPanels.length >= MAX_SELECTION;
+            !isSelected && selectedPanels.length >= MAX_SELECTION;
 
           return (
             <PanelCard
@@ -128,14 +121,10 @@ export default function PanelsLibrary({
               isSelected={isSelected}
               disabled={disabled}
               panelNumber={
-                selectedPanels.findIndex(
-                  (p) => p.id === panel.id,
-                ) + 1
+                selectedPanels.findIndex((p) => p.id === panel.id) + 1
               }
               onClick={() =>
-                isSelected
-                  ? onUnselect(panel.id)
-                  : onSelect(panel)
+                isSelected ? onUnselect(panel.id) : onSelect(panel)
               }
             />
           );
@@ -182,7 +171,7 @@ function PanelCard({
       {/* IMAGE */}
       <div className="relative aspect-square bg-gray-100">
         <img
-          src={import.meta.env.VITE_API_URL + panel.imageUrl}
+          src={panel.imageUrl}
           alt="Panel"
           className="h-full w-full object-cover"
         />

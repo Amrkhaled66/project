@@ -164,7 +164,7 @@ export default function DesignLibraryPage() {
 
                     {design?.previewImage ? (
                       <img
-                        src={import.meta.env.VITE_API_URL+design.previewImage}
+                        src={design.previewImage}
                         alt={design.name}
                         className="h-full w-full object-contain"
                       />

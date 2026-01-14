@@ -27,7 +27,7 @@ const OrderItemsList = ({ items }: Props) => {
               <div className="flex items-start gap-4">
                 {designData.previewImage && (
                   <img
-                    src={import.meta.env.VITE_API_URL + designData.previewImage}
+                    src={designData.previewImage}
                     alt={designData.name}
                     className="h-24 w-24 cursor-pointer rounded-lg border border-gray-200 object-cover transition-transform hover:scale-105"
                     onClick={() => setZoomedImage(designData.previewImage)}
@@ -292,7 +292,7 @@ const OrderItemsList = ({ items }: Props) => {
               className="relative max-h-[90vh] max-w-[90vw]"
             >
               <img
-                src={import.meta.env.VITE_API_URL + zoomedImage}
+                src={ zoomedImage}
                 alt="Zoomed preview"
                 className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
                 onClick={(e) => e.stopPropagation()}

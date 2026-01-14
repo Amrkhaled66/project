@@ -67,7 +67,7 @@ export default function UploadedImagesList({
                   }
                 >
                   <img
-                    src={import.meta.env.VITE_API_URL + img.imageUrl}
+                    src={ img.imageUrl}
                     className="object-fit aspect-square size-full object-cover transition duration-300 group-hover:scale-105"
                     alt="uploaded"
                   />

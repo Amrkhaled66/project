@@ -5,7 +5,6 @@ interface Props {
   onClose: () => void;
 }
 
-
 /* ---------- Small Helpers ---------- */
 const Row = ({ label, value }: { label: string; value?: string | number }) => (
   <div className="flex justify-between text-sm">
@@ -30,7 +29,7 @@ const OrderModal = ({ order, onClose }: Props) => {
   const placedDate = order.createdAt
     ? new Date(order.createdAt).toLocaleDateString()
     : "—";
-    console.log(order)
+  console.log(order);
 
   return (
     <section className="max-h-[85vh] w-full overflow-y-auto rounded-2xl border border-neutral-200 bg-white shadow-xl">
@@ -45,16 +44,17 @@ const OrderModal = ({ order, onClose }: Props) => {
 
           <span
             className={`inline-block rounded-full px-3 py-1 text-[11px] font-medium ${
-              ORDER_STATUS[
-                order.status as keyof typeof ORDER_STATUS
-              ].color
+              ORDER_STATUS[order.status as keyof typeof ORDER_STATUS].color
             }`}
           >
             {order.status}
           </span>
         </div>
 
-        <button className="p-1 drop-shadow-xl bg-white rounded-full" onClick={onClose}>
+        <button
+          className="rounded-full bg-white p-1 drop-shadow-xl"
+          onClick={onClose}
+        >
           <X size={16} />
         </button>
       </div>
@@ -84,7 +84,7 @@ const OrderModal = ({ order, onClose }: Props) => {
               {/* Content */}{" "}
               <div>
                 <img
-                  src={import.meta.env.VITE_API_URL + design?.previewImage}
+                  src={design?.previewImage}
                   alt="Design"
                   className="mx-auto aspect-square max-h-72 border"
                 />

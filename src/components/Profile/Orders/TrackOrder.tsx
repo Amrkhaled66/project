@@ -71,14 +71,14 @@ export default function TrackOrder() {
       {/* ==================== HEADER ==================== */}
       <div className="flex items-start gap-4 p-6">
         <img
-          src={import.meta.env.VITE_API_URL + image}
+          src={image}
           alt="Order"
           className="size-20 object-cover ring-1 ring-neutral-200"
         />
 
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h2 className="truncate  font-semibold">
+            <h2 className=" font-semibold">
               Order #{order.id}
             </h2>
 

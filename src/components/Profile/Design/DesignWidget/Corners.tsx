@@ -27,7 +27,7 @@ const CornerBox = ({
     >
       {cornerImages[index] && (
         <img
-          src={import.meta.env.VITE_API_URL + cornerImages[index]}
+          src={ cornerImages[index]}
           className="h-full w-full object-cover"
         />
       )}
