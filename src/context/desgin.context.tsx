@@ -238,7 +238,54 @@ export const DesignProvider = ({
     ["cornerstonesSingle", "cornerstonesDouble"].includes(u),
   );
 
-  const hasChanged = updaterRef.current?.hasPendingChanges(designData as any) || false;
+  const hasChanged =
+    updaterRef.current?.hasPendingChanges(designData as any) || false;
+
+  /* ------------------------------------------------------------------------ */
+  /* toggle updrade                                                           */
+  /* ------------------------------------------------------------------------ */
+  const toggleUpgrade = (id: string) =>
+    update((d) => {
+      const selected = d.upgrades.selected;
+      const isActive = selected.includes(id);
+      /* ---------------- Toggle ---------------- */
+      d.upgrades.selected = isActive
+        ? selected.filter((x) => x !== id)
+        : [...selected, id];
+      /* ---------------- Side Effects ---------------- */
+      switch (id) {
+        case "customPanels": {
+          if (isActive) {
+            d.photos.items = d.photos.items.filter(
+              (p) => p.type !== "custom_panael",
+            );
+          }
+          break;
+        }
+        case "cornerstonesSingle": {
+          if (selected.includes("cornerstonesDouble") && !isActive) {
+            d.upgrades.selected = d.upgrades.selected.filter(
+              (u) => u !== "cornerstonesDouble",
+            );
+          }
+        }
+
+        case "cornerstonesDouble":
+          {
+            if (selected.includes("cornerstonesSingle") && !isActive) {
+              d.upgrades.selected = d.upgrades.selected.filter(
+                (u) => u !== "cornerstonesSingle",
+              );
+            }
+          }
+
+          break;
+
+        default:
+          break;
+      }
+    });
+
   /* ------------------------------------------------------------------------ */
   /* Context value                                                            */
   /* ------------------------------------------------------------------------ */
@@ -269,13 +316,7 @@ export const DesignProvider = ({
         }),
       updateQualityPreserveColor: (c) =>
         update((d) => (d.colors.qualityPreserve = c)),
-      toggleUpgrade: (id) =>
-        update((d) => {
-          const selected = d.upgrades.selected;
-          d.upgrades.selected = selected.includes(id)
-            ? selected.filter((x) => x !== id)
-            : [...selected, id];
-        }),
+      toggleUpgrade,
       updateCanvasSize: (sizeObj: sizeObj) =>
         update((d) => {
           d.canvas.size = structuredClone(sizeObj);
