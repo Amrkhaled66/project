@@ -155,16 +155,18 @@ const OrderModal = ({ order, onClose }: Props) => {
                 </div>
               </div>
               {/* Upgrades */}
-              <div>
-                <p className="font-semibold">Selected Elements:</p>
-                <div className="space-y-1">
-                  {design.upgrades.selected.map((upgrade: string) => (
-                    <span key={upgrade} className="text-sm">
-                      {upgrade}
-                    </span>
-                  ))}
+              {design.upgrades.selected.length > 0 && (
+                <div>
+                  <p className="font-semibold">Selected Elements:</p>
+                  <div className="grid grid-cols-2 space-y-1">
+                    {design.upgrades.selected.map((upgrade: string) => (
+                      <span key={upgrade} className="text-sm">
+                        {upgrade}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         })}

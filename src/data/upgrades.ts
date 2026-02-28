@@ -5,6 +5,7 @@ import QuiltedPreserveImg from "src/assets/addOns/quality.webp";
 import BlockingImg from "src/assets/addOns/blocking.webp";
 import BindingImg from "src/assets/addOns/binding.webp";
 import EmbroideryImg from "src/assets/addOns/embroidery.webp";
+import edge from "src/assets/addOns/edge.webp";
 import { BLANKET_SIZE_IDS, BlanketSizeId } from "src/data/blanketSizes";
 
 // upgradeIds.ts
@@ -45,7 +46,7 @@ export const upgrades: UpgradeOption[] = [
     description: "Enhanced durability and texture.",
     img: QuiltedPreserveImg,
     brief:
-      "Each blanket boasts a meticulous quilting process, incorporating up to 100,000 stitches to guarantee unparalleled longevity and enduring quality.",
+      "A museum-grade interior construction methodology that introduces additional structural layers—selected to stabilize materials, add measured weight, and provide lasting warmth and comfort without compromising form . These interior layers reinforce the internal architecture of the build, reducing distortion and material fatigue over time while supporting everyday use.",
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_EDGE,
@@ -53,7 +54,7 @@ export const upgrades: UpgradeOption[] = [
     description:
       "Protective stitched edge wrapping the full blanket; auto-enabled with Heirloom Preserve.",
     autoAppliedBy: UPGRADE_IDS.HEIRLOOM_PRESERVE,
-    img: BindingImg,
+    img: edge,
     brief:
       "Individually tailored binding surrounds the entirety of each blanket, ensuring enduring security and timeless quality.",
   },
@@ -74,7 +75,7 @@ export const upgrades: UpgradeOption[] = [
     brief:
       "Tailored blockingchoices for each intersection, seamlessly blending the sashing together with extra jersey materials adding a diverse array of colors for a personalized touch, all coming straight from your jerseys.",
   },
-   {
+  {
     id: UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE,
     name: "Heirloom Stone (Single)",
     description: "Add decorative patches to the 4 corners of the blanket.",
@@ -99,8 +100,6 @@ export const upgrades: UpgradeOption[] = [
     brief:
       "Exquisite custom embroidery adorns the borders of each blanket, adding a touch of personalized elegance.",
   },
-
- 
 ];
 
 type UpgradePriceBySize = Record<BlanketSizeId, number>;

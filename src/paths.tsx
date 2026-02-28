@@ -57,17 +57,10 @@ export default function AppRouter() {
         <ScrollToTop />
 
         <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+
           {/* ================= Public ================= */}
           <Route path="/" element={<MainLayout />}>
-            <Route
-              index
-              element={
-                <OnlyGuestRoute>
-                  <Home />
-                </OnlyGuestRoute>
-              }
-            />
-
             <Route
               path="order-success"
               element={

@@ -16,7 +16,7 @@ export default function CornersPool() {
   const { designData, update } = useDesign();
 
   // assigned corner images
-  const cornerImages = designData.upgrades?.props?.cornerstones?.images || {};
+  const cornerImages = designData.upgrades?.props?.cornerstones.images || {};
   const cornerEntries = Object.entries(cornerImages);
 
   const deleteCornerImage = (index: number) => {
@@ -37,7 +37,7 @@ export default function CornersPool() {
       <div className="flex flex-wrap items-center gap-4 rounded-lg bg-neutral-200 p-3">
         {uploads.map((img: any) => {
           const foundEntry = cornerEntries.find(
-            ([, value]) => value === img.imageUrl,
+            ([, value]) => value === getImageLink(img.imageUrl),
           );
 
           const isSelected = !!foundEntry;
