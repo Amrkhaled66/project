@@ -152,8 +152,22 @@ export default function AppRouter() {
 
           {/* ================= Auth ================= */}
           {/* <Route path="/register" element={<SignupPage />} /> */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/auth/setup" element={<SetPassword />} />
+          <Route
+            path="/login"
+            element={
+              <OnlyGuestRoute>
+                <LoginPage />
+              </OnlyGuestRoute>
+            }
+          />
+          <Route
+            path="/auth/setup"
+            element={
+              <OnlyGuestRoute>
+                <SetPassword />
+              </OnlyGuestRoute>
+            }
+          />
         </Routes>
       </AxiosProvider>
     </BrowserRouter>
