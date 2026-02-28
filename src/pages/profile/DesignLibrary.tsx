@@ -17,15 +17,12 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function DesignLibraryPage() {
   const navigate = useNavigate();
   const { data: designs, isLoading } = useDesigns();
-  const { addOrIncrease, cartItems } = useCart();
+  const { addOrIncrease, isItemInCart } = useCart();
   const totalDesigns = designs?.length ?? 0;
 
   // ----------------------------
   // Helpers
   // ----------------------------
-  const getItemQuantity = (designId: string) =>
-    cartItems.find((item) => item.designId === designId)?.quantity ?? 0;
-
   const handleEdit = (id: string) => navigate(`/profile/design-library/${id}`);
 
   const handleAddToCart = (design: any) => {
@@ -86,8 +83,7 @@ export default function DesignLibraryPage() {
         {!isLoading && totalDesigns > 0 && (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {designs!.map((design: any, index: number) => {
-              const quantity = getItemQuantity(design.id);
-              const inCart = quantity > 0;
+              const inCart = isItemInCart(design.id);
 
               return (
                 <motion.div
@@ -118,7 +114,7 @@ export default function DesignLibraryPage() {
                         className="size-full object-contain transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="flex flex-col h-full items-center justify-center gap-2">
+                      <div className="flex h-full flex-col items-center justify-center gap-2">
                         <ImageOff
                           size={28}
                           style={{ color: "#a098ae" }}

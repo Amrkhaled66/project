@@ -30,6 +30,7 @@ type CartContextType = {
   getItemTotal: (designId: string) => number;
   getCartCount: () => number;
   cartTotal: () => number;
+  isItemInCart: (designId: string) => boolean;
 };
 
 // ----------------------------------
@@ -115,6 +116,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     return cartItems.reduce((count, item) => count + item.quantity, 0);
   };
 
+  const isItemInCart = (designId: string) =>
+    cartItems.find((item) => item.designId === designId) ? true : false;
+
   // ----------------------------------
   // Provider
   // ----------------------------------
@@ -130,6 +134,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         getItemTotal,
         getCartCount,
         cartTotal,
+        isItemInCart,
       }}
     >
       {children}

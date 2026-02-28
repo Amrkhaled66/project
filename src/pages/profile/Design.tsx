@@ -125,7 +125,9 @@ export default function BlanketDesigner() {
     flushSave,
   } = useDesign();
 
-  const { addOrIncrease } = useCart();
+  const { addOrIncrease, isItemInCart } = useCart();
+
+  const inCart = designId ? isItemInCart(designId) : false;
 
   const [activeTab, setActiveTab] = useState<TabId>("size");
 
@@ -243,12 +245,15 @@ export default function BlanketDesigner() {
               {/* <Button disabled={!hasChanged} onClick={handleUpdate}>
                 Save Your Updates
               </Button> */}
-              <Button
-                className="px-3"
-                onClick={() => handleAddToCart()}
-              >
-                Add To Cart
-              </Button>
+              
+                <Button
+                  disabled={inCart}
+                  className="px-3"
+                  onClick={() => handleAddToCart()}
+                >
+                  {inCart ? "Added To Cart" : "Add To Cart"}
+                </Button>
+              
               {/* <GoastButton
                 className="px-3"
                 onClick={() => handleAddToCart(designData)}

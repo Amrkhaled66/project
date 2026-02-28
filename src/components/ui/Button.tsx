@@ -13,7 +13,7 @@ interface ButtonProps {
   isLoading?: boolean;
   onClick?: () => void;
   disabled?: boolean;
-  variant?: ButtonVariant; // ✅ optional
+  variant?: ButtonVariant; 
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
@@ -46,7 +46,7 @@ const Button = ({
       onClick={onClick}
       className={`
         px-3 py-2 rounded-lg border font-medium transition-all duration-200
-        disabled:opacity-50 disabled:cursor-not-allowed
+        disabled:opacity-50 disabled:!cursor-not-allowed
         ${variantClasses[variant]}
         ${className}
       `}
