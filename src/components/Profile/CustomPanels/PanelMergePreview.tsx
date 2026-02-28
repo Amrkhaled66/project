@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { mergeImagesToGrid } from "src/utils/mergeImagesToGrid";
 import { Layers } from "lucide-react";
+import getImageLink from "src/utils/getImageLink";
 
 type Panel = {
   id: string;
@@ -31,7 +32,7 @@ export default function PanelMergePreview({
       setIsMerging(true);
 
       const { blob, previewUrl } = await mergeImagesToGrid(
-        panels.map((p) =>  p.imageUrl),
+        panels.map((p) => getImageLink(p.imageUrl)),
       );
 
       const file = new File([blob], "custom-panel.png", {

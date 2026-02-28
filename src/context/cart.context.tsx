@@ -4,7 +4,7 @@ import {
   setCart,
   clearCart as clearCartStorage,
 } from "src/utils/cartStorage";
-
+import Toast from "src/components/ui/Toast";
 // ----------------------------------
 // Types
 // ----------------------------------
@@ -14,7 +14,6 @@ export type CartItem = {
   previewImage: string | null;
   price: number; // ✅ added (required for totals)
   quantity: number;
-
 };
 
 type CartContextType = {
@@ -58,15 +57,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     item: Omit<CartItem, "quantity">,
     quantity: number = 1,
   ) => {
+    const index = cartItems.findIndex((i) => i.designId === item.designId);
+    if (index !== -1) return;
     setCartItems((prev) => {
-      const index = prev.findIndex((i) => i.designId === item.designId);
-
-      if (index !== -1) {
-        return prev.map((i, idx) =>
-          idx === index ? { ...i, quantity: i.quantity + quantity } : i,
-        );
-      }
-
+      Toast("Added to cart", "success", "#d1fae5", "top-end");
       return [...prev, { ...item, quantity }];
     });
   };
@@ -117,11 +111,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     );
   };
 
-
   const getCartCount = () => {
     return cartItems.reduce((count, item) => count + item.quantity, 0);
   };
-  
 
   // ----------------------------------
   // Provider
@@ -137,7 +129,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         clearCart,
         getItemTotal,
         getCartCount,
-        cartTotal
+        cartTotal,
       }}
     >
       {children}

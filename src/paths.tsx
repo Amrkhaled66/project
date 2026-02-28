@@ -13,8 +13,11 @@ import {
   Cart,
   UserProfile,
   Orders,
+  OrderSuccess,
+  OrderCancel,
   Design,
   LoginPage,
+  SetPassword,
   SignupPage,
   DesignLibrary,
   OrdersMangment,
@@ -23,7 +26,10 @@ import {
   UserManagement,
   UserDetails,
   CustomPanels,
-  LoginAsUser
+  LoginAsUser,
+  AddUser,
+  AddDesign,
+  PremiumBuilds,
 } from "./pages";
 
 import MainLayout from "./layouts/MainLayout";
@@ -61,6 +67,23 @@ export default function AppRouter() {
                 </OnlyGuestRoute>
               }
             />
+
+            <Route
+              path="order-success"
+              element={
+                <AuthRoutes>
+                  <OrderSuccess />
+                </AuthRoutes>
+              }
+            />
+            <Route
+              path="order-cancel"
+              element={
+                <AuthRoutes>
+                  <OrderCancel />
+                </AuthRoutes>
+              }
+            />
           </Route>
 
           {/* ================= User Dashboard ================= */}
@@ -92,8 +115,11 @@ export default function AppRouter() {
             />
             <Route path="user-profile" element={<UserProfile />} />
             <Route path="design-library" element={<DesignLibrary />} />
+            <Route
+              path="design-library/:id"
+              element={<DesignWithIdWrapper />}
+            />
             <Route path="orders" element={<Orders />} />
-            <Route path="design-library/:id" element={<DesignWithIdWrapper />} />
           </Route>
 
           {/* ================= Admin Routes ================= */}
@@ -114,6 +140,9 @@ export default function AppRouter() {
             <Route path="user" element={<UserManagement />} />
             <Route path="user/:id" element={<UserDetails />} />
             <Route path="login-as-user" element={<LoginAsUser />} />
+            <Route path="add-user" element={<AddUser />} />
+            <Route path="add-design" element={<AddDesign />} />
+            <Route path="premium-builds" element={<PremiumBuilds />} />
           </Route>
 
           {/* ================= Admin Login ================= */}
@@ -129,8 +158,9 @@ export default function AppRouter() {
           />
 
           {/* ================= Auth ================= */}
+          {/* <Route path="/register" element={<SignupPage />} /> */}
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<SignupPage />} />
+          <Route path="/auth/setup" element={<SetPassword />} />
         </Routes>
       </AxiosProvider>
     </BrowserRouter>

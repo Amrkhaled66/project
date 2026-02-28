@@ -2,7 +2,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { X } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import React from "react";
-
+import getImageLink from "src/utils/getImageLink";
 export type GridItemType = {
   id: string;
   image: string;
@@ -44,7 +44,7 @@ function GridItem({
       }`}
     >
       <img
-        src={image}
+        src={getImageLink(image)}
         alt={id}
         draggable={false}
         loading="lazy"

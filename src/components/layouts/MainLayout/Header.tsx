@@ -4,14 +4,15 @@ import GoastButton from "src/components/ui/GoastButton";
 import { useState } from "react";
 import { useAuth } from "src/context/auth.context";
 import { ShoppingCart, User } from "lucide-react";
+import logo from "src/assets/logo.svg";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated ,authData:{user}} = useAuth();
   return (
     <div className="fixed top-0 left-0 z-50 w-full bg-white shadow-md">
       <div className="container mx-auto flex items-center justify-between px-6 py-4 lg:px-8">
         <Link to="/">
-          <img className="w-32" src="./logo.svg" alt="JB Blanket" />
+          <img className="w-32" src={logo} alt="JB Blanket" />
         </Link>
 
         {isAuthenticated ? (
@@ -21,7 +22,7 @@ const Header = () => {
             </Link>
             <Link to="/profile" className="flex items-center space-x-2">
               <User />
-              <span className="text-sm font-medium">John Doe</span>
+              <span className="text-sm font-medium">{user?.name || "User"}</span>
             </Link>
           </div>
         ) : (

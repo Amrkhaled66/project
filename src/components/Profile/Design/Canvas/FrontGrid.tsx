@@ -8,7 +8,6 @@ import EmbroideryZones from "../upgrades/Embroidery";
 import QualityPreservedEffect from "src/components/ui/pattern/QualityPreservedEffect";
 
 import { useDesign } from "src/context/desgin.context"; // Directly using useDesign
-
 // -------------------------------------------------------
 // Memoized Components
 // -------------------------------------------------------
@@ -41,9 +40,8 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
     hasQualityPreserve,
     hasFringe,
     canvasRef
-  } = useDesign(); // Access flags and data directly from DesignContext
+  } = useDesign(); 
   const { canvas, photos, colors } = designData;
-  const { size } = canvas;
 
   const {
     blanket: blanketColor,
@@ -51,8 +49,8 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({
     binding: bindingColor,
   } = colors;
   const items = photos.items;
-console.log(items)
-  const totalCells = size?.rows * size?.cols;
+
+  const totalCells = canvas?.rows * canvas?.cols;
   const gridRef = useRef<HTMLDivElement | null>(null);
 
   // -------------------------------------------------------
@@ -81,13 +79,18 @@ console.log(items)
     [bindingColor],
   );
 
-  const getCellSize = () => {
-    const maxDimension = Math.max(size.cols, size.rows);
-    if (maxDimension <= 3) return 100;
-    if (maxDimension <= 4) return 85;
-    if (maxDimension <= 5) return 70;
-    return 60;
-  };
+const getCellSize = () => {
+  const maxDimension = Math.max(canvas.cols, canvas.rows);
+  const vw = window.innerWidth;
+
+  // Scale cell size based on screen width
+  const base = vw < 400 ? 55 : vw < 640 ? 70 : vw < 1024 ? 85 : 100;
+
+  if (maxDimension <= 3) return base;
+  if (maxDimension <= 4) return base * 0.85;
+  if (maxDimension <= 5) return base * 0.70;
+  return base * 0.60;
+};
 
   const gridStyle = useMemo(() => {
     const cellSize = getCellSize();
@@ -95,13 +98,13 @@ console.log(items)
     const padding = 32;
 
     return {
-      gridTemplateColumns: `repeat(${size.cols}, 1fr)`,
-      gridTemplateRows: `repeat(${size.rows}, 1fr)`,
+      gridTemplateColumns: `repeat(${canvas.cols}, 1fr)`,
+      gridTemplateRows: `repeat(${canvas.rows}, 1fr)`,
       backgroundColor: blanketColor || "",
-      width: `${size.cols * cellSize + (size.cols - 1) * gap + padding}px`,
-      height: `${size?.rows * cellSize + (size?.rows - 1) * gap + padding}px`,
+      width: `${canvas.cols * cellSize + (canvas.cols - 1) * gap + padding}px`,
+      height: `${canvas?.rows * cellSize + (canvas?.rows - 1) * gap + padding}px`,
     };
-  }, [size?.cols, size?.rows, blanketColor]);
+  }, [canvas?.cols, canvas?.rows, blanketColor]);
 
   
   return (
@@ -143,7 +146,7 @@ console.log(items)
         {/* Blocking (over entire grid) */}
         {/* Uncomment when Blocking upgrade UI is ready */}
         {hasBlocking && (
-            <MemoBlocking gridRef={gridRef} rows={size.rows} cols={size.cols} />
+            <MemoBlocking gridRef={gridRef} rows={canvas.rows} cols={canvas.cols} />
           )}
       </SortableContext>
     </div>
@@ -151,3 +154,6 @@ console.log(items)
 };
 
 export default React.memo(CanvasFront);
+
+
+

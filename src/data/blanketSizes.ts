@@ -1,41 +1,106 @@
 // src/data/blanketSizes.ts
 
+// Define the Blanket Size IDs and Related Properties
+export const BLANKET_SIZE_IDS = {
+  LAP: "Lap",
+  THROW: "Throw",
+  GAME: "Game",
+  STADIUM: "Stadium",
+  TWIN: "Twin",
+  DORMIE_TWIN: "DormieTwin",
+  FULL: "Full",
+  QUEEN: "Queen",
+  KING: "King",
+} as const;
+
 export type BlanketSizeId =
-  | "Lap"
-  | "Throw"
-  | "Game"
-  | "Stadium"
-  | "Twin"
-  | "DormieTwin"
-  | "Full"
-  | "Queen"
-  | "King";
+  (typeof BLANKET_SIZE_IDS)[keyof typeof BLANKET_SIZE_IDS];
 
 export type BlanketSize = {
   id: BlanketSizeId;
   name: string;
-  width: number;   // inches
-  height: number;  // inches
+  width: number; // inches
+  height: number; // inches
   price: number;
   rows: number;
   cols: number;
 };
 
-/**
- * Base blanket size definitions (default orientation = vertical/tall)
- */
+// Using the centralized sizes for the blanket sizes
 export const BLANKET_SIZES: BlanketSize[] = [
-  { id: "Lap",     name: "Lap",     width: 36,  height: 48,  price: 69.99,  rows: 3, cols: 2},
-  { id: "Throw",   name: "Throw",   width: 50,  height: 60,  price: 79.99,  rows: 3, cols: 3 },
-  { id: "Game",    name: "Game",    width: 60,  height: 80,  price: 99.99,  rows: 4, cols: 3},
-  { id: "Stadium", name: "Stadium", width: 72,  height: 90,  price: 119.99, rows: 4, cols: 4 },
-  { id: "Twin",    name: "Twin",    width: 66,  height: 90,  price: 129.99, rows: 5, cols: 4},
-  { id: "DormieTwin", name: "Dormie Twin", width: 80, height: 90, price: 149.99, rows: 6, cols: 4},
-  { id: "Full",    name: "Full",    width: 80,  height: 90,  price: 149.99, rows: 5, cols: 5 },
-  { id: "Queen",   name: "Queen",   width: 90,  height: 90,  price: 169.99, rows: 6, cols: 5},
-  { id: "King",    name: "King",    width: 108, height: 90,  price: 189.99, rows: 6, cols: 6 },
+  {
+    id: BLANKET_SIZE_IDS.LAP,
+    name: "Lap",
+    width: 43,
+    height: 59,
+    price: 99.86,
+    rows: 2,
+    cols: 3,
+  },
+  {
+    id: BLANKET_SIZE_IDS.THROW,
+    name: "Throw",
+    width: 59,
+    height: 59,
+    price: 129.86,
+    rows: 3,
+    cols: 3,
+  },
+  {
+    id: BLANKET_SIZE_IDS.GAME,
+    name: "Game",
+    width: 59,
+    height: 74,
+    price: 149.86,
+    rows: 3,
+    cols: 4,
+  },
+  {
+    id: BLANKET_SIZE_IDS.STADIUM,
+    name: "Stadium",
+    width: 74,
+    height: 74,
+    price: 199.86,
+    rows: 4,
+    cols: 4,
+  },
+  {
+    id: BLANKET_SIZE_IDS.TWIN,
+    name: "Twin",
+    width: 74,
+    height: 89,
+    price: 249.86,
+    rows: 4,
+    cols: 5,
+  },
+  {
+    id: BLANKET_SIZE_IDS.FULL,
+    name: "Full",
+    width: 89,
+    height: 89,
+    price: 299.86,
+    rows: 5,
+    cols: 5,
+  },
+  {
+    id: BLANKET_SIZE_IDS.QUEEN,
+    name: "Queen",
+    width: 89,
+    height: 104,
+    price: 349.86,
+    rows: 5,
+    cols: 6,
+  },
+  {
+    id: BLANKET_SIZE_IDS.KING,
+    name: "King",
+    width: 104,
+    height: 104,
+    price: 399.86,
+    rows: 6,
+    cols: 6,
+  },
 ];
-
 /**
  * Helper to get size definition by ID
  */
@@ -46,8 +111,14 @@ export const getSizeById = (id: BlanketSizeId) =>
  * ✅ Smart function to flip orientation
  * - Swaps rows ↔ cols and width ↔ height ifue
  */
-export const flipSizeOrientation = (size: BlanketSizeId): BlanketSize => {
+export const flipSizeOrientation = (
+  size: BlanketSizeId,
+  isFlipped: boolean,
+): BlanketSize => {
   const sizeDef = getSizeById(size);
+  if (isFlipped) {
+    return sizeDef;
+  }
   return {
     ...sizeDef,
     width: sizeDef.height,

@@ -130,7 +130,7 @@ const UserDetails = () => {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-white">
-                {user.firstName} {user.lastName}
+                {user.name} 
               </h2>
               <p className="mt-0.5 text-sm text-white/80">User Account</p>
             </div>

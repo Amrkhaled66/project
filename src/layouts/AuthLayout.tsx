@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 import video from "src/assets/JB-VIDEO.mp4";
-
+import logo from "src/assets/logo.svg";
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
@@ -32,7 +32,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
 
             {/* Top Bar */}
             <div className="absolute top-2 right-0 left-0 flex items-center justify-between px-4 text-white">
-              <img src="./logo.svg" alt="Jb Blanket" className="h-10" />
+              <img src={logo} alt="Jb Blanket" className="h-10" />
             </div>
           </div>
         </div>
@@ -44,7 +44,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         >
           <div className="flex w-full flex-col items-start justify-between border-b border-b-gray-300 pb-2">
             <Link to="/">
-              <img src="./logo.svg" alt="jb Blanket" />
+              <img src={logo} alt="jb Blanket" />
             </Link>
           </div>
           {children}

@@ -26,8 +26,7 @@ const OrderCustomerForm = ({ order }: Props) => {
 
   const initialFormValues = {
     email: order.user.email,
-    firstName: order.user.firstName,
-    lastName: order.user.lastName,
+    name: order.user.name,
     status: order.status,
 
     addressLine1: order.addressLine1,
@@ -70,8 +69,7 @@ const OrderCustomerForm = ({ order }: Props) => {
   const handleCancel = () => {
     setValues({
       email: order.user.email,
-      firstName: order.user.firstName,
-      lastName: order.user.lastName,
+      name: order.user.name,
       status: order.status,
 
       addressLine1: order.addressLine1,
@@ -102,6 +100,7 @@ const OrderCustomerForm = ({ order }: Props) => {
             <Button
               className="border-gray-300 bg-gray-300 text-gray-800 hover:bg-gray-400"
               onClick={handleCancel}
+              variant="danger"
             >
               Cancel
             </Button>
@@ -111,40 +110,13 @@ const OrderCustomerForm = ({ order }: Props) => {
 
       {/* ---------------- CUSTOMER ---------------- */}
       <Section title="Customer">
-        <ReadOnlyField label="User ID" value={order.user.id} />
-
-        {isEditing ? (
-          <FormInput
-            label="Email"
-            name="email"
-            value={values.email}
-            onChange={handleChange}
-          />
-        ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 col-span-2 gap-3">
           <ReadOnlyField label="Email" value={values.email} />
-        )}
 
-        {isEditing ? (
-          <FormInput
-            label="First Name"
-            name="firstName"
-            value={values.firstName}
-            onChange={handleChange}
-          />
-        ) : (
-          <ReadOnlyField label="First Name" value={values.firstName} />
-        )}
+          <ReadOnlyField label="Full Name" value={values.name} />
 
-        {isEditing ? (
-          <FormInput
-            label="Last Name"
-            name="lastName"
-            value={values.lastName}
-            onChange={handleChange}
-          />
-        ) : (
-          <ReadOnlyField label="Last Name" value={values.lastName} />
-        )}
+          <ReadOnlyField label="Phone" value={values.phone} />
+        </div>
 
         <div className="md:col-span-2">
           {isEditing ? (
@@ -210,10 +182,9 @@ const OrderCustomerForm = ({ order }: Props) => {
             value={values.state}
             options={states.map((s: { name: string; code: string }) => ({
               label: s.name,
-              value: s.code,
+              value: s.name,
             }))}
             onChange={(value) => {
-              console.log(value);
               handleChange({
                 target: { name: "state", value: value.target.value },
               } as any);
@@ -232,17 +203,6 @@ const OrderCustomerForm = ({ order }: Props) => {
           />
         ) : (
           <ReadOnlyField label="ZIP Code" value={values.zip} />
-        )}
-
-        {isEditing ? (
-          <FormInput
-            label="Phone"
-            name="phone"
-            value={values.phone}
-            onChange={handleChange}
-          />
-        ) : (
-          <ReadOnlyField label="Phone" value={values.phone} />
         )}
       </Section>
     </div>
@@ -267,7 +227,7 @@ const Section = ({
 );
 
 const ReadOnlyField = ({ label, value }: { label: string; value?: string }) => (
-  <div>
+  <div className="w-full">
     <span className="block text-sm font-medium text-gray-700">{label}</span>
     <div className="mt-1 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-600">
       {value || "-"}

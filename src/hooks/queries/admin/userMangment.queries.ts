@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getAdminUserOverviewByEmailService } from "src/services/admin/userMangment.service";
+import { getAdminUserOverviewByEmailService,AdminCreateUserService } from "src/services/admin/userMangment.service";
 
 export const useAdminUserOverviewByEmailMutation = () => {
   return useMutation({
@@ -14,3 +14,10 @@ export const useAdminUserOverviewByIdQuery = (userId: string,props: any) => {
     ...props,
   });
 };
+
+
+export const useAdminCreateUserMutation = () => {
+  return useMutation({
+    mutationFn: (data: any) => AdminCreateUserService(data),
+  });
+}

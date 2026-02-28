@@ -1,6 +1,6 @@
 import { Trash2 } from "lucide-react";
 import Pagination from "src/components/ui/Pagination";
-
+import getImageLink from "src/utils/getImageLink";
 type UploadedImagesListProps = {
   uploads: any[];
   isLoading: boolean;
@@ -67,7 +67,7 @@ export default function UploadedImagesList({
                   }
                 >
                   <img
-                    src={img.imageUrl}
+                    src={getImageLink(img.imageUrl)}
                     className="object-fit aspect-square size-full object-cover transition duration-300 group-hover:scale-105"
                     alt="uploaded"
                   />

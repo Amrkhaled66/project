@@ -83,7 +83,7 @@ const LoginPage: React.FC = () => {
             Login
           </Button>
 
-          <p
+          {/* <p
             className="mt-3 text-center text-sm"
             style={{ color: "var(--color-strokeFont)" }}
           >
@@ -95,7 +95,7 @@ const LoginPage: React.FC = () => {
             >
               Sign up
             </a>
-          </p>
+          </p> */}
         </form>
       </div>
     </AuthLayout>

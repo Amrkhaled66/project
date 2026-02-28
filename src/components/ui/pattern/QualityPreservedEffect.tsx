@@ -51,7 +51,7 @@ const QualityPreservedEffect: React.FC<PatternGridProps> = ({
 
   if (!hasQualityPreserve) return null;
 
-  const { cols, rows } = designData.canvas.size;
+  const { cols, rows } = designData.canvas;
 
   const preservedColor =
     designData.colors.qualityPreserve || "#D1D1D1";

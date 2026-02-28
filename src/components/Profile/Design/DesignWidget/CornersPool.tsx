@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import Pagination from "src/components/ui/Pagination";
 import { useDesign } from "src/context/desgin.context";
-
+import getImageLink from "src/utils/getImageLink";
 const ITEMS_PER_PAGE = 16;
 import { useMyCorners } from "src/hooks/queries/upload.queries";
 export default function CornersPool() {
@@ -47,7 +47,7 @@ export default function CornersPool() {
             <CornerImage
               key={img.id}
               id={img.id}
-              src={img.imageUrl}
+              src={getImageLink(img.imageUrl)}
               isSelected={isSelected}
               cornerIndex={selectedCornerIndex}
               deleteCornerImage={deleteCornerImage}

@@ -21,6 +21,9 @@ import { toBlob } from "html-to-image";
 import { createDesignUpdater } from "src/utils/designUpdater";
 import { calculateDesignPrice } from "src/utils/calcDesignPrice";
 
+import { BLANKET_SIZES } from "src/data/blanketSizes";
+import { UPGRADE_IDS } from "src/data/upgrades";
+
 /* -------------------------------------------------------------------------- */
 /* Context                                                                     */
 /* -------------------------------------------------------------------------- */
@@ -70,26 +73,46 @@ type DesignContextType = {
 /* Initial State                                                               */
 /* -------------------------------------------------------------------------- */
 const initialDesignState: DesignData = {
-  meta: { name: "Untitled Design", createdAt: null, updatedAt: null },
-  canvas: { size: { name: "Lap", rows: 2, cols: 3 }, layout: [], zoom: 1 },
+  startingSize: BLANKET_SIZES[0].id,
+  canvas: {
+    size: BLANKET_SIZES[0].id,
+    rows: BLANKET_SIZES[0].rows,
+    cols: BLANKET_SIZES[0].cols,
+  },
   colors: {
     blanket: "",
     border: "",
     backing: "",
     binding: "",
-    blocking: { colors: [], random: false },
+    blocking: {
+      colors: [],
+      random: false,
+    },
     qualityPreserve: "",
   },
+
   upgrades: {
     selected: [],
     props: {
-      embroidery: { zones: null },
-      cornerstones: { type: null, images: {} },
+      embroidery: {
+        zones: null,
+      },
+      cornerstones: {
+        type: null,
+        images: {},
+      },
     },
   },
-  text: { items: [] },
-  photos: { items: [] },
-  price: "0",
+
+  text: {
+    items: [],
+  },
+
+  photos: {
+    items: [],
+  },
+
+  price: "0.00",
 };
 
 /* -------------------------------------------------------------------------- */
@@ -234,8 +257,11 @@ export const DesignProvider = ({
   /* ------------------------------------------------------------------------ */
   /* Flags                                                                    */
   /* ------------------------------------------------------------------------ */
-  const hasCornerstones = designData.upgrades.selected.some((u) =>
-    ["cornerstonesSingle", "cornerstonesDouble"].includes(u),
+  const hasCornerstones = designData.upgrades.selected.some((u: any) =>
+    [
+      UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE,
+      UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE,
+    ].includes(u),
   );
 
   const hasChanged =
@@ -254,36 +280,42 @@ export const DesignProvider = ({
         : [...selected, id];
       /* ---------------- Side Effects ---------------- */
       switch (id) {
-        case "customPanels": {
+        case UPGRADE_IDS.HEIRLOOM_PANEL: {
           if (isActive) {
             d.photos.items = d.photos.items.filter(
-              (p) => p.type !== "custom_PANEL",
+              (p) => p.type !== UPGRADE_IDS.HEIRLOOM_PANEL,
             );
           }
           break;
         }
-        case "cornerstonesSingle": {
-          if (selected.includes("cornerstonesDouble") && !isActive) {
+        case UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE: {
+          if (
+            selected.includes(UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE) &&
+            !isActive
+          ) {
             d.upgrades.selected = d.upgrades.selected.filter(
-              (u) => u !== "cornerstonesDouble",
+              (u) => u !== UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE,
             );
           }
         }
 
-        case "cornerstonesDouble":
-          {
-            if (selected.includes("cornerstonesSingle") && !isActive) {
-              d.upgrades.selected = d.upgrades.selected.filter(
-                (u) => u !== "cornerstonesSingle",
-              );
-            }
-          }
-
-        case "quiltedPreserve":{
-          if(!isActive){
-            d.upgrades.selected.push("binding")
+        case UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE: {
+          if (
+            selected.includes(UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE) &&
+            !isActive
+          ) {
+            d.upgrades.selected = d.upgrades.selected.filter(
+              (u) => u !== UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE,
+            );
           }
         }
+
+        case UPGRADE_IDS.HEIRLOOM_PRESERVE:
+          {
+            if (!isActive) {
+              d.upgrades.selected.push(UPGRADE_IDS.HEIRLOOM_EDGE);
+            }
+          }
 
           break;
 
@@ -325,20 +357,35 @@ export const DesignProvider = ({
       toggleUpgrade,
       updateCanvasSize: (sizeObj: sizeObj) =>
         update((d) => {
-          d.canvas.size = structuredClone(sizeObj);
+          d.canvas.size = sizeObj.size;
+          d.canvas.rows = sizeObj.rows;
+          d.canvas.cols = sizeObj.cols;
         }),
 
       hasCornerstones,
       hasDoubleCorner:
         hasCornerstones &&
-        designData.upgrades.selected.includes("cornerstonesDouble"),
-      hasBlocking: designData.upgrades.selected.includes("blocking"),
-      hasEmbroidery: designData.upgrades.selected.includes("embroidery"),
-      hasCustomPanel: designData.upgrades.selected.includes("customPanels"),
-      hasQualityPreserve:
-        designData.upgrades.selected.includes("quiltedPreserve"),
-      hasBinding: designData.upgrades.selected.includes("binding"),
-      hasFringe: designData.upgrades.selected.includes("fringe"),
+        designData.upgrades.selected.includes(
+          UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE,
+        ),
+      hasBlocking: designData.upgrades.selected.includes(
+        UPGRADE_IDS.HEIRLOOM_BLOCK,
+      ),
+      hasEmbroidery: designData.upgrades.selected.includes(
+        UPGRADE_IDS.HEIRLOOM_SCRIPT,
+      ),
+      hasCustomPanel: designData.upgrades.selected.includes(
+        UPGRADE_IDS.HEIRLOOM_PANEL,
+      ),
+      hasQualityPreserve: designData.upgrades.selected.includes(
+        UPGRADE_IDS.HEIRLOOM_PRESERVE,
+      ),
+      hasBinding: designData.upgrades.selected.includes(
+        UPGRADE_IDS.HEIRLOOM_EDGE,
+      ),
+      hasFringe: designData.upgrades.selected.includes(
+        UPGRADE_IDS.HEIRLOOM_SEAL,
+      ),
       hasChanged,
     }),
     [designId, designData, isLoading, isError, flushSave],

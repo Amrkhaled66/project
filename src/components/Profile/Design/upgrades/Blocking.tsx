@@ -96,7 +96,7 @@ const Blocking: React.FC<BlockingProps> = ({ rows, cols, gridRef }) => {
     resizeObserver.observe(grid);
 
     return () => resizeObserver.disconnect();
-  }, [rows, cols, getColor]); // ✅ STABLE deps only
+  }, [rows, cols, getColor]); 
 
   if (!hasBlocking) return null;
 

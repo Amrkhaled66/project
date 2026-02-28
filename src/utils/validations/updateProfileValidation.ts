@@ -1,18 +1,14 @@
-import { validateFirstName, validateLastName, validatePhone, validatePassword } from "./validationRules";
+import { validateFirstName, validatePhone, validatePassword } from "./validationRules";
 
 export const updateProfileValidation = (values: {
-  firstName: string;
-  lastName: string;
+  name: string;
   phone: string;
   password: string;
 }) => {
   const errors: Partial<typeof values> = {};
 
-  const fn = validateFirstName(values.firstName);
-  if (fn) errors.firstName = fn;
-
-  const ln = validateLastName(values.lastName);
-  if (ln) errors.lastName = ln;
+  const name = validateFirstName(values.name);
+  if (name) errors.name = name;
 
   const ph = validatePhone(values.phone);
   if (ph) errors.phone = ph;

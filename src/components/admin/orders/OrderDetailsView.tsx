@@ -1,7 +1,7 @@
 import { AdminOrderDetailsResponse } from "src/services/admin/orders.service";
 import OrderCustomerForm from "./OrderCustomerForm";
 import OrderItemsList from "./OrderItemsList";
-
+import { ORDER_STATUS } from "src/utils/defaultSettings";
 type Props = {
   order: AdminOrderDetailsResponse;
 };
@@ -33,7 +33,11 @@ const OrderDetailsView = ({ order }: Props) => {
             <div className="text-2xl font-bold text-gray-900">
               ${order.totalPrice}
             </div>
-            <div className="mt-2 inline-block rounded-full px-3 py-1 text-sm font-medium">
+            <div
+              className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-medium ${
+                ORDER_STATUS[order.status].color
+              }`}
+            >
               {order.status}
             </div>
           </div>

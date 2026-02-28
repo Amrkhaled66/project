@@ -108,7 +108,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-lg border bg-white shadow-lg"
+            className="absolute z-50 mt-2 max-h-50 w-full overflow-auto rounded-lg border bg-white shadow-lg"
           >
             {options.map((option, index) => (
               <motion.li

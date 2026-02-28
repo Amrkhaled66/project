@@ -1,4 +1,5 @@
-import { DesignData } from './../../types/design.types';
+import { User } from "src/types/User";
+import { Design, DesignData } from "./../../types/design.types";
 import { axiosAdmin } from "src/api/axios";
 
 const API_BASE = import.meta.env.VITE_API_URL || "/api";
@@ -33,7 +34,7 @@ export type AdminOrderListResponse = {
 };
 
 export const getAdminOrders = async (
-  params: AdminOrderListParams
+  params: AdminOrderListParams,
 ): Promise<AdminOrderListResponse> => {
   const res = await axiosAdmin.get(`${API_BASE}/admin/orders`, {
     params,
@@ -47,26 +48,21 @@ export const getAdminOrders = async (
 /* -------------------------------------------------------------------------- */
 export type AdminOrderDetailsItem = {
   id: string;
-  designSnapshot:DesignData;
+  designSnapshot: DesignData;
 };
-
 
 export type AdminOrderDetailsResponse = {
   /* ---------------- Order Core ---------------- */
   id: string;
-  status: 
-    | "PENDING_PAYMENT"
-    | "PROCESSING"
-    | "COMPLETED"
-    | "CANCELLED";
+  status: "PENDING_PAYMENT" | "PROCESSING" | "COMPLETED" | "CANCELLED";
 
   createdAt: string;
   updatedAt: string;
 
   /* ---------------- Pricing ---------------- */
-  subtotal: string;        // before shipping / tax
-  shippingFee: string;     // e.g. "5.00"
-  totalPrice: string;      // final charged amount
+  subtotal: string; // before shipping / tax
+  shippingFee: string; // e.g. "5.00"
+  totalPrice: string; // final charged amount
 
   /* ---------------- Lifecycle ---------------- */
   paidAt: string | null;
@@ -76,16 +72,11 @@ export type AdminOrderDetailsResponse = {
 
   /* ---------------- Customer ---------------- */
   userId: string;
-  user: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-  };
+  user: User;
 
   /* ---------------- Address ---------------- */
-  country: string;        
-  state: string;          
+  country: string;
+  state: string;
   city: string;
   addressLine1: string;
   addressLine2?: string;
@@ -93,22 +84,13 @@ export type AdminOrderDetailsResponse = {
   phone: string;
 
   /* ---------------- Items ---------------- */
-  items: {
-    id: string;
-    designId?: string;
-    quantity?: number;
-    price?: string;
-    designSnapshot: DesignData;
-  }[];
+  items: Design[];
 };
 
-
 export const getAdminOrderById = async (
-  orderId: string
+  orderId: string,
 ): Promise<AdminOrderDetailsResponse> => {
-  const res = await axiosAdmin.get(
-    `${API_BASE}/admin/orders/${orderId}`
-  );
+  const res = await axiosAdmin.get(`${API_BASE}/admin/orders/${orderId}`);
 
   return res.data;
 };
@@ -128,8 +110,11 @@ export type UpdateOrderPayload = {
 
 export const updateOrder = async (
   orderId: string,
-  payload: UpdateOrderPayload
+  payload: UpdateOrderPayload,
 ) => {
-  const res = await axiosAdmin.put(`${API_BASE}/admin/orders/${orderId}`, payload);
+  const res = await axiosAdmin.put(
+    `${API_BASE}/admin/orders/${orderId}`,
+    payload,
+  );
   return res.data;
 };

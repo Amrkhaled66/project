@@ -1,5 +1,7 @@
 import { ORDER_STATUS } from "src/utils/defaultSettings";
 import { X } from "lucide-react";
+import getImageLink from "src/utils/getImageLink";
+import { DesignData } from "src/types/design.types";
 interface Props {
   order: any;
   onClose: () => void;
@@ -61,8 +63,8 @@ const OrderModal = ({ order, onClose }: Props) => {
 
       {/* ================= Content ================= */}
       <div className="space-y-6 p-6">
-        {order.items?.map((item: any, index: number) => {
-          const design = item.designSnapshot;
+        {order.designs?.map((item: any, index: number) => {
+          const design: DesignData = item.designData;
 
           return (
             <div
@@ -84,53 +86,91 @@ const OrderModal = ({ order, onClose }: Props) => {
               {/* Content */}{" "}
               <div>
                 <img
-                  src={design?.previewImage}
+                  src={getImageLink(item?.previewImage)}
                   alt="Design"
                   className="mx-auto aspect-square max-h-72 border"
                 />
               </div>
               {/* Basic Info */}
               <div className="space-y-2">
-                <Row label="Design Name" value={design?.name} />
-
+                <Row label="Design Name" value={design?.canvas.size} />
                 <Row
                   label="Size"
                   value={
                     design?.canvas?.size
-                      ? `${design.canvas.size.name} (${design.canvas.size.rows}×${design.canvas.size.cols})`
+                      ? `${design.canvas.size} (${design.canvas.rows}×${design.canvas.cols})`
                       : undefined
                   }
                 />
               </div>
               {/* Colors */}
-              <div className="space-y-2">
-                <ColorRow
-                  label="Blanket Color"
-                  color={design?.colors?.blanket}
-                />
-                <ColorRow label="Border Color" color={design?.colors?.border} />
-              </div>
-              {/* Embroidery */}
-              {design?.upgrades?.props?.embroidery?.zones?.length > 0 && (
-                <div>
-                  <p className="mb-1 text-sm font-medium">Embroidery</p>
+              <div>
+                <p className="font-semibold">Colors</p>
 
-                  <ul className="space-y-1 text-xs text-neutral-700">
-                    {design.upgrades.props.embroidery.zones.map((zone: any) => (
-                      <li key={zone.id}>
-                        <span className="font-medium">{zone.id}</span>:{" "}
-                        {zone.text}
-                      </li>
-                    ))}
-                  </ul>
+                <div className="space-y-2">
+                  {Object.entries(design.colors || {})
+                    .filter(([_, value]) => value)
+                    .map(([key, value]) => {
+                      if (key === "blocking") {
+                        const isObject =
+                          typeof value === "object" && value !== null;
+                        const hasRandom =
+                          isObject &&
+                          "random" in value &&
+                          (value as any).random;
+                        const hasColors =
+                          isObject &&
+                          "colors" in value &&
+                          Array.isArray((value as any).colors);
+
+                        return (
+                          <div key={key}>
+                            <div style={{ backgroundColor: value as string }} />
+                            {isObject && !hasRandom && hasColors ? (
+                              <ColorRow
+                                label={key}
+                                color={(value as any).colors[0]}
+                              />
+                            ) : isObject && hasColors ? (
+                              <div className="flex items-center gap-1">
+                                {(value as any).colors.map(
+                                  (color: string, idx: number) => (
+                                    <ColorRow
+                                      key={idx}
+                                      label={key}
+                                      color={color}
+                                    />
+                                  ),
+                                )}
+                              </div>
+                            ) : typeof value === "string" ? (
+                              value
+                            ) : null}
+                          </div>
+                        );
+                      } else {
+                        return <ColorRow label={key} color={value as string} />;
+                      }
+                    })}
                 </div>
-              )}
+              </div>
+              {/* Upgrades */}
+              <div>
+                <p className="font-semibold">Selected Elements:</p>
+                <div className="space-y-1">
+                  {design.upgrades.selected.map((upgrade: string) => (
+                    <span key={upgrade} className="text-sm">
+                      {upgrade}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           );
         })}
 
         {/* Empty State */}
-        {(!order.items || order.items.length === 0) && (
+        {(!order.designs || order.designs.length === 0) && (
           <p className="text-sm text-neutral-500">
             No items found in this order.
           </p>

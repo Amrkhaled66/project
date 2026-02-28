@@ -26,7 +26,7 @@ const OrdersTable = () => {
       render: (value: string) => {
         const colorClass =
           (typeof value === "string" &&
-            ORDER_STATUS[value.toLowerCase() as keyof typeof ORDER_STATUS]) ||
+            ORDER_STATUS[value]?.color) ||
           "bg-neutral-100 text-neutral-700";
 
         return (

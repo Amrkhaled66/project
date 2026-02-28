@@ -36,7 +36,7 @@ export const AxiosProvider = ({ children }: { children: React.ReactNode }) => {
       async (error) => {
         if (error?.response?.status === 401 && isAuthenticated) {
           logout();
-          navigate("/signin", { replace: true });
+          navigate("/login", { replace: true });
           EndedSessionModal();
         }
         return Promise.reject(error);

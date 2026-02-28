@@ -8,6 +8,7 @@ import OrderModal from "./OrderModel";
 
 import { useLatestThreeOrders } from "src/hooks/queries/orders.queries";
 import { ORDER_STATUS } from "src/utils/defaultSettings";
+import getImageLink from "src/utils/getImageLink";
 
 /* ---------------- Skeleton ---------------- */
 const OrderSkeleton = () => (
@@ -29,13 +30,12 @@ const OrderCard = ({
   order: any;
   onOpen: (id: string) => void;
 }) => {
-  const item = order.items?.[0];
-  const design = item?.designSnapshot;
+  const item = order.designs?.[0];
 
   return (
     <div className="group relative flex items-start gap-3 rounded-xl border border-neutral-200 bg-white/60 p-3 transition hover:bg-neutral-50">
       <img
-        src={design?.previewImage}
+        src={getImageLink(item?.previewImage)}
         alt="Order preview"
         className="size-16 rounded-lg object-cover ring-1 ring-neutral-200"
       />
@@ -57,22 +57,23 @@ const OrderCard = ({
 
         <p className="mt-0.5 text-xs text-neutral-600">
           Placed on
+          <br />
           {order.createdAt
             ? new Date(order.createdAt).toLocaleDateString()
             : "—"}
         </p>
 
-        {design?.canvas?.size && (
+        {item?.canvas?.size && (
           <p className="mt-1 line-clamp-1 text-xs text-neutral-800">
-            Size: {design.canvas.size.name} ({design.canvas.size.rows}×
-            {design.canvas.size.cols})
+            Size: {item.canvas.size.name} ({item.canvas.size.rows}×
+            {item.canvas.size.cols})
           </p>
         )}
       </div>
 
       <button
         onClick={() => onOpen(order.id)}
-        className="absolute right-2 bottom-0 rounded-lg border border-neutral-200 bg-white px-2 py-1 text-xs text-neutral-700 opacity-0 transition group-hover:opacity-100"
+        className="absolute right-2 bottom-2 rounded-lg border border-neutral-200 bg-white px-2 py-1 text-xs text-neutral-700 sm:opacity-0 transition group-hover:opacity-100"
       >
         View
       </button>
@@ -94,7 +95,7 @@ const PreviousOrder = () => {
     latestOrders.find((o: any) => o.id === openOrderId) || null;
 
   return (
-    <aside className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
+    <aside className="rounded-2xl border h-fit border-neutral-200 bg-white p-4 shadow-sm">
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Previous Orders</h2>

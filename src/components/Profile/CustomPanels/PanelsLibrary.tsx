@@ -3,7 +3,7 @@ import { Check, Image as ImageIcon } from "lucide-react";
 
 import Pagination from "src/components/ui/Pagination";
 import EmptyState from "src/components/ui/EmptyState";
-
+import getImageLink from "src/utils/getImageLink";
 type Panel = {
   id: string;
   imageUrl: string;
@@ -171,7 +171,7 @@ function PanelCard({
       {/* IMAGE */}
       <div className="relative aspect-square bg-gray-100">
         <img
-          src={panel.imageUrl}
+          src={getImageLink(panel.imageUrl)}
           alt="Panel"
           className="h-full w-full object-cover"
         />

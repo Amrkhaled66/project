@@ -35,7 +35,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   // Admin context
   const { adminLogout } = useAdminContext();
 
-  console.log(isAdminPath)
   const handleLogout = () => {
     if (isAdminPath) {
       adminLogout();

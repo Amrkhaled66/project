@@ -11,40 +11,51 @@ import { RotateCcw } from "lucide-react";
 
 const Sizes = () => {
   const { designData, updateCanvasSize } = useDesign();
-  // Correct: selectedName is actually ID
-  const { name: selectedId, cols, rows } = designData.canvas?.size ||{ name: "Lap", cols: 2, rows: 3 };
+  const startingSizeId = designData.startingSize || BLANKET_SIZES[0].id;
+  const {
+    size: selectedId,
+    cols,
+    rows,
+  } = designData.canvas || { name: "Lap", cols: 2, rows: 3 };
 
-const onSelectSize = (id: BlanketSizeId) => {
-  const s = getSizeById(id);
-  // Update the canvas size in the state
-  updateCanvasSize({
-    name: s.id,
-    cols: s.cols,
-    rows: s.rows,
-  });
-};
+  const startingSizeIndex = BLANKET_SIZES.findIndex(
+    (s) => s.id === startingSizeId,
+  );
 
+  const visibleSizes = BLANKET_SIZES.slice(
+    startingSizeIndex >= 0 ? startingSizeIndex : 0,
+  );
 
+  const onSelectSize = (id: BlanketSizeId) => {
+    const s = getSizeById(id);
+    // Update the canvas size in the state
+    updateCanvasSize({
+      size: s.id,
+      cols: s.cols,
+      rows: s.rows,
+    });
+  };
 
   const handleFlipOrientation = () => {
     if (rows !== cols) {
-      const flipped = flipSizeOrientation(selectedId); // MUST use ID
+      const isFlipped = getSizeById(selectedId)?.cols === rows; 
+      const flipped = flipSizeOrientation(selectedId,isFlipped); // MUST use ID
 
       updateCanvasSize({
-        name: flipped.id,
+        size: flipped.id,
         cols: flipped.cols,
         rows: flipped.rows,
       });
     }
   };
-
+  console.log(visibleSizes, startingSizeIndex, startingSizeId);
   return (
     <DesginContainer header="Blanket Size" className="h-full">
       <div className="w-full space-y-3">
-        {BLANKET_SIZES.map((s) => {
-          const isSelected = selectedId === s.id; // FIX
-
+        {visibleSizes.map((s) => {
+          const isSelected = selectedId === s.id;
           const isFlippable = s.rows !== s.cols;
+          const stepPrice = s.price - getSizeById(startingSizeId)?.price!;
 
           return (
             <div
@@ -64,13 +75,15 @@ const onSelectSize = (id: BlanketSizeId) => {
                   />
 
                   <span className="text-sm text-neutral-900">
-                    {s.name} ({s.cols}×{s.rows})
+                    {s.name} ({s.cols}x{s.rows})
                   </span>
                 </div>
 
-                <span className="text-sm font-medium text-neutral-800">
-                  ${s.price.toFixed(2)}
-                </span>
+                {s.id !== startingSizeId && (
+                  <span className="text-sm font-medium text-neutral-800">
+                    ${stepPrice.toFixed(2)}
+                  </span>
+                )}
               </label>
 
               {isSelected && isFlippable && (

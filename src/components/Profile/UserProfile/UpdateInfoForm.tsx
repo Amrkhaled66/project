@@ -11,18 +11,16 @@ export default function UpdateInfoForm() {
   const { mutate, isPending } = useUpdateUserProfile();
   const {
     authData: { user },
-    updateUser
+    updateUser,
   } = useAuth();
-  const { firstName, lastName, phone } = user || {
-    firstName: "",
-    lastName: "",
+  const { name, phone } = user || {
+    name: "",
     phone: "",
   };
   const { values, errors, handleChange, handleSubmit } = useForm({
     initialValues: {
-      firstName,
-      lastName,
-      phone,
+      name: name || "",
+      phone: phone || "",
       password: "",
     },
 
@@ -31,7 +29,7 @@ export default function UpdateInfoForm() {
     onSubmit: (vals) => {
       mutate(vals, {
         onSuccess: (data) => {
-          updateUser(data.data)
+          updateUser(data.data);
           Alert({
             title: "Profile Updated",
             text: "Your profile information has been successfully updated.",
@@ -62,34 +60,25 @@ export default function UpdateInfoForm() {
           {/* First / Last Name */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormInput
-              label="First Name"
-              name="firstName"
+              label="Name"
+              name="name"
               placeholder="Jane"
-              value={values.firstName}
+              value={values.name}
               onChange={handleChange}
-              error={errors.firstName}
+              error={errors.name}
             />
 
+            {/* Phone */}
             <FormInput
-              label="Last Name"
-              name="lastName"
-              placeholder="Doe"
-              value={values.lastName}
+              label="Phone"
+              name="phone"
+              type="number"
+              placeholder="555-555-5555"
+              value={values.phone}
               onChange={handleChange}
-              error={errors.lastName}
+              error={errors.phone}
             />
           </div>
-
-          {/* Phone */}
-          <FormInput
-            label="Phone"
-            name="phone"
-            type="number"
-            placeholder="555-555-5555"
-            value={values.phone}
-            onChange={handleChange}
-            error={errors.phone}
-          />
 
           {/* Password (optional) */}
           <PasswordInput

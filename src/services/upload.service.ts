@@ -18,6 +18,23 @@ export const uploadImagesService = async (files: File[], type: string) => {
   return res.data;
 };
 
+export const getUserUnusedUploadsService = async (
+  page: number,
+  limit: number,
+  userId?: string,
+  type?: string,
+) => {
+  const res = await axiosPrivate.get("/uploads/unused", {
+    params: {
+      page,
+      limit,
+      ...(userId && { userId }),
+      type: type,
+    },
+  });
+
+  return res.data;
+};
 export const getUserUploadsService = async (
   page: number,
   limit: number,
@@ -38,7 +55,6 @@ export const getUserUploadsService = async (
 
 export const deleteUploadService = async (
   uploadId: string,
-  userId?: string,
 ) => {
   const res = await axiosPrivate.delete(`/uploads/${uploadId}`);
 

@@ -3,8 +3,6 @@ import {
   useEffect,
   useRef,
   forwardRef,
-  useImperativeHandle,
-  useCallback,
 } from "react";
 
 import CanvasFront from "./FrontGrid";
@@ -36,8 +34,9 @@ const Canvas = forwardRef<
     const backingColor = designData.colors?.backing;
     const bindingColor = designData.colors?.binding;
 
-    const { rows, cols } = designData?.canvas?.size || { rows: 2, cols: 3 };
+    const { rows, cols } = designData?.canvas || { rows: 2, cols: 3 };
 
+    console.log(designData.canvas)
     // -------------------------------------------------------
     // FIXED: Reset items ONLY when canvas size REALLY changes
     // -------------------------------------------------------

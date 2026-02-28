@@ -9,3 +9,10 @@ export const getAdminUserOverviewByEmailService = async (
 
   return res.data;
 };
+
+
+
+export const AdminCreateUserService = async (data: any) => {
+  const res = await axiosAdmin.post("/user", data);
+  return res.data;
+};

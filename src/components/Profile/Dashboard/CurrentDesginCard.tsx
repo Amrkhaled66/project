@@ -6,6 +6,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useCart } from "src/context/cart.context";
 import { useLatestDesign } from "src/hooks/queries/design.queries";
 import priceFormatter from "src/utils/priceFormmater";
+import getImageLink from "src/utils/getImageLink";
 
 const CurrentDesignCard = () => {
   const { cartItems } = useCart();
@@ -55,7 +56,7 @@ const CurrentDesignCard = () => {
         <div className="flex-shrink-0">
           {latestDesign.previewImage ? (
             <img
-              src={latestDesign.previewImage}
+              src={ getImageLink(latestDesign.previewImage)}
               alt={latestDesign.name}
               className="h-32 w-40 rounded-lg border object-contain"
             />

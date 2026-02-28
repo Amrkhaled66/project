@@ -4,7 +4,7 @@ import UploadedImagesList from "src/components/Profile/Uploads/UploadedImagesLis
 import Tabs from "src/components/ui/Tabs";
 import {
   useUploadMyImages,
-  useMyUploads,
+  useGetAllUploads,
   useMyCorners,
   useDeleteMyUpload,
 } from "src/hooks/queries/upload.queries";
@@ -41,7 +41,7 @@ export default function Uploads() {
   };
 
   /* ---------------- Queries ---------------- */
-  const panelsQuery = useMyUploads(panelPage, ITEMS_PER_PAGE);
+  const panelsQuery = useGetAllUploads(panelPage, ITEMS_PER_PAGE);
   const cornersQuery = useMyCorners(cornerPage, ITEMS_PER_PAGE);
 
   /* ---------------- Delete ---------------- */

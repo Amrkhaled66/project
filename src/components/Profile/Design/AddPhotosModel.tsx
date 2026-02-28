@@ -6,9 +6,9 @@ import MainDashButton from "src/components/ui/MainDashButton";
 import Toast from "src/components/ui/Toast";
 import { useDesign } from "src/context/desgin.context";
 import { useMyUploads } from "src/hooks/queries/upload.queries";
+import getImageLink from "src/utils/getImageLink";
 
 const ITEMS_PER_PAGE = 12;
-const API_URL = import.meta.env.VITE_API_URL;
 
 export default function AddPhotosModel({
   isOpen,
@@ -33,8 +33,7 @@ export default function AddPhotosModel({
   const { designData, update } = useDesign();
   const items = designData?.photos?.items || [];
 
-  const maxphoto =
-    designData.canvas.size.cols * designData.canvas.size.rows;
+  const maxphoto = designData.canvas.cols * designData.canvas.rows;
 
   const isFull = itemsLength + selected.length >= maxphoto;
 
@@ -44,16 +43,16 @@ export default function AddPhotosModel({
       prev.includes(src)
         ? prev.filter((s) => s !== src)
         : !isFull
-        ? [...prev, src]
-        : (() => {
-            Toast(
-              "Maximum photo slots filled!",
-              "warning",
-              "#fff3cd",
-              "top-end"
-            );
-            return prev;
-          })()
+          ? [...prev, src]
+          : (() => {
+              Toast(
+                "Maximum photo slots filled!",
+                "warning",
+                "#fff3cd",
+                "top-end",
+              );
+              return prev;
+            })(),
     );
   };
 
@@ -103,7 +102,7 @@ export default function AddPhotosModel({
                   } ${isSelected ? "ring-primary ring-2" : ""}`}
                 >
                   <img
-                    src={src}
+                    src={getImageLink(src)}
                     className="h-full w-full object-cover"
                   />
 

@@ -13,7 +13,7 @@ export function createDesignUpdater<T extends Record<string, unknown>>(options: 
   let saveTimeout: ReturnType<typeof setTimeout> | null = null;
   let hydrated = false;
 
-  const VISUAL_KEYS: (keyof T)[] = ["canvas", "colors", "photos"] as any;
+  const VISUAL_KEYS: (keyof T)[] = ["canvas", "colors", "photos","upgrades"] as any;
 
   async function execute(current: Partial<T>) {
     if (!hydrated) return;

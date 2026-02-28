@@ -1,6 +1,12 @@
 // --------------------------------------
 // 🔤 Name Validation
 // --------------------------------------
+export const validateFullName = (value: string) => {
+  if (!value.trim()) return "Full name is required";
+  if (value.trim().split(" ").length < 2)
+    return "Full name must include both first and last name";
+  return "";
+};
 export const validateFirstName = (value: string) => {
   if (!value.trim()) return "First name is required";
   if (value.trim().length < 3)

@@ -1,6 +1,7 @@
 import { useDroppable } from "@dnd-kit/core";
 import { useDesign } from "src/context/desgin.context";
-
+import getImageLink from "src/utils/getImageLink";
+import { UPGRADE_IDS } from "src/data/upgrades";
 const CornerBox = ({
   index,
   position,
@@ -48,9 +49,9 @@ export default function Corners() {
     "top-0 left-1/2 -translate-x-1/2",
     "bottom-0 left-1/2 -translate-x-1/2",
   ];
-
+console.log(designData)
   const isDouble = designData.upgrades?.selected?.includes(
-    "cornerstonesDouble"
+    UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE
   );
 
   const cornersToRender = isDouble ? positions : positions.slice(0, 4);

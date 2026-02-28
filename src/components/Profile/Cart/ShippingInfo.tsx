@@ -5,107 +5,29 @@ import FormSelect from "src/components/ui/FormSelect";
 import FormTextarea from "src/components/ui/FormTeaxtArea";
 import Button from "src/components/ui/Button";
 import { Tab } from "./CartForm";
-
 import { useStates } from "src/hooks/queries/staticData.queries";
 
-import {
-  validateFirstName,
-  validateLastName,
-  validateEmail,
-  validatePhone,
-} from "src/utils/validations/validationRules";
-
-import {
-  validateState,
-  validateCity,
-  validateAddressLine1,
-  validateZip,
-} from "src/utils/validations/addressValidation";
-
-import { useCart } from "src/context/cart.context";
-import { useCreateOrder } from "src/hooks/queries/orders.queries";
-import { CreateOrderPayload } from "src/types/Order";
-
 type ShippingInfoProps = {
-  values: any;
-  setValues: React.Dispatch<React.SetStateAction<any>>;
+  values: Record<string, any>;
+  errors: Record<string, string | undefined>;
+  handleChange: (e: any) => void;
+  handleSubmit: (e?: React.FormEvent) => void | Promise<void>;
+  isPending: boolean;
   onChangeTab?: (tab: Tab) => void;
 };
 
 const ShippingInfo: React.FC<ShippingInfoProps> = ({
   values,
-  setValues,
-  onChangeTab,
+  errors,
+  handleChange,
+  handleSubmit,
+  isPending,
 }) => {
-  const [errors, setErrors] = React.useState<Record<string, string>>({});
-
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setValues((prev: any) => ({ ...prev, [name]: value }));
-  };
   const { data: states } = useStates();
-
-  const validateAll = () => {
-    const newErrors: Record<string, string> = {
-      firstName: validateFirstName(values.firstName),
-      lastName: validateLastName(values.lastName),
-      email: validateEmail(values.email),
-      phone: validatePhone(values.phone),
-      state: validateState(values.state),
-      city: validateCity(values.city),
-      addressLine1: validateAddressLine1(values.addressLine1),
-      zip: validateZip(values.zip),
-    };
-
-    Object.keys(newErrors).forEach(
-      (key) => !newErrors[key] && delete newErrors[key],
-    );
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // const onSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (validateAll()) {
-  //     onChangeTab("Payment Details");
-  //     window.scrollTo({
-  //       top: 0,
-  //       left: 0,
-  //       behavior: "smooth",
-  //     });
-  //   }
-  // };
-
-  const { cartItems, clearCart } = useCart();
-  const { mutate: createOrder, isPending } = useCreateOrder();
-
-  const handlePayNow = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateAll()) return;
-    const payload: CreateOrderPayload = {
-      items: cartItems.map((item: any) => ({
-        designId: item.designId,
-        quantity: item.quantity,
-      })),
-      address: values,
-    };
-
-    createOrder(payload, {
-      onSuccess: (response) => {
-        console.log("✅ Order created successfully:", response);
-        clearCart();
-        window.location.href = response.paymentUrl;
-      },
-      onError: (error) => {
-        console.error("❌ Failed to create order:", error);
-      },
-    });
-  };
 
   return (
     <motion.form
-      onSubmit={handlePayNow}
+      onSubmit={handleSubmit}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
@@ -115,23 +37,23 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormInput
-          label="First Name"
-          name="firstName"
-          value={values?.firstName}
+          label="Full Name"
+          name="name"
+          value={values.name}
           onChange={handleChange}
-          error={errors.firstName}
+          error={errors.name}
           required
         />
 
         <FormInput
-          label="Last Name"
-          name="lastName"
-          value={values.lastName}
+          label="Phone"
+          name="phone"
+          value={values.phone}
           onChange={handleChange}
-          error={errors.lastName}
+          error={errors.phone}
           required
         />
-
+        
         <FormSelect
           label="State / Province"
           name="state"
@@ -185,16 +107,7 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
           required
         />
 
-        <FormInput
-          label="Phone"
-          name="phone"
-          value={values.phone}
-          onChange={handleChange}
-          error={errors.phone}
-          required
-        />
-
-        <FormInput
+        {/* <FormInput
           className="sm:col-span-2"
           label="Email"
           name="email"
@@ -203,7 +116,7 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
           onChange={handleChange}
           error={errors.email}
           required
-        />
+        /> */}
 
         <FormTextarea
           className="sm:col-span-2"

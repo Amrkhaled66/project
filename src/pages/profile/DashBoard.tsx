@@ -35,7 +35,7 @@ const DashBoard = () => {
           Dashboard Overview
         </h1>
         <p className="text-base font-semibold text-gray-700 sm:text-lg">
-          Welcome back, <span className="underline">{user?.firstName}!</span>
+          Welcome back, <span className="underline">{user?.name}!</span>
         </p>
       </div>
 

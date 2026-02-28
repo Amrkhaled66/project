@@ -26,7 +26,7 @@ const DashBoardLayout: React.FC = () => {
           menuItems={userSidebarMenu}
           basePath="/profile"
           userInfo={{
-            name: authData?.user?.firstName,
+            name: authData?.user?.name,
             email: authData?.user?.email,
           }}
         />
@@ -43,7 +43,7 @@ const DashBoardLayout: React.FC = () => {
         </div>
       </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </AxiosProvider>
   );
 };

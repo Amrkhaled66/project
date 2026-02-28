@@ -16,7 +16,7 @@ const ITEMS_PER_PAGE = 20;
 const CustomPanel = () => {
   const { designData, update } = useDesign();
 
-  const maxphoto = designData.canvas.size.cols * designData.canvas.size.rows;
+  const maxphoto = designData.canvas.cols * designData.canvas.rows;
 
   /* ---------------- Fetch custom panels ---------------- */
   const { data, isLoading, isError } = useMyCustomPanels(1, ITEMS_PER_PAGE);

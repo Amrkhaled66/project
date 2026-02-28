@@ -4,9 +4,14 @@ import Skeleton from "react-loading-skeleton";
 import { PackageSearch } from "lucide-react";
 import { ORDER_STATUS } from "src/utils/defaultSettings";
 import priceFormmater from "src/utils/priceFormmater";
-
+import getImageLink from "src/utils/getImageLink";
+import Button from "src/components/ui/Button";
+import Model from "src/components/ui/Model";
+import OrderModal from "./OrderModel";
+import { useState } from "react";
 export default function TrackOrder() {
   const { data: order, isLoading } = useLatestOrder();
+  const [openOrderId, setOpenOrderId] = useState<string | null>(null);
 
   /* -------------------- LOADING -------------------- */
   if (isLoading) {
@@ -48,18 +53,13 @@ export default function TrackOrder() {
     }));
 
   // Current step index
-  const currentIndex = steps.findIndex(
-    (step) => step.key === order.status
-  );
+  const currentIndex = steps.findIndex((step) => step.key === order.status);
 
   // Progress percentage
   const progress =
-    currentIndex >= 0
-      ? (currentIndex / (steps.length - 1)) * 100
-      : 0;
+    currentIndex >= 0 ? (currentIndex / (steps.length - 1)) * 100 : 0;
 
-  const image =
-    order.items[0]?.designSnapshot?.previewImage || placeholder;
+  const image = order.designs[0]?.previewImage || placeholder;
 
   const placedDate = new Date(order.createdAt).toLocaleDateString();
 
@@ -71,24 +71,31 @@ export default function TrackOrder() {
       {/* ==================== HEADER ==================== */}
       <div className="flex items-start gap-4 p-6">
         <img
-          src={image}
+          src={getImageLink(image)}
           alt="Order"
           className="size-20 object-cover ring-1 ring-neutral-200"
         />
 
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <h2 className=" font-semibold">
-              Order #{order.id}
-            </h2>
+        <div className="w-full min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="w-1/2 font-semibold">Order #{order.id}</h2>
 
-            {statusUI && (
-              <span
-                className={`rounded-full px-2.5 py-0.5 text-center text-[10px] text-nowrap font-medium ${statusUI.color}`}
+            <div className="flex flex-col gap-2">
+              {statusUI && (
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-center text-[10px] font-medium text-nowrap ${statusUI.color}`}
+                >
+                  {statusUI.label}
+                </span>
+              )}
+              <Button
+                variant="primary"
+                onClick={() => setOpenOrderId(order.id)}
+                className="text-xs"
               >
-                {statusUI.label}
-              </span>
-            )}
+                View
+              </Button>
+            </div>
           </div>
 
           <p className="mt-1 text-sm text-neutral-600">
@@ -160,8 +167,8 @@ export default function TrackOrder() {
                         {i === currentIndex
                           ? "In progress"
                           : done
-                          ? "Completed"
-                          : "Pending"}
+                            ? "Completed"
+                            : "Pending"}
                       </span>
                     </div>
                   </div>
@@ -171,15 +178,20 @@ export default function TrackOrder() {
           </ul>
         </div>
       </div>
+      <Model isOpen={!!openOrderId} onClose={() => setOpenOrderId(null)}>
+        {order && (
+          <OrderModal order={order} onClose={() => setOpenOrderId(null)} />
+        )}
+      </Model>
 
       {/* ==================== FOOTER ==================== */}
-      <div className="flex items-center justify-between border-t bg-neutral-50 p-4">
+      {/* <div className="flex items-center justify-between border-t bg-neutral-50 p-4">
         <p className="text-xs text-neutral-600">Need help?</p>
 
         <button className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-neutral-800">
           Contact Support
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -42,8 +42,8 @@ import { toBlob } from "html-to-image";
 type TabId =
   | "size"
   | "colors"
-  | "upgrades"
-  | "text"
+  | "elements"
+  | "script"
   | "corners"
   | "customPanel";
 
@@ -168,14 +168,14 @@ export default function BlanketDesigner() {
         isActive: true,
       },
       {
-        id: "upgrades",
-        label: "Upgrades",
+        id: "elements",
+        label: "elements",
         component: <Upgrades selectedUpgrades={selectedUpgrades} />,
         isActive: true,
       },
       {
-        id: "text",
-        label: "Text",
+        id: "script",
+        label: "script",
         component: <Text />,
         isActive: hasEmbroidery,
       },

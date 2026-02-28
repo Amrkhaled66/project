@@ -84,3 +84,14 @@ input[type="password"]::-webkit-textfield-decoration-container {
   display: none;
 }
 
+
+/* Hide arrows for number input */
+.hide-arrows::-webkit-outer-spin-button,
+.hide-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.hide-arrows[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}

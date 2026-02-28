@@ -1,23 +1,14 @@
 import { BlanketSizeId } from "src/data/blanketSizes";
+
 export interface sizeObj {
-  name: BlanketSizeId;
+  size: BlanketSizeId;
   rows: number;
   cols: number;
 }
 
 export interface DesignData {
-  meta: {
-    name: string;
-    createdAt: string | null;
-    updatedAt: string | null;
-  };
-
-  canvas: {
-    size: sizeObj;
-    layout: any[];
-    zoom: number;
-  };
-
+  canvas: sizeObj;
+  startingSize: BlanketSizeId;
   colors: {
     blanket: string | null;
     border: string | null;
@@ -33,10 +24,12 @@ export interface DesignData {
   upgrades: {
     selected: string[];
     props: {
-      embroidery: { zones: any };
+      embroidery: {
+        zones: any;
+      };
       cornerstones: {
         type: string | null;
-        images: Record<number, string | null>;
+        images: Record<string, string>;
       };
     };
   };
@@ -48,6 +41,7 @@ export interface DesignData {
   photos: {
     items: any[];
   };
+
   price: string;
 }
 

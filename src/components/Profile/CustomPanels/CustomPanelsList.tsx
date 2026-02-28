@@ -4,8 +4,12 @@ import EmptyState from "src/components/ui/EmptyState";
 import ConfirmDialog from "src/components/ui/ConfirmDialog";
 import Pagination from "src/components/ui/Pagination";
 
-import { useMyCustomPanels,useMyCorners } from "src/hooks/queries/upload.queries";
+import {
+  useMyCustomPanels,
+  useMyCorners,
+} from "src/hooks/queries/upload.queries";
 import { Trash } from "lucide-react";
+import getImageLink from "src/utils/getImageLink";
 type CustomPanel = {
   id: string;
   imageUrl: string;
@@ -94,7 +98,7 @@ function PanelCard({
     <div className="group relative w-fit overflow-hidden rounded-lg border bg-white shadow-sm">
       {/* IMAGE */}
       <img
-        src={panel.imageUrl}
+        src={getImageLink(panel.imageUrl)}
         alt="Custom Panel"
         className="object-fit aspect-square w-40"
       />

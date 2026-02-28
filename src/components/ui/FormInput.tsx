@@ -9,6 +9,7 @@ type FormInputProps = {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   required?: boolean;
+  disabled?: boolean;
   className?: string;
   error?: string;
 };
@@ -22,6 +23,7 @@ const FormInput: React.FC<FormInputProps> = ({
   onChange,
   onBlur,
   required,
+  disabled,
   className = "",
   error,
 }) => {
@@ -36,7 +38,8 @@ const FormInput: React.FC<FormInputProps> = ({
         onChange={onChange}
         onBlur={onBlur}
         required={required}
-        className={`rounded-xl border animate px-3 py-2.5 text-sm outline-none placeholder:text-gray-400 focus:ring-0 ${
+        disabled={disabled}
+        className={`rounded-xl border hide-arrows animate px-3 py-2.5 text-sm outline-none placeholder:text-gray-400 focus:ring-0 ${
           error
             ? "border-red-500 focus:border-red-500"
             : "border-gray-300 focus:border-gray-400"
