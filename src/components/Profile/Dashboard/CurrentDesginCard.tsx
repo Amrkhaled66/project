@@ -27,7 +27,6 @@ const CurrentDesignCard = () => {
   }
 
   if (!latestDesign) {
-    console.log("first");
     return <NoDesignCTA />;
   }
 

@@ -48,7 +48,7 @@ const Sizes = () => {
       });
     }
   };
-  console.log(visibleSizes, startingSizeIndex, startingSizeId);
+
   return (
     <DesginContainer header="Blanket Size" className="h-full">
       <div className="w-full space-y-3">

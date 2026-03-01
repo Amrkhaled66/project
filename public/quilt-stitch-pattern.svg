@@ -10,7 +10,7 @@
        Q30,0 60,20 
        T120,40"
     stroke="rgba(255,255,255,0.25)"
-    stroke-width="0.8"
+    strokeWidth="0.8"
     fill="none"
     stroke-linecap="round"
   />

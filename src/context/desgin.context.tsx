@@ -45,7 +45,7 @@ type DesignContextType = {
   handleDragStart: () => void;
   handleDragEnd: (event: any) => void;
   isDragging: boolean;
-
+  data: any;
   flushSave: () => Promise<void>;
 
   updateBlanketColor: (color: string | null) => void;
@@ -312,7 +312,10 @@ export const DesignProvider = ({
 
         case UPGRADE_IDS.HEIRLOOM_PRESERVE:
           {
-            if (!isActive) {
+            if (
+              !isActive &&
+              !d.upgrades.selected.includes(UPGRADE_IDS.HEIRLOOM_EDGE)
+            ) {
               d.upgrades.selected.push(UPGRADE_IDS.HEIRLOOM_EDGE);
             }
           }
@@ -331,6 +334,7 @@ export const DesignProvider = ({
     () => ({
       designId,
       designData,
+      data,
       update,
       isLoading,
       isError,

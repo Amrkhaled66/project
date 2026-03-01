@@ -31,7 +31,6 @@ const OrderModal = ({ order, onClose }: Props) => {
   const placedDate = order.createdAt
     ? new Date(order.createdAt).toLocaleDateString()
     : "—";
-  console.log(order);
 
   return (
     <section className="max-h-[85vh] w-full overflow-y-auto rounded-2xl border border-neutral-200 bg-white shadow-xl">

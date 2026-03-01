@@ -230,7 +230,6 @@ const OrderItemsList = ({ items }: Props) => {
                     .filter(([_, value]) => value)
                     .map(([key, value]) => {
                       if (key === "blocking") {
-                        console.log(value);
                         return (
                           <div
                             key={key}

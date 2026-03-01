@@ -26,7 +26,7 @@ const StitchTile: React.FC<StitchTileProps> = ({
 }) => {
   return (
     <div
-      className={`flex z-100 items-center justify-center ${className}`}
+      className={`flex opacity-50 z-100 items-center justify-center ${className}`}
       style={{ width: size, height: size }}
     >
       <StitchPattern

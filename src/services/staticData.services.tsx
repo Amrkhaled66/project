@@ -7,6 +7,5 @@ export const getOrderStatuses = async () => {
 
 export const getStates = async () => {
   const res = await axiosPrivate.get("/static/states");
-  console.log(res.data)
   return res.data;
 };

@@ -36,7 +36,6 @@ const Canvas = forwardRef<
 
     const { rows, cols } = designData?.canvas || { rows: 2, cols: 3 };
 
-    console.log(designData.canvas)
     // -------------------------------------------------------
     // FIXED: Reset items ONLY when canvas size REALLY changes
     // -------------------------------------------------------

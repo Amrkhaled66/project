@@ -49,7 +49,7 @@ export default function Corners() {
     "top-0 left-1/2 -translate-x-1/2",
     "bottom-0 left-1/2 -translate-x-1/2",
   ];
-console.log(designData)
+
   const isDouble = designData.upgrades?.selected?.includes(
     UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE
   );

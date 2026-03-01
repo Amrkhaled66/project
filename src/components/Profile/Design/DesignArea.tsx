@@ -73,7 +73,7 @@ const DesignArea = () => {
     >
       <div className="flex flex-col gap-4">
         {/* Toolbar */}
-        <div className="mx-auto flex items-center gap-3 rounded-md bg-neutral-100 px-3 py-2 shadow-sm">
+        <div className="mx-auto flex items-center gap-3  shadow-xl bg-neutral-50 rounded-xl px-3 py-2 ">
           <button
             onClick={() => {
               previewDirtyRef.current = true;

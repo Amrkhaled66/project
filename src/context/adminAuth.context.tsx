@@ -71,7 +71,6 @@ export function AdminContextProvider({ children }: Props) {
 
   const isAdmin = adminData?.token ? true : false;
 
-  console.log("admin Context", isAdmin);
 
   /* ------------------------------- Value ---------------------------------- */
   const value: AdminContextType = {

@@ -25,7 +25,6 @@ export const DesignService = {
   /* -------------------------------------------------------------------------- */
   getById: async (id: string): Promise<Design> => {
     const res = await axiosPrivate.get<Design>(`${BASE_URL}/${id}`);
-    console.log(res.data)
     return res.data;
   },
 
@@ -62,7 +61,6 @@ export const DesignService = {
     formData.append("preview", preview, "preview.webp");
   }
 
-  console.log(payload)
   const res = await axiosPrivate.put<{ success: boolean; price: number }>(
     `${BASE_URL}/${id}`,
     formData,

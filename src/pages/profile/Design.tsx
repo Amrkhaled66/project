@@ -28,14 +28,12 @@ import CornersPool from "src/components/Profile/Design/DesignWidget/CornersPool"
 import CustomPanelTab from "src/components/Profile/Design/DesignWidget/CustomPanel";
 
 import { useDesign } from "src/context/desgin.context";
-import { useUpdateDesign } from "src/hooks/queries/design.queries";
 import { useCart } from "src/context/cart.context";
 import { useDesign as useDesignQuery } from "src/hooks/queries/design.queries";
 import Toast from "src/components/ui/Toast";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-import { toBlob } from "html-to-image";
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
@@ -107,7 +105,6 @@ const ColorGrid = ({
 /* -------------------------------------------------------------------------- */
 export default function BlanketDesigner() {
   const { id: designId } = useParams<{ id: string }>();
-  const { data, isLoading: isDesignLoading } = useDesignQuery(designId);
 
   const {
     designData,
@@ -123,6 +120,7 @@ export default function BlanketDesigner() {
     hasChanged,
     price,
     flushSave,
+    data,
   } = useDesign();
 
   const { addOrIncrease, isItemInCart } = useCart();
@@ -138,7 +136,6 @@ export default function BlanketDesigner() {
   /* ------------------------------------------------------------------------ */
 
   const handleAddToCart = () => {
-    console.log(data);
     addOrIncrease({
       designId: designId || " ",
       name: data?.name || "",
@@ -205,6 +202,8 @@ export default function BlanketDesigner() {
     ],
   );
 
+  console.log(designData);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
@@ -217,7 +216,6 @@ export default function BlanketDesigner() {
   }
 
   const handleUpdate = () => {
-    console.log(hasChanged);
     flushSave();
   };
   /* ------------------------------------------------------------------------ */
@@ -245,15 +243,15 @@ export default function BlanketDesigner() {
               {/* <Button disabled={!hasChanged} onClick={handleUpdate}>
                 Save Your Updates
               </Button> */}
-              
-                <Button
-                  disabled={inCart}
-                  className="px-3"
-                  onClick={() => handleAddToCart()}
-                >
-                  {inCart ? "Added To Cart" : "Add To Cart"}
-                </Button>
-              
+
+              <Button
+                disabled={inCart}
+                className="px-3"
+                onClick={() => handleAddToCart()}
+              >
+                {inCart ? "Added To Cart" : "Add To Cart"}
+              </Button>
+
               {/* <GoastButton
                 className="px-3"
                 onClick={() => handleAddToCart(designData)}

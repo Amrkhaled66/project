@@ -24,7 +24,6 @@ export function calculateDesignPrice(designData : DesignData ): number {
     const upgrade = upgrades.find((u) => u.id === id);
     if (upgrade) totalUpgrades += priceMap[upgrade.id][sizeName];
   }
-  console.log(totalUpgrades)
 
   return Number((basePrice + totalUpgrades).toFixed(2));
 }
