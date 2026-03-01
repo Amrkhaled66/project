@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   DndContext,
@@ -123,13 +123,19 @@ export default function BlanketDesigner() {
     data,
   } = useDesign();
 
-  const { addOrIncrease, isItemInCart } = useCart();
+  const { addOrIncrease, isItemInCart, updateItemPrice } = useCart();
 
   const inCart = designId ? isItemInCart(designId) : false;
 
   const [activeTab, setActiveTab] = useState<TabId>("size");
 
   const selectedUpgrades = designData?.upgrades?.selected ?? [];
+
+  useEffect(() => {
+    if (inCart) {
+      updateItemPrice(designId || " ", Number(price));
+    }
+  }, [hasChanged]);
 
   /* ------------------------------------------------------------------------ */
   /* Tabs                                                                     */
@@ -201,9 +207,6 @@ export default function BlanketDesigner() {
       selectedUpgrades,
     ],
   );
-
-  console.log(designData);
-
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );

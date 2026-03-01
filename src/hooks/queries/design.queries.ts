@@ -31,7 +31,7 @@ export const useDesign = (id?: string) => {
 /* UPDATE DESIGN (AUTO-SAVE JSON ONLY)                                         */
 /* -------------------------------------------------------------------------- */
 export const useUpdateDesign = () => {
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   return useMutation<
     { success: boolean; price: number },
@@ -47,11 +47,11 @@ export const useUpdateDesign = () => {
   >({
     mutationFn: ({ id, payload, preview }) =>
       DesignService.update(id, payload, preview ?? null),
-    // onSuccess: (_, variables) => {
-    //   queryClient.invalidateQueries({
-    //     queryKey: ["design", variables.id],
-    //   });
-    // },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["design", variables.id],
+      });
+    },
   });
 };
 

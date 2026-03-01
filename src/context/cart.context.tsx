@@ -31,6 +31,7 @@ type CartContextType = {
   getCartCount: () => number;
   cartTotal: () => number;
   isItemInCart: (designId: string) => boolean;
+  updateItemPrice: (designId: string, price: number) => void;
 };
 
 // ----------------------------------
@@ -119,6 +120,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const isItemInCart = (designId: string) =>
     cartItems.find((item) => item.designId === designId) ? true : false;
 
+  const updateItemPrice = (designId: string, price: number) => {
+    setCartItems((prev) =>
+      prev.map((i) => (i.designId === designId ? { ...i, price } : i)),
+    );
+  };
+
   // ----------------------------------
   // Provider
   // ----------------------------------
@@ -135,6 +142,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         getCartCount,
         cartTotal,
         isItemInCart,
+        updateItemPrice
       }}
     >
       {children}
