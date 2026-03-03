@@ -18,7 +18,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t amrse912553/blanket-frontend:latest .
+        run: |
+          docker build \
+            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            --build-arg VITE_ADMIN_API_URL=${{ secrets.VITE_ADMIN_API_URL }} \
+            -t amrse912553/blanket-frontend:latest .
 
       - name: Push Docker image
         run: docker push amrse912553/blanket-frontend:latest
@@ -27,6 +31,9 @@ jobs:
     needs: build
     runs-on: self-hosted
     steps:
+      - name: Clean old Docker images (avoid no space)
+        run: docker system prune -af
+
       - name: Pull image
         run: docker pull amrse912553/blanket-frontend:latest
 
@@ -39,5 +46,4 @@ jobs:
             -p 3000:80 \
             --name blanket-frontend-container \
             --restart unless-stopped \
-            --env-file /opt/blanket/frontend.env \
             amrse912553/blanket-frontend:latest
