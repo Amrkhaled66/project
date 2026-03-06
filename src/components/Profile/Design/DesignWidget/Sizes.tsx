@@ -50,7 +50,7 @@ const Sizes = () => {
   };
 
   return (
-    <DesginContainer header="Blanket Size" className="h-full">
+    <DesginContainer header="Premium Build™ Size" className="h-full">
       <div className="w-full space-y-3">
         {visibleSizes.map((s) => {
           const isSelected = selectedId === s.id;

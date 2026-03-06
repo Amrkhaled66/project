@@ -1,10 +1,16 @@
-import React, { useMemo, useRef, useState, useEffect, useCallback } from "react";
+import React, {
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 
 import Corners from "../DesignWidget/Corners";
 import GridItem from "./GridItem";
-import Blocking from "../upgrades/Blocking";
-import EmbroideryZones from "../upgrades/Embroidery";
+import Blocking from "../DesignWidget/Blocking";
+import EmbroideryZones from "../DesignWidget/Embroidery";
 import QualityPreservedEffect from "src/components/ui/pattern/QualityPreservedEffect";
 
 import { useDesign } from "src/context/desgin.context";
@@ -65,6 +71,7 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({ onDeleteItem }) => {
     hasFringe,
     canvasRef,
   } = useDesign();
+  console.log(designData);
 
   const { canvas, photos, colors } = designData;
 
@@ -88,7 +95,8 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({ onDeleteItem }) => {
     if (!rows || !cols) return 0;
 
     const maxDimension = Math.max(cols, rows);
-    const vw = windowWidth || (typeof window !== "undefined" ? window.innerWidth : 0);
+    const vw =
+      windowWidth || (typeof window !== "undefined" ? window.innerWidth : 0);
 
     // Scale cell size based on screen width
     const base = vw < 400 ? 40 : vw < 640 ? 50 : 85;
@@ -178,7 +186,9 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({ onDeleteItem }) => {
       id="canvas-front"
     >
       {/* Binding Frame */}
-      {hasBinding && <div className="absolute inset-0 border-2" style={bindingStyle} />}
+      {hasBinding && (
+        <div className="absolute inset-0 border-2" style={bindingStyle} />
+      )}
 
       {/* Cornerstones */}
       {hasCornerstones && <MemoCorners />}

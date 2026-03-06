@@ -3,7 +3,7 @@ import {
   uploadImagesService,
   getUserUnusedUploadsService,
   deleteUploadService,
-  getUserUploadsService
+  getUserUploadsService,
 } from "src/services/upload.service";
 import Toast from "src/components/ui/Toast";
 
@@ -23,14 +23,16 @@ export const useMyUploads = (page: number, limit: number) => {
 export const useMyCustomPanels = (page: number, limit: number) => {
   return useQuery({
     queryKey: ["custom-panels", "me", page, limit],
-    queryFn: () => getUserUnusedUploadsService(page, limit, undefined, "CUSTOME_PANEL"),
+    queryFn: () =>
+      getUserUnusedUploadsService(page, limit, undefined, "CUSTOME_PANEL"),
   });
 };
 
 export const useMyCorners = (page: number, limit: number) => {
   return useQuery({
     queryKey: ["corners", "me", page, limit],
-    queryFn: () => getUserUnusedUploadsService(page, limit, undefined, "CORNER"),
+    queryFn: () =>
+      getUserUnusedUploadsService(page, limit, undefined, "CORNER"),
   });
 };
 
@@ -61,6 +63,7 @@ export const useDeleteMyUpload = () => {
       // refresh uploads & custom panels
       qc.invalidateQueries({ queryKey: ["uploads", "me"] });
       qc.invalidateQueries({ queryKey: ["custom-panels"] });
+      qc.invalidateQueries({ queryKey: ["corners"] });
     },
 
     onError: (err: any) => {

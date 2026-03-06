@@ -280,14 +280,14 @@ export const DesignProvider = ({
         : [...selected, id];
       /* ---------------- Side Effects ---------------- */
       switch (id) {
-        case UPGRADE_IDS.HEIRLOOM_PANEL: {
-          if (isActive) {
-            d.photos.items = d.photos.items.filter(
-              (p) => p.type !== UPGRADE_IDS.HEIRLOOM_PANEL,
-            );
-          }
-          break;
-        }
+        // case UPGRADE_IDS.HEIRLOOM_PANEL: {
+        //   if (isActive) {
+        //     d.photos.items = d.photos.items.filter(
+        //       (p) => p.type !== UPGRADE_IDS.HEIRLOOM_PANEL,
+        //     );
+        //   }
+        //   break;
+        // }
         case UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE: {
           if (
             selected.includes(UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE) &&
@@ -297,6 +297,7 @@ export const DesignProvider = ({
               (u) => u !== UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE,
             );
           }
+          break;
         }
 
         case UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE: {
@@ -308,19 +309,18 @@ export const DesignProvider = ({
               (u) => u !== UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE,
             );
           }
+          break;
         }
 
-        case UPGRADE_IDS.HEIRLOOM_PRESERVE:
-          {
-            if (
-              !isActive &&
-              !d.upgrades.selected.includes(UPGRADE_IDS.HEIRLOOM_EDGE)
-            ) {
-              d.upgrades.selected.push(UPGRADE_IDS.HEIRLOOM_EDGE);
-            }
+        case UPGRADE_IDS.HEIRLOOM_PRESERVE: {
+          if (
+            !isActive &&
+            !d.upgrades.selected.includes(UPGRADE_IDS.HEIRLOOM_EDGE)
+          ) {
+            d.upgrades.selected.push(UPGRADE_IDS.HEIRLOOM_EDGE);
           }
-
           break;
+        }
 
         default:
           break;

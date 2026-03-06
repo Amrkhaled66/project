@@ -15,10 +15,32 @@ export const UPGRADE_IDS = {
   HEIRLOOM_CORNER_SINGLE: "heirloomCornerSingle",
   HEIRLOOM_CORNER_DOUBLE: "heirloomCornerDouble",
   HEIRLOOM_PANEL: "heirloomPanel",
+  HEIRLOOM_FRAMING: "heirloomFraming",
   HEIRLOOM_PRESERVE: "heirloomPreserve",
   HEIRLOOM_SEAL: "heirloomSeal",
   HEIRLOOM_EDGE: "heirloomEdge",
 } as const;
+
+export const upgradesTabs: Record<string, { label: string; elments: UpgradeId[] }> = {
+  standardIssue: {
+    label: "Standard Issue",
+    elments: [UPGRADE_IDS.HEIRLOOM_PANEL, UPGRADE_IDS.HEIRLOOM_FRAMING],
+  },
+  flagshipElements: {
+    label: "Flagship Elements",
+    elments: [UPGRADE_IDS.HEIRLOOM_PRESERVE, UPGRADE_IDS.HEIRLOOM_EDGE],
+  },
+  coreElements: {
+    label: "Core Elements",
+    elments: [
+      UPGRADE_IDS.HEIRLOOM_SCRIPT,
+      UPGRADE_IDS.HEIRLOOM_BLOCK,
+      UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE,
+      UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE,
+      UPGRADE_IDS.HEIRLOOM_SEAL,
+    ],
+  },
+};
 
 export type UpgradeId = (typeof UPGRADE_IDS)[keyof typeof UPGRADE_IDS];
 
@@ -29,9 +51,18 @@ export type UpgradeOption = {
   autoAppliedBy?: UpgradeId;
   img?: string;
   brief?: string;
+  selected?: boolean;
 };
 
 export const upgrades: UpgradeOption[] = [
+  {
+    id: UPGRADE_IDS.HEIRLOOM_FRAMING,
+    name: "Heirloom Framing",
+    description: "waiting",
+    img: EmbroideryImg,
+    brief: "hello",
+    selected: true,
+  },
   {
     id: UPGRADE_IDS.HEIRLOOM_PANEL,
     name: "Heirloom Panel",
@@ -39,10 +70,11 @@ export const upgrades: UpgradeOption[] = [
     img: CustomPanelsImg,
     brief:
       "Custom panels can be made at your request to fill what would be a blank. .",
+    selected: true,
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_PRESERVE,
-    name: "Heirloom Preserve",
+    name: "Heirloom Preserve™",
     description: "Enhanced durability and texture.",
     img: QuiltedPreserveImg,
     brief:
@@ -50,10 +82,9 @@ export const upgrades: UpgradeOption[] = [
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_EDGE,
-    name: "Heirloom Edge",
+    name: "Heirloom Edge™",
     description:
       "Protective stitched edge wrapping the full blanket; auto-enabled with Heirloom Preserve.",
-    autoAppliedBy: UPGRADE_IDS.HEIRLOOM_PRESERVE,
     img: edge,
     brief:
       "Individually tailored binding surrounds the entirety of each blanket, ensuring enduring security and timeless quality.",
@@ -61,7 +92,7 @@ export const upgrades: UpgradeOption[] = [
 
   {
     id: UPGRADE_IDS.HEIRLOOM_SEAL,
-    name: "Heirloom Seal",
+    name: "Heirloom Seal™",
     description: "Add a decorative seal to the border.",
     img: BindingImg,
     brief:
@@ -69,7 +100,7 @@ export const upgrades: UpgradeOption[] = [
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_BLOCK,
-    name: "Heirloom Block",
+    name: "Heirloom Block™",
     description: "Adds structural support and pattern definition.",
     img: BlockingImg,
     brief:
@@ -77,7 +108,7 @@ export const upgrades: UpgradeOption[] = [
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE,
-    name: "Heirloom Stone (Single)",
+    name: "Heirloom Stone™ (Single)",
     description: "Add decorative patches to the 4 corners of the blanket.",
     img: CornerstonesImg,
     brief:
@@ -85,7 +116,7 @@ export const upgrades: UpgradeOption[] = [
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE,
-    name: "Heirloom Stone (Double)",
+    name: "Heirloom Stone™ (Double)",
     description:
       "Add decorative patches to all 8 positions - 4 corners and 4 midpoints on each side.",
     img: CornerstonesImg,
@@ -94,7 +125,7 @@ export const upgrades: UpgradeOption[] = [
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_SCRIPT,
-    name: "Heirloom Script",
+    name: "Heirloom Script™",
     description: "Add custom text or designs to specific areas.",
     img: EmbroideryImg,
     brief:
@@ -104,7 +135,7 @@ export const upgrades: UpgradeOption[] = [
 
 type UpgradePriceBySize = Record<BlanketSizeId, number>;
 
-export const priceMap: Record<UpgradeId, UpgradePriceBySize> = {
+export const priceMap: Partial<Record<UpgradeId, UpgradePriceBySize>> = {
   [UPGRADE_IDS.HEIRLOOM_SCRIPT]: {
     [BLANKET_SIZE_IDS.LAP]: 29.86,
     [BLANKET_SIZE_IDS.THROW]: 29.86,
@@ -148,17 +179,6 @@ export const priceMap: Record<UpgradeId, UpgradePriceBySize> = {
     [BLANKET_SIZE_IDS.FULL]: 49.86,
     [BLANKET_SIZE_IDS.QUEEN]: 49.86,
     [BLANKET_SIZE_IDS.KING]: 49.86,
-  },
-  [UPGRADE_IDS.HEIRLOOM_PANEL]: {
-    [BLANKET_SIZE_IDS.LAP]: 29.86,
-    [BLANKET_SIZE_IDS.THROW]: 29.86,
-    [BLANKET_SIZE_IDS.GAME]: 29.86,
-    [BLANKET_SIZE_IDS.STADIUM]: 29.86,
-    [BLANKET_SIZE_IDS.TWIN]: 29.86,
-    [BLANKET_SIZE_IDS.DORMIE_TWIN]: 29.86,
-    [BLANKET_SIZE_IDS.FULL]: 29.86,
-    [BLANKET_SIZE_IDS.QUEEN]: 29.86,
-    [BLANKET_SIZE_IDS.KING]: 29.86,
   },
   [UPGRADE_IDS.HEIRLOOM_PRESERVE]: {
     [BLANKET_SIZE_IDS.LAP]: 79.86,

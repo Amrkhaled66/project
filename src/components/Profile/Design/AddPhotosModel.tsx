@@ -87,7 +87,7 @@ export default function AddPhotosModel({
         <div className="flex max-h-[230px] flex-wrap gap-3 overflow-y-auto rounded-xl bg-neutral-100 px-4 py-3">
           {isLoading && <span>Loading photos...</span>}
 
-          {!isLoading &&
+          {!isLoading && uploads.length > 0 ? (
             uploads.map((img: any) => {
               const src = img.imageUrl;
               const isSelected = selected.includes(src);
@@ -113,7 +113,12 @@ export default function AddPhotosModel({
                   )}
                 </div>
               );
-            })}
+            })
+          ) : (
+            <div className="w-full">
+              <p className="text-center font-medium text-sm">No Panels Avaliable yet</p>
+            </div>
+          )}
         </div>
 
         {/* PAGINATION */}
@@ -126,13 +131,15 @@ export default function AddPhotosModel({
         )}
 
         {/* ACTION */}
-        <div className="flex justify-end">
-          <MainDashButton
-            text="Add to Blanket"
-            disabled={selected.length === 0}
-            onClick={handleAddSelected}
-          />
-        </div>
+        {uploads.length > 0 && (
+          <div className="flex justify-end">
+            <MainDashButton
+              text="Add to Blanket"
+              disabled={selected.length === 0}
+              onClick={handleAddSelected}
+            />
+          </div>
+        )}
       </div>
     </Model>
   );

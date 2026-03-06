@@ -35,25 +35,33 @@ export default function CornersPool() {
     <div className="space-y-3">
       {/* IMAGES POOL */}
       <div className="flex flex-wrap items-center gap-4 rounded-lg bg-neutral-200 p-3">
-        {uploads.map((img: any) => {
-          const foundEntry = cornerEntries.find(
-            ([, value]) => value === getImageLink(img.imageUrl),
-          );
+        {uploads.length > 0 ? (
+          uploads.map((img: any) => {
+            const foundEntry = cornerEntries.find(
+              ([, value]) => value === getImageLink(img.imageUrl),
+            );
 
-          const isSelected = !!foundEntry;
-          const selectedCornerIndex = foundEntry ? Number(foundEntry[0]) : null;
+            const isSelected = !!foundEntry;
+            const selectedCornerIndex = foundEntry
+              ? Number(foundEntry[0])
+              : null;
 
-          return (
-            <CornerImage
-              key={img.id}
-              id={img.id}
-              src={getImageLink(img.imageUrl)}
-              isSelected={isSelected}
-              cornerIndex={selectedCornerIndex}
-              deleteCornerImage={deleteCornerImage}
-            />
-          );
-        })}
+            return (
+              <CornerImage
+                key={img.id}
+                id={img.id}
+                src={getImageLink(img.imageUrl)}
+                isSelected={isSelected}
+                cornerIndex={selectedCornerIndex}
+                deleteCornerImage={deleteCornerImage}
+              />
+            );
+          })
+        ) : (
+          <div>
+            <p>No Corners Avaliable yet</p>
+          </div>
+        )}
       </div>
 
       {/* PAGINATION */}

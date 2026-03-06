@@ -24,7 +24,7 @@ const DesignArea = () => {
   /* ------------------------------------------------------------------------ */
   /* Flip                                                                     */
   /* ------------------------------------------------------------------------ */
-  
+
   const toggleFlipped = () => {
     previewDirtyRef.current = true;
     setIsFlipped((prev) => !prev);
@@ -73,7 +73,7 @@ const DesignArea = () => {
     >
       <div className="flex flex-col gap-4">
         {/* Toolbar */}
-        <div className="mx-auto flex items-center gap-3  shadow-xl bg-neutral-50 rounded-xl px-3 py-2 ">
+        <div className="mx-auto flex items-center gap-3 rounded-xl bg-neutral-50 px-3 py-2 shadow-xl">
           <button
             onClick={() => {
               previewDirtyRef.current = true;
@@ -89,15 +89,14 @@ const DesignArea = () => {
             onClick={
               !backingColor
                 ? () =>
-                    Toast(
-                      "Please select a backing color",
-                      "warning",
-                      "#fff3cd",
-                      "top-end",
-                    )
+                  Toast(
+                    "Please select a backing color",
+                    "warning",
+                    "#fff3cd",
+                    "top-end",
+                  )
                 : toggleFlipped
             }
-            disabled={!backingColor}
             className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm text-gray-700 transition-all hover:bg-gray-200 disabled:opacity-50"
           >
             <FlipHorizontal className="size-4" />

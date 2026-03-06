@@ -1,6 +1,5 @@
 import { useDroppable } from "@dnd-kit/core";
 import { useDesign } from "src/context/desgin.context";
-import getImageLink from "src/utils/getImageLink";
 import { UPGRADE_IDS } from "src/data/upgrades";
 const CornerBox = ({
   index,

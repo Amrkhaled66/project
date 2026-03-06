@@ -22,7 +22,7 @@ export default function QualityPreserveColor() {
 
   return (
     <ColorSelector
-      header="Quality Preserve Stitch Color"
+      header="Heirloom Preserve Stitch Color"
       selectedColor={selectedColor}
       onSelectColor={onSelectColor}
     />

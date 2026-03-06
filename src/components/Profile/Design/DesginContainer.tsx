@@ -16,10 +16,10 @@ const DesginContainer = ({
       className={`bg-mainProfile flex flex-col justify-between space-y-4 rounded-xl p-4 ${className}`}
     >
       <div className="page-header flex h-fit items-start justify-between">
-        <div className="space-y-1 max-w-[75%]">
+        <div className="space-y-1 ">
           <h2 className="text-xl font-medium">{header}</h2>
           {subHeader && (
-            <h3 className="text-lg text-neutral-500">{subHeader}</h3>
+            <h3 className="text-sm max-w-[75%] text-neutral-500">{subHeader}</h3>
           )}
         </div>
         {headerComponenet}

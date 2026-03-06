@@ -291,7 +291,7 @@ const Text = () => {
           />
           {/* Submit */}
           <MainDashButton
-            text={editingId ? "Update Embroidery" : "Add Embroidery"}
+            text={editingId ? "Update Script" : "Apply Script"}
             onClick={handleAddOrUpdate}
           />
 

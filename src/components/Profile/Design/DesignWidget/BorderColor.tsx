@@ -9,7 +9,7 @@ export default function BorderColorSelector() {
   const selectedColor = designData?.colors.border ?? null;
   return (
     <ColorSelector
-      header="Bordering"
+      header="Border Color"
       selectedColor={selectedColor}
       onSelectColor={onSelectColor}
     />

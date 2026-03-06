@@ -9,7 +9,7 @@ export default function BlanketColorSelector() {
   const selectedColor = designData?.colors.blanket ?? null;
   return (
     <ColorSelector
-      header="Sashing"
+      header="Textile Framing"
       selectedColor={selectedColor}
       onSelectColor={onSelectColor}
     />

@@ -13,7 +13,7 @@ export default function BackingColorSelector() {
   };
   const backingColor = designData.colors.backing || null;
   return (
-    <DesginContainer header="Backing Color">
+    <DesginContainer header="Backing Textile">
       <div className="space-y-3">
         <div className="flex gap-4">
           {backingColors.map((c) => (

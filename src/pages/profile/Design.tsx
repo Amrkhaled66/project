@@ -39,7 +39,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 /* -------------------------------------------------------------------------- */
 type TabId =
   | "size"
-  | "colors"
+  | "materials"
   | "elements"
   | "script"
   | "corners"
@@ -161,8 +161,8 @@ export default function BlanketDesigner() {
         isActive: true,
       },
       {
-        id: "colors",
-        label: "Colors",
+        id: "materials",
+        label: "Materials",
         component: (
           <ColorGrid
             hasBinding={hasBinding}
@@ -174,13 +174,13 @@ export default function BlanketDesigner() {
       },
       {
         id: "elements",
-        label: "elements",
+        label: "Elements",
         component: <Upgrades selectedUpgrades={selectedUpgrades} />,
         isActive: true,
       },
       {
         id: "script",
-        label: "script",
+        label: "Heirloom Script™",
         component: <Text />,
         isActive: hasEmbroidery,
       },
@@ -192,9 +192,9 @@ export default function BlanketDesigner() {
       },
       {
         id: "customPanel",
-        label: "Custom Panel",
+        label: "Custom Panels™",
         component: <CustomPanelTab />,
-        isActive: hasCustomPanel,
+        isActive: true,
       },
     ],
     [
@@ -281,6 +281,19 @@ export default function BlanketDesigner() {
 
           {/* Sidebar */}
           <aside className="sticky top-2 flex h-fit w-full flex-col space-y-4 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm lg:w-[40%]">
+            {/* <div>
+              <h2 className="sm:text-xl font-bold">Build Configuration</h2>
+              <p className="text-sm font-medium">Configure your Premium Build™ Blueprin</p>
+            </div> */}
+            <div className="page-header flex h-fit items-start justify-between">
+              <div className="max-w-[75%] space-y-1">
+                <h2 className="text-xl font-medium">Build Configuration</h2>
+
+                <h3 className="text-sm text-neutral-500">
+                  Configure your Premium Build™ Blueprin
+                </h3>
+              </div>
+            </div>
             <nav className="relative flex w-full flex-wrap gap-1 border-b border-neutral-200 pb-2">
               {isLoading
                 ? [...Array(4)].map((_, i) => (

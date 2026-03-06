@@ -17,7 +17,7 @@ export default function BlockingColor() {
   return (
     <div className="flex flex-col gap-3">
       <ColorSelector
-        header="Blocking Color"
+        header="Panel Blocking Color"
         headerComponenet={
           <button
             className="animate bg-primary rounded-md px-3 py-1 text-white hover:opacity-80"
