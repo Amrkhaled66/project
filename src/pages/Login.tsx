@@ -9,7 +9,9 @@ import { useAuth } from "src/context/auth.context";
 import Button from "src/components/ui/Button";
 import { useNavigate } from "react-router-dom";
 
+import usePageTitle from "src/hooks/useUpdatePageTitle";
 const LoginPage: React.FC = () => {
+  usePageTitle("Login");
   const { mutate: loginMutation, isPending } = useLogin();
   const { login } = useAuth();
   const navigate = useNavigate();

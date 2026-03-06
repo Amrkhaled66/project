@@ -6,6 +6,7 @@ import {
   useUploadMyImages,
   useDeleteMyUpload,
 } from "src/hooks/queries/upload.queries";
+import usePageTitle from "src/hooks/useUpdatePageTitle";
 
 import PanelsLibrary from "src/components/Profile/CustomPanels/PanelsLibrary";
 import PanelMergePreview from "src/components/Profile/CustomPanels/PanelMergePreview";
@@ -21,6 +22,7 @@ type Panel = {
 };
 
 export default function CustomPanels() {
+  usePageTitle("Custom Panels");
   /* ---------------- Pagination (library only) ---------------- */
   const [page, setPage] = useState(1);
 

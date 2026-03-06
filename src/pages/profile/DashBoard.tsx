@@ -9,6 +9,7 @@ import Orders from "src/components/ui/icons/Orders";
 import { useAuth } from "src/context/auth.context";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import usePageTitle from "src/hooks/useUpdatePageTitle";
 
 const container = {
   hidden: { opacity: 1 },
@@ -24,6 +25,7 @@ const item: Variants = {
 };
 
 const DashBoard = () => {
+  usePageTitle("Atelier");
   const isLoading = false;
   const {
     authData: { user },

@@ -1,11 +1,5 @@
-import {
-  TextAlignJustify,
-  X,
-  User,
-  LogOut,
-  ShoppingCart,
-} from "lucide-react";
-import { useState } from "react";
+import { TextAlignJustify, X, User, LogOut, ShoppingCart } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "src/context/auth.context";
@@ -21,6 +15,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onMenuToggle,
   isSidebarOpen,
 }) => {
+  const profileRef = useRef<HTMLDivElement | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
 
   const location = useLocation();
@@ -34,7 +29,21 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
   // Admin context
   const { adminLogout } = useAdminContext();
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      )
+        [setIsProfileOpen(false)];
+    };
 
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const handleLogout = () => {
     if (isAdminPath) {
       adminLogout();
@@ -75,17 +84,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           {!isAdminPath && (
             <Link className="relative hidden lg:block" to="cart">
               <div className="absolute -top-2 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                {cartItems.reduce(
-                  (total, item) => total + item.quantity,
-                  0
-                )}
+                {cartItems.reduce((total, item) => total + item.quantity, 0)}
               </div>
               <ShoppingCart size={24} />
             </Link>
           )}
 
           {/* Profile */}
-          <div className="relative">
+          <div ref={profileRef} className="relative">
             <button
               onClick={() => setIsProfileOpen((v) => !v)}
               className="flex items-center gap-2 rounded-lg p-2 transition-colors hover:bg-gray-100"
@@ -96,10 +102,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </button>
 
             {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
+              <div className="absolute right-0 !z-200 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
                 <button
                   onClick={handleLogout}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50"
+                  className="relative flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50"
                 >
                   <LogOut size={16} />
                   Sign Out

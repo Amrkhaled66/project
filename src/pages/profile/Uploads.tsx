@@ -10,12 +10,14 @@ import {
 } from "src/hooks/queries/upload.queries";
 import Toast from "src/components/ui/Toast";
 import { MAX_UPLOAD_SIZE } from "src/utils/defaultSettings";
+import usePageTitle from "src/hooks/useUpdatePageTitle";
 
 const ITEMS_PER_PAGE = 9;
 
 type IMAGE_TYPE = "panel" | "corner";
 
 export default function Uploads() {
+  usePageTitle("Panel Library");
   /* ---------------- Tabs ---------------- */
   const [activeTab, setActiveTab] = useState<IMAGE_TYPE>("panel");
 

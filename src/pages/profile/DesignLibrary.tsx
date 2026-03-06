@@ -13,8 +13,10 @@ import { useCart } from "src/context/cart.context";
 import priceFormmater from "src/utils/priceFormmater";
 import getImageLink from "src/utils/getImageLink";
 import { motion, AnimatePresence } from "framer-motion";
+import usePageTitle from "src/hooks/useUpdatePageTitle";
 
 export default function DesignLibraryPage() {
+  usePageTitle("Blueprints");
   const navigate = useNavigate();
   const { data: designs, isLoading } = useDesigns();
   const { addOrIncrease, isItemInCart } = useCart();

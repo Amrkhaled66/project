@@ -13,8 +13,10 @@ import {
 } from "src/hooks/queries/auth.queries";
 
 type UiState = "form" | "invalid" | "resent";
+import usePageTitle from "src/hooks/useUpdatePageTitle";
 
 const SetPassword: React.FC = () => {
+  usePageTitle("Set Password");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 

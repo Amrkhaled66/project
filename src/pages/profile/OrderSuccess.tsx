@@ -2,6 +2,8 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { motion, Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 import Button from "src/components/ui/Button";
+import usePageTitle from "src/hooks/useUpdatePageTitle";
+
 // Confetti particle
 const Particle = ({ index }: { index: number }) => {
   const colors = [
@@ -75,6 +77,7 @@ const pulseRingVariants: Variants = {
 };
 
 const OrderSuccess = () => {
+  usePageTitle("Order Success");
   const navigate = useNavigate();
   const { id: routeId } = useParams();
   const [searchParams] = useSearchParams();

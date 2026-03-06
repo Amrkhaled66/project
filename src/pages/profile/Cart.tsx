@@ -18,8 +18,10 @@ import { CreateOrderPayload } from "src/types/Order";
 import { useForm } from "src/hooks/useForm";
 import { useAuth } from "src/context/auth.context";
 import { useCreateInvoice } from "src/hooks/queries/invoice.queries";
+import usePageTitle from "src/hooks/useUpdatePageTitle";
 
 const Cart = () => {
+  usePageTitle("Build Summary - Jb Blanket");
   const {
     authData: { user },
   } = useAuth();

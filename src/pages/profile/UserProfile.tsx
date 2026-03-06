@@ -1,7 +1,8 @@
 import OrdersTable from "src/components/Profile/UserProfile/OrdersTable";
-import TransactionsTable from "src/components/Profile/UserProfile/TransactionsTable";
+import usePageTitle from "src/hooks/useUpdatePageTitle";
 import UpdateInfoForm from "src/components/Profile/UserProfile/UpdateInfoForm";
 const UserProfile = () => {
+  usePageTitle("Profile");
   return (
     <div className="mx-auto space-y-6">
       <div className="page-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

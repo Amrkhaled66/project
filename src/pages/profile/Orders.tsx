@@ -3,8 +3,10 @@ import PreviousOrder from "src/components/Profile/Orders/PreviousOrder";
 
 import { useLatestOrder } from "src/hooks/queries/orders.queries";
 import Skeleton from "react-loading-skeleton";
+import usePageTitle from "src/hooks/useUpdatePageTitle";
 
 const Orders = () => {
+  usePageTitle("Your Builds");
   const { data: lastOrder, isLoading } = useLatestOrder();
 
   return (

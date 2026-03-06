@@ -1,6 +1,6 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { motion, Variants } from "framer-motion";
-import Button from "src/components/ui/Button";
+import usePageTitle from "src/hooks/useUpdatePageTitle";
 
 const xVariants: Variants = {
   hidden: { pathLength: 0, opacity: 0 },
@@ -30,6 +30,7 @@ const pulseRingVariants: Variants = {
 };
 
 const OrderCancel = () => {
+  usePageTitle("Order Cancelled");
   const navigate = useNavigate();
   const { id: routeId } = useParams();
   const [searchParams] = useSearchParams();
