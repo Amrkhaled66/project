@@ -32,13 +32,11 @@ const DropZone = ({
       onClick={openDialog}
       role="button"
       tabIndex={0}
-      className={`cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all
-        ${
-          dragActive
-            ? "border-blue-600 bg-blue-50/60"
-            : "border-neutral-300 bg-white"
-        }
-      `}
+      className={`cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all ${
+        dragActive
+          ? "border-blue-600 bg-blue-50/60"
+          : "border-neutral-300 bg-white"
+      } `}
     >
       <input
         ref={inputRef}
@@ -50,7 +48,7 @@ const DropZone = ({
       />
 
       {/* Upload Icon */}
-      <div className="flex justify-center mb-4">
+      <div className="mb-4 flex justify-center">
         <UploadCloud
           size={48}
           className={`${
@@ -60,16 +58,16 @@ const DropZone = ({
       </div>
 
       <p className="text-sm text-neutral-600">
-        Click or drag files to upload. Max {maxFiles} photos.
+        Drag or select images to add components to your Panel Library™.{" "}
       </p>
 
-      <p className="text-xs text-neutral-400 mt-1">Remaining: {remaining}</p>
+      <p className="mt-1 text-xs text-neutral-400">Remaining: {remaining}</p>
 
       <button
         type="button"
         className="mt-4 inline-flex items-center justify-center rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 active:scale-[.99]"
       >
-        Browse Files
+        Select Files
       </button>
     </div>
   );

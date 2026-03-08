@@ -14,43 +14,43 @@ const ORDER_STATUS: Record<
   { label: string; color: string; icon: any; stepOrder: number }
 > = {
   PENDING_PAYMENT: {
-    label: "Pending Payment",
+    label: "Commission Pending",
     color: "bg-amber-100 text-amber-700",
     icon: Receipt,
     stepOrder: 1,
   },
   PAID: {
-    label: "Paid",
+    label: "Commissioned",
     color: "bg-blue-100 text-blue-700",
     icon: CheckCircle2,
     stepOrder: 2,
   },
   IN_DESIGN: {
-    label: "In Design",
+    label: "Blueprint™ Review",
     color: "bg-purple-100 text-purple-700",
     icon: Pencil,
     stepOrder: 3,
   },
   DESIGN_APPROVED: {
-    label: "Design Approved",
+    label: "Blueprint Locked",
     color: "bg-sky-100 text-sky-700",
     icon: CheckCircle2,
     stepOrder: 4,
   },
   IN_PRODUCTION: {
-    label: "In Production",
+    label: "Stitch Arena™ Production",
     color: "bg-indigo-100 text-indigo-700",
     icon: Factory,
     stepOrder: 5,
   },
   SHIPPED: {
-    label: "Shipped",
+    label: "Artifact Shipped",
     color: "bg-indigo-100 text-indigo-700",
     icon: Truck,
     stepOrder: 6,
   },
   DELIVERED: {
-    label: "Delivered",
+    label: "Artifact Delivered",
     color: "bg-emerald-100 text-emerald-700",
     icon: Home,
     stepOrder: 7,

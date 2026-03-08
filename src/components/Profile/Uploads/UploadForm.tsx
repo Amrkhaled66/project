@@ -13,7 +13,7 @@ type UploadFormProps = {
   onUpload: (
     files: File[],
     type: UploadType,
-    clear: () => void
+    clear: () => void,
   ) => Promise<void>;
 };
 
@@ -64,38 +64,38 @@ export default function UploadForm({
         size: f.size,
         url: URL.createObjectURL(f),
       })),
-    [files]
+    [files],
   );
 
   React.useEffect(
     () => () => previews.forEach((p) => URL.revokeObjectURL(p.url)),
-    [previews]
+    [previews],
   );
 
   return (
     <form
       onSubmit={handleSubmit}
-      className={`space-y-8 h-fit rounded-2xl border bg-white/70 p-6 shadow-md backdrop-blur-md
-        ${isLoading ? "pointer-events-none opacity-60" : ""}`}
+      className={`h-fit space-y-8 rounded-2xl border bg-white/70 p-6 shadow-md backdrop-blur-md ${isLoading ? "pointer-events-none opacity-60" : ""}`}
     >
       {/* HEADER */}
       <header className="space-y-1">
-        <h2 className="text-xl font-semibold">Upload from Your Device</h2>
+        <h2 className="text-xl font-semibold">Upload Components</h2>
         <p className="text-sm text-neutral-500">
-          Upload up to <span className="font-medium">{maxFiles}</span> photos.
+          Upload images used to construct your Blueprint™ panels and stoning
+          elements.
         </p>
       </header>
 
       {/* TYPE SELECT */}
       <FormSelect
-        label="Image Type"
+        label="Component Type"
         name="type"
         required
         value={type}
         onChange={(e) => setType(e.target.value as UploadType)}
         options={[
-          { label: "Panel", value: "panel" },
-          { label: "Corner", value: "corner" },
+          { label: "Panel", value: "Heirloom Panels™" },
+          { label: "Corner", value: "Heirloom Stone™" },
         ]}
         placeholder="Select image type"
       />
@@ -133,14 +133,13 @@ export default function UploadForm({
       <button
         type="submit"
         disabled={disabled}
-        className={`w-full rounded-xl px-4 py-3 font-semibold transition-all
-          ${
-            disabled
-              ? "bg-neutral-300 text-neutral-600"
-              : "bg-neutral-900 text-white hover:bg-neutral-800"
-          }`}
+        className={`w-full rounded-xl px-4 py-3 font-semibold transition-all ${
+          disabled
+            ? "bg-neutral-300 text-neutral-600"
+            : "bg-neutral-900 text-white hover:bg-neutral-800"
+        }`}
       >
-        {isLoading ? "Uploading..." : "Upload Selected Files"}
+        {isLoading ? "Uploading..." : "Add to Panel Library™"}
       </button>
     </form>
   );

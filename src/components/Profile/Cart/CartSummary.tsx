@@ -30,21 +30,21 @@ const CartSummary = ({ state }: Props) => {
   /* ---------------- UI ---------------- */
   return (
     <aside className="rounded-lg border border-neutral-200 bg-mainProfile/10 p-4 lg:sticky lg:top-6">
-      <h2 className="mb-3 text-xl font-semibold">Order Summary</h2>
+      <h2 className="mb-3 text-xl font-semibold">Commission Summary</h2>
 
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
-          <span>Subtotal</span>
+          <span>Build Value</span>
           <span>{priceFormatter(cartTotal())}</span>
         </div>
 
         <div className="flex justify-between">
-          <span>Shipping</span>
+          <span>Delivery</span>
           <span>{priceFormatter(shippingFee)}</span>
         </div>
 
         <div className="flex justify-between border-t pt-2 text-lg font-semibold">
-          <span>Total</span>
+          <span>Commission Value</span>
           <span>{priceFormatter(totalWithShipping)}</span>
         </div>
       </div>

@@ -16,13 +16,13 @@ const OrdersTable = () => {
 
   /* ---------------- Table Headers ---------------- */
   const headers = [
-    { key: "id", label: "Order ID" },
-    { key: "amount", label: "Amount" },
-    { key: "placed", label: "Placed" },
-    { key: "invoice Link", label: "Invoice Link" },
+    { key: "id", label: "Build ID" },
+    { key: "amount", label: "Commission Value" },
+    { key: "placed", label: "Commissioned" },
+    { key: "invoice Link", label: "Invoice" },
     {
       key: "status",
-      label: "Status",
+      label: "Commission Status",
       render: (value: string) => {
         const colorClass =
           (typeof value === "string" &&
@@ -70,7 +70,7 @@ const OrdersTable = () => {
   if (isError) {
     return (
       <div className="rounded-xl border border-neutral-200 bg-white p-6 text-center shadow-sm">
-        <p className="text-neutral-600">Failed to load your orders.</p>
+        <p className="text-neutral-600">Failed to load Your Commissions.</p>
       </div>
     );
   }
@@ -102,7 +102,7 @@ const OrdersTable = () => {
 
   return (
     <>
-      <Table label="My Orders" headers={headers} data={rows} />
+      <Table emptyLabel="No commissions recorded yet." label="My Orders" headers={headers} data={rows} />
 
       <Model isOpen={!!selectedOrder} onClose={() => setSelectedOrder(null)}>
         {selectedOrder && (

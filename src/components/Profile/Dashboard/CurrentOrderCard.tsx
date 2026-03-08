@@ -38,7 +38,7 @@ const CurrentOrderCard = () => {
     );
   }
 
-  // 📨 No Active Orders
+  // 📨 No Active Commissions
   if (!order) {
     return (
       <div className="rounded-xl border-2 bg-white p-6 text-center shadow-md flex flex-col items-center gap-3">
@@ -46,14 +46,14 @@ const CurrentOrderCard = () => {
           <PackageSearch className="h-8 w-8 text-neutral-500" />
         </div>
 
-        <p className="text-lg font-semibold">No Active Orders</p>
+        <p className="text-lg font-semibold">No Active Commissions</p>
         <p className="text-sm text-neutral-600 max-w-[240px]">
-          Your latest order status will appear here.
+          Your commissioned Jersey Blanket™ builds will appear here as they progress through review and production.
         </p>
 
         <Link to="/profile/orders" className="mt-3">
           <button className="rounded-xl bg-black px-4 py-2 text-sm text-white hover:bg-neutral-800">
-            View All Orders
+            View Commission Archive™
           </button>
         </Link>
       </div>
@@ -65,19 +65,19 @@ const CurrentOrderCard = () => {
     <div className="flex h-fit w-full flex-col space-y-10 rounded-xl border-2 bg-white py-4 shadow-md hover:shadow-lg">
       <div className="flex items-center gap-3 px-4">
         <CircleDashed />
-        <p className="text-xl font-semibold">Current Order Status</p>
+        <p className="text-xl font-semibold">Current Commission Status</p>
       </div>
 
       <div className="flex w-full flex-col justify-center gap-y-4">
         <Link to="/profile/orders" className="mx-auto w-[90%] lg:w-[80%]">
           <button className="w-full rounded-xl border border-black/70 bg-black py-3 text-white hover:bg-white hover:text-black transition">
-            View Order Details
+            View Commission Details
           </button>
         </Link>
 
         <div className="mx-auto w-[90%] rounded-lg bg-gray-200 px-4 py-3 lg:w-[80%]">
           <p className="font-semibold">
-            <span>Order ID: </span>
+            <span>Commission ID: </span>
             <span>{order.id}</span>
           </p>
           <p className="text-sm text-neutral-700">

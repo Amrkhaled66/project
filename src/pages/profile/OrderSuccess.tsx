@@ -109,17 +109,17 @@ const OrderSuccess = () => {
         </div>
       )}
 
-        {/* Soft background blobs — rose/red tones */}
+      {/* Soft background blobs — rose/red tones */}
       <div
-        className="pointer-events-none absolute left-0 top-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/4 rounded-full opacity-25 blur-3xl"
+        className="pointer-events-none absolute top-0 left-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/4 rounded-full opacity-25 blur-3xl"
         style={{ background: "radial-gradient(circle, #fecdd3, #fff1f2)" }}
       />
       <div
-        className="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] translate-x-1/4 translate-y-1/4 rounded-full opacity-20 blur-3xl"
+        className="pointer-events-none absolute right-0 bottom-0 h-[400px] w-[400px] translate-x-1/4 translate-y-1/4 rounded-full opacity-20 blur-3xl"
         style={{ background: "radial-gradient(circle, #fda4af, #ffe4e6)" }}
       />
       <div
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 blur-3xl"
+        className="pointer-events-none absolute top-1/2 left-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 blur-3xl"
         style={{ background: "radial-gradient(circle, #fecaca, #fef2f2)" }}
       />
 
@@ -183,10 +183,10 @@ const OrderSuccess = () => {
               lineHeight: 1.1,
             }}
           >
-            Order Confirmed
+            Commission Confirmed
           </h1>
           <p className="text-lg" style={{ color: "#6b7280", fontWeight: 400 }}>
-            Your blanket is on its way ✦
+            Your Jersey Blanket™ commission is confirmed
           </p>
         </motion.div>
 
@@ -195,7 +195,7 @@ const OrderSuccess = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.7 }}
-          className="max-w-xl mx-auto"
+          className="mx-auto max-w-xl"
           style={{
             background: "rgba(255, 255, 255, 0.55)",
             backdropFilter: "blur(20px)",
@@ -222,7 +222,7 @@ const OrderSuccess = () => {
                 textTransform: "uppercase",
               }}
             >
-              Payment Successful
+              COMMISSION PAYMENT RECEIVED
             </span>
           </div>
 
@@ -259,11 +259,16 @@ const OrderSuccess = () => {
               fontWeight: 400,
             }}
           >
-            We've received your order and it's being prepared with care. You'll
-            receive a confirmation email shortly with tracking details.
+            Your commission has been recorded and assigned a Build ID. Your
+            project will now proceed through the Jersey Blanket™ production
+            process. You will receive updates as your build advances through
+            Photo Lab™, Blueprint™ verification, and Stitch Arena™
+            production.
           </p>
 
-          <Button onClick={handleTrackOrder} className="w-full">Track My Order →</Button>
+          <Button onClick={handleTrackOrder} className="w-full">
+            View Commission Status →
+          </Button>
         </motion.div>
       </div>
     </div>

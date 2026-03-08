@@ -22,7 +22,7 @@ type Panel = {
 };
 
 export default function CustomPanels() {
-  usePageTitle("Custom Panels");
+  usePageTitle("Custom Panel Studio™");
   /* ---------------- Pagination (library only) ---------------- */
   const [page, setPage] = useState(1);
 
@@ -42,12 +42,7 @@ export default function CustomPanels() {
         type: "CUSTOME_PANEL",
       });
 
-      Toast(
-        "Custom panel created successfully!",
-        "success",
-        "#ecfdf5",
-        "top",
-      );
+      Toast("Custom panel created successfully!", "success", "#ecfdf5", "top");
 
       // reset merge flow
       setSelectedPanels([]);
@@ -63,10 +58,7 @@ export default function CustomPanels() {
   };
 
   /* ---------------- Fetch base panels (library) ---------------- */
-  const { data, isLoading, isError } = useMyUploads(
-    page,
-    ITEMS_PER_PAGE,
-  );
+  const { data, isLoading, isError } = useMyUploads(page, ITEMS_PER_PAGE);
 
   const deleteMutation = useDeleteMyUpload();
 
@@ -86,9 +78,7 @@ export default function CustomPanels() {
   };
 
   const handleUnselectPanel = (panelId: string) => {
-    setSelectedPanels((prev) =>
-      prev.filter((p) => p.id !== panelId),
-    );
+    setSelectedPanels((prev) => prev.filter((p) => p.id !== panelId));
   };
 
   const handleClearSelection = () => {
@@ -101,11 +91,11 @@ export default function CustomPanels() {
       {/* HEADER */}
       <div className="page-header">
         <h1 className="text-2xl font-semibold sm:text-3xl">
-          Custom Panels
+          Custom Panel Studio™
         </h1>
         <p className="text-base font-light sm:text-lg">
-          View your custom panels, select up to 4 base panels, merge them,
-          and save a new custom panel.
+          Compose Custom Heirloom Panels™ by selecting up to four Blueprint™
+          components and combining them into a single panel element.
         </p>
       </div>
 

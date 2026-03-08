@@ -46,7 +46,7 @@ const CurrentDesignCard = () => {
       {/* Header */}
       <div className="flex items-center gap-3 px-4">
         <ImageIcon />
-        <p className="text-xl font-semibold">Your Design In Progress</p>
+        <p className="text-xl font-semibold">Blueprint™ In Progress</p>
       </div>
 
       {/* Content */}
@@ -98,7 +98,7 @@ const CurrentDesignCard = () => {
         to={`/profile/design-library/${latestDesign.id}`}
         className="mx-auto w-[90%] rounded-xl border border-black/70 bg-black py-3 text-center text-white transition hover:bg-white hover:text-black lg:w-[80%]"
       >
-        Complete Your Design
+        Continue Blueprint™
       </Link>
     </div>
   );

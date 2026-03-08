@@ -26,10 +26,10 @@ export default function UploadedImagesList({
     <div className="w-full space-y-4 ">
       <header>
         <h2 className="text-lg font-semibold text-neutral-900">
-          Uploaded Photos
+          Component Library™
         </h2>
         <p className="text-sm text-neutral-500">
-          Manage your previously uploaded images.
+          Your available Blueprint™ components.
         </p>
       </header>
 
@@ -83,7 +83,7 @@ export default function UploadedImagesList({
 
               {uploads.length === 0 && (
                 <div className="col-span-full py-6 text-center text-neutral-500">
-                  No uploaded photos yet.
+                  No Component Library™ yet.
                 </div>
               )}
             </div>

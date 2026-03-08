@@ -34,10 +34,10 @@ const DashBoard = () => {
     <div className=" mx-auto space-y-5 lg:space-y-10">
       <div className="page-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold sm:text-3xl">
-          Dashboard Overview
+          Private Atelier™ Lobby
         </h1>
         <p className="text-base font-semibold text-gray-700 sm:text-lg">
-          Welcome back, <span className="underline">{user?.name}!</span>
+          Welcome back, <span className="underline">{user?.name.split(" ")[0]}!</span>
         </p>
       </div>
 
@@ -63,9 +63,9 @@ const DashBoard = () => {
           <motion.div variants={item} className="h-full">
             <ProfileFeatureCard
               Icon={<Draw />}
-              title="Start New Design"
-              subTitle="Begin creating your next custom blanket."
-              buttonText="Create Design"
+              title="Draft New Blueprint™"
+              subTitle="Begin drafting the structural Blueprint™ for your next Jersey Blanket™ build."
+              buttonText="Draft Blueprint™"
               to={"/profile/design-library"}
             />
           </motion.div>
@@ -73,9 +73,9 @@ const DashBoard = () => {
           <motion.div variants={item} className="h-full">
             <ProfileFeatureCard
               Icon={<Upload />}
-              title="Upload Photos"
-              subTitle="Add new memories to your photo lab."
-              buttonText="Let's Upload"
+              title="Photo Lab™"
+              subTitle="Upload reference images and story moments for your collection."
+              buttonText="Enter Photo Lab™"
               to={"/profile/uploads"}
             />
           </motion.div>
@@ -83,9 +83,9 @@ const DashBoard = () => {
           <motion.div variants={item} className="h-full">
             <ProfileFeatureCard
               Icon={<Orders />}
-              title="Your Orders"
-              subTitle="Track the status of your blanket orders."
-              buttonText="View Orders"
+              title="Your Commissions"
+              subTitle="Track the progress of your commissioned Jersey Blanket™ builds."
+              buttonText="View Commissions"
               to="/profile/orders"
             />
           </motion.div>

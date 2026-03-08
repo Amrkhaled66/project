@@ -60,7 +60,7 @@ export default function UpdateInfoForm() {
           {/* First / Last Name */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormInput
-              label="Name"
+              label="Collector Name"
               name="name"
               placeholder="Jane"
               value={values.name}
@@ -70,7 +70,7 @@ export default function UpdateInfoForm() {
 
             {/* Phone */}
             <FormInput
-              label="Phone"
+              label="Contact Phone"
               name="phone"
               type="number"
               placeholder="555-555-5555"
@@ -82,7 +82,7 @@ export default function UpdateInfoForm() {
 
           {/* Password (optional) */}
           <PasswordInput
-            label="Change Password"
+            label="Update Password"
             name="password"
             placeholder="*******************"
             value={values.password}
@@ -94,21 +94,22 @@ export default function UpdateInfoForm() {
         {/* Side panel */}
         <div className="flex flex-col items-center justify-between gap-4 lg:col-span-2 lg:gap-8">
           <p className="text-center text-base font-light text-neutral-600 sm:text-lg">
-            Your account details are used for order processing, shipping, and
-            communication. Please keep them up to date.
+            Your contact information is used for communication, project
+            coordination, and delivery of commissioned Jersey Blanket™
+            artifacts. Please keep these details current.
           </p>
 
           <div className="w-full">
             <div className="sticky bottom-3 lg:hidden">
               <MainDashButton
-                text={"Save Your Edits"}
+                text={"Save Profile Updates"}
                 type="submit"
                 isLoading={isPending}
               />
             </div>
             <div className="hidden lg:block">
               <MainDashButton
-                text={"Save Your Edits"}
+                text={"Save Profile Updates"}
                 type="submit"
                 isLoading={isPending}
               />

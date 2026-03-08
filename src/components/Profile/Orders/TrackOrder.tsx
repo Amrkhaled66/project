@@ -32,7 +32,7 @@ export default function TrackOrder() {
           <PackageSearch className="h-8 w-8 text-neutral-500" />
         </div>
 
-        <h2 className="text-lg font-semibold">No Active Orders</h2>
+        <h2 className="text-lg font-semibold">No Active Commissions</h2>
 
         <p className="max-w-[240px] text-sm text-neutral-600">
           Once you place an order, you’ll be able to track it here in real time.
@@ -93,17 +93,17 @@ export default function TrackOrder() {
                 onClick={() => setOpenOrderId(order.id)}
                 className="text-xs"
               >
-                View
+                View Build →
               </Button>
             </div>
           </div>
 
           <p className="mt-1 text-sm text-neutral-600">
-            Placed on {placedDate}
+            Commissioned {placedDate}
           </p>
 
           <p className="mt-2 line-clamp-2 text-sm text-neutral-800">
-            {priceFormmater(order.totalPrice)}
+            Commission Value: {priceFormmater(order.totalPrice)}
           </p>
         </div>
       </div>
@@ -111,7 +111,7 @@ export default function TrackOrder() {
       {/* ==================== TRACKER ==================== */}
       <div className="border-t border-neutral-200 p-6">
         <h3 className="mb-4 text-sm font-semibold text-neutral-900">
-          Order Status
+          Build Progress
         </h3>
 
         <div className="relative ml-10 h-72">

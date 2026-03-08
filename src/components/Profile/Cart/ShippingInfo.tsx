@@ -33,11 +33,11 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
       transition={{ duration: 0.25 }}
       className="space-y-6"
     >
-      <h2 className="text-2xl font-semibold">Shipping Information</h2>
+      <h2 className="text-2xl font-semibold">Delivery Information</h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormInput
-          label="Full Name"
+          label="Collector Name"
           name="name"
           value={values.name}
           onChange={handleChange}
@@ -46,16 +46,16 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
         />
 
         <FormInput
-          label="Phone"
+          label="Contact Phone"
           name="phone"
           value={values.phone}
           onChange={handleChange}
           error={errors.phone}
           required
         />
-        
+
         <FormSelect
-          label="State / Province"
+          label="State / Region"
           name="state"
           options={
             states
@@ -82,7 +82,7 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
 
         <FormInput
           className="sm:col-span-2"
-          label="Address Line 1"
+          label="Delivery Address"
           name="addressLine1"
           value={values.addressLine1}
           onChange={handleChange}
@@ -99,7 +99,7 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
         />
 
         <FormInput
-          label="ZIP Code"
+          label="Postal Code"
           name="zip"
           value={values.zip}
           onChange={handleChange}
@@ -120,7 +120,7 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
 
         <FormTextarea
           className="sm:col-span-2"
-          label="Order Notes (optional)"
+          label="Commission Notes (Optional)"
           name="notes"
           value={values.notes}
           onChange={handleChange}
@@ -129,7 +129,7 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
       </div>
 
       <Button isLoading={isPending} type="submit" className="w-full py-3">
-        Continue to Payment
+        Commission Payment
       </Button>
     </motion.form>
   );

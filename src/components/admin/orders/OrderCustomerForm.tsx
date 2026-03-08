@@ -11,6 +11,7 @@ import {
 import { useUpdateOrder } from "src/hooks/queries/admin/orders.queries";
 
 import { getChangedFields } from "src/utils/getChangedFields";
+import { ORDER_STATUS } from "src/utils/defaultSettings";
 
 type Props = {
   order: AdminOrderDetailsResponse;
@@ -125,7 +126,7 @@ const OrderCustomerForm = ({ order }: Props) => {
               name="status"
               value={values.status}
               options={orderStatuses.map((status: string) => ({
-                label: status.replaceAll("_", " "),
+                label: ORDER_STATUS[status]?.label || status,
                 value: status,
               }))}
               onChange={(value) =>

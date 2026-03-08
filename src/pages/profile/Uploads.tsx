@@ -61,9 +61,9 @@ export default function Uploads() {
     <div className="mx-auto space-y-8">
       {/* HEADER */}
       <div className="page-header">
-        <h1 className="text-2xl font-semibold sm:text-3xl">Upload Photos</h1>
+        <h1 className="text-2xl font-semibold sm:text-3xl">Photo Lab™</h1>
         <p className="text-base font-light sm:text-lg">
-          Upload new photos and manage your previously uploaded ones.
+          Upload and organize components for your Blueprint™ library.
         </p>
       </div>
 
@@ -88,7 +88,7 @@ export default function Uploads() {
           tabs={[
             {
               key: "panel",
-              label: "Panels",
+              label: "Heirloom Panel™",
               content: (
                 <UploadedImagesList
                   uploads={panelUploads}
@@ -104,7 +104,7 @@ export default function Uploads() {
             },
             {
               key: "corner",
-              label: "Corners",
+              label: "Heirloom Stone™",
               content: (
                 <UploadedImagesList
                   uploads={cornerUploads}

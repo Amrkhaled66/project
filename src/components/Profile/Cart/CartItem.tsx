@@ -60,7 +60,7 @@ const CartItem = ({ item }: CartItemProps) => {
             <p className="text-sm font-semibold text-neutral-900">
               {priceFormatter(totalPrice)}
             </p>
-            <p className="text-[11px] text-neutral-500">Total</p>
+            <p className="text-[11px] text-neutral-500">Commission Total</p>
           </div>
         </div>
 

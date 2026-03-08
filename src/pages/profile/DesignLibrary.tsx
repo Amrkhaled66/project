@@ -65,8 +65,10 @@ export default function DesignLibraryPage() {
     >
       {/* HEADER */}
       <div className="page-header flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-gray-900">My Designs</h1>
-        <p className="text-sm text-gray-500">{totalDesigns} saved designs</p>
+        <h1 className="text-2xl font-bold text-gray-900">Blueprint Review™</h1>
+        <p className="text-sm text-gray-500">
+          {totalDesigns} saved Blueprints™
+        </p>
       </div>
 
       {/* CONTENT */}
@@ -226,7 +228,7 @@ export default function DesignLibraryPage() {
                           }}
                         >
                           <Edit size={14} strokeWidth={2} />
-                          Edit
+                          Edit Blueprint™
                         </motion.button>
 
                         {/* Add to Cart */}
@@ -262,7 +264,7 @@ export default function DesignLibraryPage() {
                                 transition={{ duration: 0.18 }}
                               >
                                 <CheckCircle2 size={14} strokeWidth={2.5} />
-                                Added
+                                Commission Build
                               </motion.span>
                             ) : (
                               <motion.span

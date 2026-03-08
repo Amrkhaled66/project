@@ -79,7 +79,7 @@ export default function PanelsLibrary({
         <div className="flex items-center gap-2">
           <ImageIcon size={18} className="text-gray-600" />
           <span className="text-sm font-medium text-gray-700">
-            Panel Selection
+            Component Selection
           </span>
         </div>
 

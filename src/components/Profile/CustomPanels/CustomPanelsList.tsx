@@ -58,8 +58,8 @@ export default function CustomPanelsList({ onDelete }: Props) {
   if (!panels.length) {
     return (
       <EmptyState
-        title="No Custom Panels"
-        description="You haven’t created any custom panels yet."
+        title="No Custom Heirloom Panels™ Yet"
+        description="Your Custom Heirloom Panels™ will appear here once created."
       />
     );
   }

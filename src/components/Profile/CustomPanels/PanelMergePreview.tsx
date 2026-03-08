@@ -48,11 +48,11 @@ export default function PanelMergePreview({
   }, [panels, onMerged]);
 
   return (
-    <div className="rounded-xl bg-gray-50 p-6 shadow-sm border border-gray-200 space-y-4">
+    <div className="space-y-4 rounded-xl border border-gray-200 bg-gray-50 p-6 shadow-sm">
       {/* TITLE */}
       <div className="flex items-center justify-between">
         <h3 className="text-base font-semibold text-gray-800">
-          Merged Preview
+          Panel Composition Preview
         </h3>
 
         {panels.length > 0 && (
@@ -60,7 +60,7 @@ export default function PanelMergePreview({
             onClick={onClear}
             className="text-sm text-red-600 hover:underline"
           >
-            Clear
+            Reset Composition
           </button>
         )}
       </div>
@@ -70,10 +70,10 @@ export default function PanelMergePreview({
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed bg-white py-12 text-center">
           <Layers className="h-10 w-10 text-gray-400" />
           <p className="mt-3 text-sm font-medium text-gray-700">
-            Select images to create a custom panel
+            Select components to compose a Custom Heirloom Panel™
           </p>
           <p className="mt-1 text-xs text-gray-500">
-            Choose at least 2 images from the left
+            Choose at least 2 components from the left.
           </p>
         </div>
       )}

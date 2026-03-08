@@ -10,12 +10,14 @@ type TableProps<T> = {
   headers: Header<T>[];
   data: T[];
   label: string;
+  emptyLabel?: string;
 };
 
 export default function Table<T extends { id: string | number }>({
   headers,
   data,
   label,
+  emptyLabel="No data available.",
 }: TableProps<T>) {
   return (
     <div>
@@ -37,7 +39,7 @@ export default function Table<T extends { id: string | number }>({
                     colSpan={headers.length}
                     className="px-4 py-6 text-center"
                   >
-                    No data available.
+                    {emptyLabel}
                   </td>
                 </tr>
               )}

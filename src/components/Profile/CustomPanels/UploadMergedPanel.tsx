@@ -20,7 +20,7 @@ export default function UploadMergedPanel({
         isLoading={isUploading}
         className="w-full justify-center"
       >
-        Save as New Custom Panel
+        Save Custom Heirloom Panel™
       </Button>
     </div>
   );

@@ -92,7 +92,7 @@ const Cart = () => {
   return (
     <div className="mx-auto space-y-5 lg:space-y-10">
       <div className="page-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold sm:text-3xl">Your Cart Items</h1>
+        <h1 className="text-2xl font-semibold sm:text-3xl">Build Ledger™</h1>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-10">

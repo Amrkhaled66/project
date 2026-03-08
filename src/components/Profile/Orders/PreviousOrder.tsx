@@ -98,7 +98,7 @@ const PreviousOrder = () => {
     <aside className="rounded-2xl border h-fit border-neutral-200 bg-white p-4 shadow-sm">
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Previous Orders</h2>
+        <h2 className="text-lg font-semibold">Previous Commissions</h2>
 
         {isLoading ? (
           <Skeleton width={40} height={18} />
@@ -120,7 +120,7 @@ const PreviousOrder = () => {
 
       {/* Error */}
       {isError && (
-        <p className="text-sm text-red-500">Failed to load orders.</p>
+        <p className="text-sm text-red-500">Failed to load Commissions.</p>
       )}
 
       {/* Data */}
@@ -131,7 +131,7 @@ const PreviousOrder = () => {
           ))}
 
           {latestOrders.length === 0 && (
-            <p className="text-xs text-neutral-500">No previous orders yet.</p>
+            <p className="text-xs text-neutral-500">No previous Commissions yet.</p>
           )}
         </div>
       )}
@@ -139,7 +139,7 @@ const PreviousOrder = () => {
       {/* View All */}
       {latestOrders.length > 0 && (
         <Link to="/profile/user-profile" className="mt-4 block">
-          <MainDashButton text="View All Orders" />
+          <MainDashButton text="View All Commissions" />
         </Link>
       )}
 

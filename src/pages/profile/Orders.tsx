@@ -18,10 +18,10 @@ const Orders = () => {
         <div className="flex flex-col items-start gap-2 p-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Order Tracking
+              Commission Archive™
             </h1>
             <p className="text-sm text-neutral-600">
-              Track your latest order and browse your past purchases.
+              Track your commissioned Jersey Blanket™ artifacts and view their production progress.
             </p>
           </div>
 
@@ -30,12 +30,12 @@ const Orders = () => {
             <Skeleton width={180} height={32} />
           ) : lastOrder ? (
             <div className="inline-flex items-center gap-2 rounded-xl border border-neutral-200 bg-white/70 px-4 py-2 text-sm shadow-sm backdrop-blur">
-              <span className="font-medium">Last order:</span>
+              <span className="font-medium">Latest Commission:</span>
               {/* <span className="rounded-lg bg-neutral-900 px-2 py-1 text-white">
                 #{lastOrder.id}
               </span> */}
               <span className="text-neutral-500">
-                • Placed on {new Date(lastOrder.createdAt).toLocaleDateString()}
+                • Commissioned {new Date(lastOrder.createdAt).toLocaleDateString()}
               </span>
             </div>
           ) : null}
