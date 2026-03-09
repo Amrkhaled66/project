@@ -94,8 +94,8 @@ export default function UploadForm({
         value={type}
         onChange={(e) => setType(e.target.value as UploadType)}
         options={[
-          { label: "Panel", value: "Heirloom Panels™" },
-          { label: "Corner", value: "Heirloom Stone™" },
+          { label: "Heirloom Panels™", value: "panel" },
+          { label: "Heirloom Stone™", value: "corner" },
         ]}
         placeholder="Select image type"
       />
