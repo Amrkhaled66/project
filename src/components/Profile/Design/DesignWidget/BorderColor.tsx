@@ -9,7 +9,7 @@ export default function BorderColorSelector() {
   const selectedColor = designData?.colors.border ?? null;
   return (
     <ColorSelector
-      header="Border Color"
+      header="Heirloom Edge™ Color"
       selectedColor={selectedColor}
       onSelectColor={onSelectColor}
     />

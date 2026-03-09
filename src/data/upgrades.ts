@@ -1,11 +1,12 @@
 // addonsData.ts
+import framingImg from "src/assets/addOns/framing.webp";
 import CustomPanelsImg from "src/assets/addOns/customePanels.webp";
 import CornerstonesImg from "src/assets/addOns/corner.webp";
 import QuiltedPreserveImg from "src/assets/addOns/quality.webp";
 import BlockingImg from "src/assets/addOns/blocking.webp";
-import BindingImg from "src/assets/addOns/binding.webp";
+import egdeImg from "src/assets/addOns/edge.webp";
 import EmbroideryImg from "src/assets/addOns/embroidery.webp";
-import edge from "src/assets/addOns/edge.webp";
+import sale from "src/assets/addOns/sale.webp";
 import { BLANKET_SIZE_IDS, BlanketSizeId } from "src/data/blanketSizes";
 
 // upgradeIds.ts
@@ -21,7 +22,10 @@ export const UPGRADE_IDS = {
   HEIRLOOM_EDGE: "heirloomEdge",
 } as const;
 
-export const upgradesTabs: Record<string, { label: string; elments: UpgradeId[] }> = {
+export const upgradesTabs: Record<
+  string,
+  { label: string; elments: UpgradeId[] }
+> = {
   standardIssue: {
     label: "Standard Issue",
     elments: [UPGRADE_IDS.HEIRLOOM_PANEL, UPGRADE_IDS.HEIRLOOM_FRAMING],
@@ -59,8 +63,9 @@ export const upgrades: UpgradeOption[] = [
     id: UPGRADE_IDS.HEIRLOOM_FRAMING,
     name: "Heirloom Framing",
     description: "waiting",
-    img: EmbroideryImg,
-    brief: "hello",
+    img: framingImg,
+    brief:
+      "A controlled framing system that separates and presents each jersey as its own chapter.\nHeirloom Framing™ establishes visual rhythm across the grid—guiding the eye through teams, seasons, numbers, and insignia while maintaining structural stability between panels. The result is a composition that reads like a curated collection rather than a patchwork assembly.",
     selected: true,
   },
   {
@@ -69,7 +74,7 @@ export const upgrades: UpgradeOption[] = [
     description: "Integrate unique fabric panels into the design.",
     img: CustomPanelsImg,
     brief:
-      "Custom panels can be made at your request to fill what would be a blank. .",
+      "The structural chapter unit of every Jersey Blanket™ artifact.Each jersey panel is stabilized according to its material, construction, and age—ensuring the fabric holds its shape while preserving the integrity of the original garment.This disciplined stabilization allows the story to be read clearly across seasons while protecting the textiles that carry it.",
     selected: true,
   },
   {
@@ -78,25 +83,25 @@ export const upgrades: UpgradeOption[] = [
     description: "Enhanced durability and texture.",
     img: QuiltedPreserveImg,
     brief:
-      "A museum-grade interior construction methodology that introduces additional structural layers—selected to stabilize materials, add measured weight, and provide lasting warmth and comfort without compromising form . These interior layers reinforce the internal architecture of the build, reducing distortion and material fatigue over time while supporting everyday use.",
+      "A calibrated stitch-density architecture that locks the entire build into permanent alignment.\nHeirloom Preserve™ introduces interior structural layers engineered to stabilize panels, reinforce framing, and resist distortion through real use. The result is measured weight, improved durability, and a blanket that holds its form across years of wear.It is the system most responsible for turning a collection of jerseys into a lasting textile artifact.",
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_EDGE,
     name: "Heirloom Edge™",
     description:
       "Protective stitched edge wrapping the full blanket; auto-enabled with Heirloom Preserve.",
-    img: edge,
+    img: egdeImg,
     brief:
-      "Individually tailored binding surrounds the entirety of each blanket, ensuring enduring security and timeless quality.",
+      "A reinforced perimeter architecture designed to protect the highest-stress boundary of the artifact.\nHeirloom Edge™ stabilizes the outer edge where wear and tension concentrate most—reducing fray risk while preserving the geometry of the build.The result is a clean, controlled boundary that protects the interior architecture and maintains the artifact’s structure through years of use.",
   },
 
   {
     id: UPGRADE_IDS.HEIRLOOM_SEAL,
     name: "Heirloom Seal™",
     description: "Add a decorative seal to the border.",
-    img: BindingImg,
+    img: sale,
     brief:
-      "A decorative fringe border adds a classic, textured finish around the edge of your blanket.",
+      "A controlled finishing doctrine that resolves the composition.\nHeirloom Seal™ brings the artifact to a deliberate conclusion—closing the build with a clean visual boundary and structural confidence. The seal establishes authority in the final presentation, allowing the artifact to read as complete and intentional.",
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_BLOCK,
@@ -104,7 +109,7 @@ export const upgrades: UpgradeOption[] = [
     description: "Adds structural support and pattern definition.",
     img: BlockingImg,
     brief:
-      "Tailored blockingchoices for each intersection, seamlessly blending the sashing together with extra jersey materials adding a diverse array of colors for a personalized touch, all coming straight from your jerseys.",
+      "Structural reinforcement placed at key intersections within the grid.\nHeirloom Block™ distributes tension across panel junctions—preserving alignment, geometry, and long-term stability while preventing stress concentration in high-load areas.It strengthens the internal architecture without interrupting the visual rhythm of the composition.",
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE,
@@ -112,7 +117,7 @@ export const upgrades: UpgradeOption[] = [
     description: "Add decorative patches to the 4 corners of the blanket.",
     img: CornerstonesImg,
     brief:
-      "Tailored corner stoning choices for each blanket, seamlessly blending sashing together with extra jersey materials and a diverse array of colors for a personalized touch.",
+      "A controlled marker system used to anchor meaning within the artifact.\nHeirloom Stones™ designate milestones—championship seasons, defining teams, locations, or eras—without disrupting the visual discipline of the build.They function as archival markers within the composition, giving important moments a permanent place in the narrative.",
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE,
@@ -121,7 +126,7 @@ export const upgrades: UpgradeOption[] = [
       "Add decorative patches to all 8 positions - 4 corners and 4 midpoints on each side.",
     img: CornerstonesImg,
     brief:
-      "Tailored corner stoning choices for each blanket, seamlessly blending sashing together with extra jersey materials and a diverse array of colors for a personalized touch.",
+      "A controlled marker system used to anchor meaning within the artifact.\nHeirloom Stones™ designate milestones—championship seasons, defining teams, locations, or eras—without disrupting the visual discipline of the build.They function as archival markers within the composition, giving important moments a permanent place in the narrative.",
   },
   {
     id: UPGRADE_IDS.HEIRLOOM_SCRIPT,
@@ -129,7 +134,7 @@ export const upgrades: UpgradeOption[] = [
     description: "Add custom text or designs to specific areas.",
     img: EmbroideryImg,
     brief:
-      "Exquisite custom embroidery adorns the borders of each blanket, adding a touch of personalized elegance.",
+      "A museum-style inscription integrated directly into the grid.\nHeirloom Script™ introduces a controlled embroidery field designed to read like an archival label rather than a retail customization. Names, years, achievements, or messages are preserved as part of the artifact’s permanent record. The result is an inscription that feels authored, not decorative.",
   },
 ];
 

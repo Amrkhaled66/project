@@ -9,7 +9,7 @@ export default function BlanketColorSelector() {
   const selectedColor = designData?.colors.blanket ?? null;
   return (
     <ColorSelector
-      header="Textile Framing"
+      header="Heirloom Framing™ Color"
       selectedColor={selectedColor}
       onSelectColor={onSelectColor}
     />
