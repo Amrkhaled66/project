@@ -5,6 +5,7 @@ import { useDesign } from "src/context/desgin.context";
 import { useMyCustomPanels } from "src/hooks/queries/upload.queries";
 import EmptyState from "src/components/ui/EmptyState";
 import Button from "src/components/ui/Button";
+import getImageLink from "src/utils/getImageLink";
 
 type CustomPanelItem = {
   id: string;
@@ -90,7 +91,7 @@ const CustomPanel = () => {
       {/* GRID */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         {panels.map((panel) => {
-          const src =  panel.imageUrl;
+          const src = panel.imageUrl;
           const isSelected = selected.includes(src);
 
           return (
@@ -102,7 +103,7 @@ const CustomPanel = () => {
               }`}
             >
               <img
-                src={src}
+                src={getImageLink(src)}
                 alt="Custom panel"
                 className="aspect-square w-full object-cover"
               />

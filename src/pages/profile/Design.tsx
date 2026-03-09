@@ -252,7 +252,7 @@ export default function BlanketDesigner() {
                 className="px-3"
                 onClick={() => handleAddToCart()}
               >
-                {inCart ? "Added To Cart" : "Add To Cart"}
+                {inCart ? "Added" : "Commission Build"}
               </Button>
 
               {/* <GoastButton
@@ -290,7 +290,7 @@ export default function BlanketDesigner() {
                 <h2 className="text-xl font-medium">Build Configuration</h2>
 
                 <h3 className="text-sm text-neutral-500">
-                  Configure your Premium Build™ Blueprin
+                  Configure your Premium Build™ Blueprint
                 </h3>
               </div>
             </div>
