@@ -189,7 +189,7 @@ const PremiumBuilds = () => {
           pageSize={limit}
           totalRows={data?.meta.totalDesigns ?? 0}
           onPageChange={setPage}
-          onPageSizeChange={(size: number) => {
+          onRowsPerPageChange={(size: number) => {
             setLimit(size);
             setPage(1);
           }}

@@ -72,7 +72,7 @@ const OrdersManagement = () => {
         animate={{ opacity: 1 }}
         className="flex min-h-[400px] items-center justify-center"
       >
-        <p className="text-red-500 font-medium">Failed to load orders</p>
+        <p className="font-medium text-red-500">Failed to load orders</p>
       </motion.div>
     );
   }
@@ -95,20 +95,20 @@ const OrdersManagement = () => {
       <div className="rounded-2xl border bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
           {/* Search */}
-          <div className="flex-1 max-w-md">
+          <div className="max-w-md flex-1">
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Search Orders
             </label>
             <div className="relative">
               <Search
                 size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400"
               />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by order ID or email"
-                className="w-full rounded-xl border bg-white py-2.5 pl-10 pr-4 text-sm shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                className="w-full rounded-xl border bg-white py-2.5 pr-4 pl-10 text-sm shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
               />
             </div>
           </div>
@@ -127,7 +127,7 @@ const OrdersManagement = () => {
       </div>
 
       {/* Table */}
-      <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
         <Table<AdminOrder>
           columns={columns}
           data={orders}
@@ -137,7 +137,7 @@ const OrdersManagement = () => {
           pageSize={limit}
           totalRows={data?.meta.totalOrders ?? 0}
           onPageChange={setPage}
-          onPageSizeChange={(size: number) => {
+          onRowsPerPageChange={(size: number) => {
             setLimit(size);
             setPage(1);
           }}

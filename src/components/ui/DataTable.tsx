@@ -36,11 +36,14 @@ const customStyles: TableStyles = {
 
   rows: {
     style: {
-      minHeight: "60px",
+      maxHeight: "70px !important",
       fontSize: "14px",
       backgroundColor: "#FFFFFF",
       borderBottom: "1px solid #F1F5F9",
       transition: "background-color 0.2s ease",
+      "&:nth-of-type(even)": {
+        background: "linear-gradient(to right, #F9FAFB, #F3F4F6)",
+      },
     },
 
     highlightOnHoverStyle: {
@@ -112,7 +115,7 @@ type TableProps<T> = {
 
   /* UI */
   noDataText?: string;
-  onPageSizeChange: (pageSize: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
 };
 
 export default function Table<T>({
