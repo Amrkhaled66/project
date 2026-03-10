@@ -69,7 +69,23 @@ const ORDER_STATUS: Record<
   },
 };
 
-
 const ADMIN_PATH = "/jb_blanket_admin@2020";
 const MAX_UPLOAD_SIZE = 150;
-export { ORDER_STATUS, ADMIN_PATH, MAX_UPLOAD_SIZE };
+type IMAGE_TYPE = "panel" | "corner" |"custome_panel";
+
+const panels: Record<IMAGE_TYPE, { label: string; key: IMAGE_TYPE }> = {
+  panel: {
+    label: "Heirloom Panel™",
+    key: "panel",
+  },
+  corner: {
+    label: "Heirloom Stone™",
+    key: "corner",
+  },
+  custome_panel:{
+    label:"Custom Panel",
+    key:"custome_panel"
+  }
+};
+export { ORDER_STATUS, ADMIN_PATH, MAX_UPLOAD_SIZE, panels };
+export type { IMAGE_TYPE };

@@ -4,57 +4,88 @@ import {
   getUserUploadsService,
   deleteUploadService,
 } from "src/services/admin/uploads.service";
-type IMAGE_TYPE = "panel" | "corner";
+import Toast from "src/components/ui/Toast";
+import { panels } from "src/utils/defaultSettings";
+
+/* ===============================
+   Admin Panels
+================================ */
 
 export const useAdminUploads = (
   page: number,
   limit: number,
-  userId: string,
+  userId: string
 ) => {
   return useQuery({
-    queryKey: ["panel", "admin", userId, page, limit],
+    queryKey: ["uploads", panels.panel.key, "admin", userId, page, limit],
     queryFn: () => getUserUploadsService(page, limit, userId),
     enabled: !!userId,
   });
 };
+
+/* ===============================
+   Admin Corners
+================================ */
+
 export const useAdminCorners = (
   page: number,
   limit: number,
-  userId: string,
+  userId: string
 ) => {
   return useQuery({
-    queryKey: ["corner", "admin", userId, page, limit],
-    queryFn: () => getUserUploadsService(page, limit, userId, "CORNER"),
+    queryKey: ["uploads", panels.corner.key, "admin", userId, page, limit],
+    queryFn: () =>
+      getUserUploadsService(page, limit, userId, panels.corner.key),
     enabled: !!userId,
   });
 };
+
+/* ===============================
+   Upload Images (Admin)
+================================ */
 
 export const useAdminUploadImages = (userId: string) => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ files, type }: { files: File[]; type: IMAGE_TYPE }) =>
+    mutationFn: ({ files, type }: { files: File[]; type: string }) =>
       uploadImagesService(type, files, userId),
 
-    onSuccess: (_, variables) => {
-      const typeKey = variables.type === "corner" ? "corner" : "panel";
+    onSuccess: (_, { type }) => {
+      Toast("Uploaded successfully!", "success", "#ecfdf5", "top");
 
       qc.invalidateQueries({
-        queryKey: [typeKey, "admin"],
+        queryKey: ["uploads", type, "admin", userId],
       });
+    },
+
+    onError: (err: any) => {
+      Toast(err?.message || "Upload failed", "error", "#fee2e2", "top");
     },
   });
 };
+
+/* ===============================
+   Delete Upload (Admin)
+================================ */
 
 export const useAdminDeleteUpload = (userId: string) => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (uploadId: string) => deleteUploadService(uploadId, userId),
-    onSuccess: () => {
+    mutationFn: ({ uploadId, type }: { uploadId: string; type: string }) =>
+      deleteUploadService(uploadId, userId),
+
+    onSuccess: (_, { type }) => {
+      Toast("Deleted successfully!", "success", "#ecfdf5", "top");
+
       qc.invalidateQueries({
-        queryKey: ["uploads", "admin", userId],
+        queryKey: ["uploads", type, "admin", userId],
       });
+    },
+
+    onError: (err: any) => {
+      Toast(err?.message || "Failed to delete item", "error", "#fee2e2", "top");
     },
   });
 };

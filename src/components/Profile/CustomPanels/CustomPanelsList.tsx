@@ -10,6 +10,7 @@ import {
 } from "src/hooks/queries/upload.queries";
 import { Trash } from "lucide-react";
 import getImageLink from "src/utils/getImageLink";
+import { IMAGE_TYPE, panels } from "src/utils/defaultSettings";
 type CustomPanel = {
   id: string;
   imageUrl: string;
@@ -17,7 +18,7 @@ type CustomPanel = {
 };
 
 type Props = {
-  onDelete: (id: string) => void;
+  onDelete: (id: string, type: IMAGE_TYPE) => void;
 };
 
 const ITEMS_PER_PAGE = 9;
@@ -92,7 +93,7 @@ function PanelCard({
   onDelete,
 }: {
   panel: CustomPanel;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, type: IMAGE_TYPE) => void;
 }) {
   return (
     <div className="group relative w-fit overflow-hidden rounded-lg border bg-white shadow-sm">
@@ -109,7 +110,7 @@ function PanelCard({
         <ConfirmDialog
           title="Delete Custom Panel?"
           description="This action cannot be undone."
-          onConfirm={() => onDelete(panel.id)}
+          onConfirm={() => onDelete(panel.id, panels.custome_panel.key)}
         >
           <button className="absolute end-2 top-1 rounded-full bg-red-500 px-2 py-1 text-sm font-medium text-white">
             <Trash className="inline-block h-4 w-4" />

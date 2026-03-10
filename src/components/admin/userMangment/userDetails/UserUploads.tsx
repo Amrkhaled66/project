@@ -14,10 +14,11 @@ import {
 } from "src/hooks/queries/admin/uploads.queries";
 
 import Toast from "src/components/ui/Toast";
+import { panels } from "src/utils/defaultSettings";
 
 const ITEMS_PER_PAGE = 9;
 
-type IMAGE_TYPE = "panel" | "corner";
+type IMAGE_TYPE = typeof panels.panel.key | typeof panels.corner.key;
 type MAIN_TAB = "upload" | "library";
 
 const UserUploads = () => {
@@ -27,7 +28,7 @@ const UserUploads = () => {
   const [activeTab, setActiveTab] = useState<MAIN_TAB>("upload");
 
   /* ---------------- Inner Tabs ---------------- */
-  const [activeType, setActiveType] = useState<IMAGE_TYPE>("panel");
+  const [activeType, setActiveType] = useState<IMAGE_TYPE>(panels.panel.key);
 
   /* ---------------- Pagination ---------------- */
   const [panelPage, setPanelPage] = useState(1);
@@ -57,7 +58,10 @@ const UserUploads = () => {
 
   /* ---------------- Delete ---------------- */
   const deleteMutation = useAdminDeleteUpload(userId!);
-  const handleDelete = (id: string) => deleteMutation.mutate(id);
+
+  const handleDelete = (uploadId: string, type: IMAGE_TYPE) => {
+    deleteMutation.mutate({ uploadId, type });
+  };
 
   return (
     <div className="space-y-6">
@@ -106,7 +110,7 @@ const UserUploads = () => {
           onChange={(key) => setActiveType(key as IMAGE_TYPE)}
           tabs={[
             {
-              key: "panel",
+              key: panels.panel.key,
               label: "Panels",
               content: (
                 <UploadedImagesList
@@ -116,12 +120,13 @@ const UserUploads = () => {
                   page={panelPage}
                   pageCount={panelsQuery.data?.pagination?.pages || 1}
                   onPageChange={setPanelPage}
-                  onDelete={handleDelete}
+                  onDelete={(id) => handleDelete(id, panels.panel.key)}
+                  type={panels.panel.key}
                 />
               ),
             },
             {
-              key: "corner",
+              key: panels.corner.key,
               label: "Corners",
               content: (
                 <UploadedImagesList
@@ -131,7 +136,8 @@ const UserUploads = () => {
                   page={cornerPage}
                   pageCount={cornersQuery.data?.pagination?.pages || 1}
                   onPageChange={setCornerPage}
-                  onDelete={handleDelete}
+                  onDelete={(id) => handleDelete(id, panels.corner.key)}
+                  type={panels.corner.key}
                 />
               ),
             },

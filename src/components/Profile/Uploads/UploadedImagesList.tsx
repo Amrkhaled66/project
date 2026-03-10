@@ -1,5 +1,6 @@
 import { Trash2 } from "lucide-react";
 import Pagination from "src/components/ui/Pagination";
+import { IMAGE_TYPE } from "src/utils/defaultSettings";
 import getImageLink from "src/utils/getImageLink";
 type UploadedImagesListProps = {
   uploads: any[];
@@ -8,8 +9,9 @@ type UploadedImagesListProps = {
   page: number;
   pageCount: number;
   onPageChange: (page: number) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, type: IMAGE_TYPE) => void;
   isUserList?: boolean;
+  type:IMAGE_TYPE
 };
 
 export default function UploadedImagesList({
@@ -21,6 +23,7 @@ export default function UploadedImagesList({
   onPageChange,
   onDelete,
   isUserList,
+  type
 }: UploadedImagesListProps) {
   return (
     <div className="w-full space-y-4 ">
@@ -73,7 +76,7 @@ export default function UploadedImagesList({
                   />
 
                   <button
-                    onClick={() => onDelete(img.id)}
+                    onClick={() => onDelete(img.id,type)}
                     className="absolute top-2 right-2 rounded-full bg-white/95 p-1.5 text-red-600 opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100 hover:scale-110"
                   >
                     <Trash2 size={16} />

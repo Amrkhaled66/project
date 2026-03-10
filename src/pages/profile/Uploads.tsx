@@ -9,12 +9,10 @@ import {
   useDeleteMyUpload,
 } from "src/hooks/queries/upload.queries";
 import Toast from "src/components/ui/Toast";
-import { MAX_UPLOAD_SIZE } from "src/utils/defaultSettings";
+import { MAX_UPLOAD_SIZE, panels, IMAGE_TYPE } from "src/utils/defaultSettings";
 import usePageTitle from "src/hooks/useUpdatePageTitle";
 
 const ITEMS_PER_PAGE = 9;
-
-type IMAGE_TYPE = "panel" | "corner";
 
 export default function Uploads() {
   usePageTitle("Panel Library");
@@ -31,7 +29,7 @@ export default function Uploads() {
   const handleUpload = async (
     files: File[],
     type: IMAGE_TYPE,
-    clear: () => void
+    clear: () => void,
   ) => {
     try {
       await uploadMutation.mutateAsync({ files, type });
@@ -48,7 +46,8 @@ export default function Uploads() {
 
   /* ---------------- Delete ---------------- */
   const deleteMutation = useDeleteMyUpload();
-  const handleDelete = (id: string) => deleteMutation.mutate(id);
+  const handleDelete = (id: string, type: IMAGE_TYPE) =>
+    deleteMutation.mutate({ uploadId: id, type });
 
   /* ---------------- Extract Data ---------------- */
   const panelUploads = panelsQuery.data?.data || [];
@@ -73,9 +72,7 @@ export default function Uploads() {
         <UploadForm
           maxFiles={
             MAX_UPLOAD_SIZE -
-            (activeTab === "panel"
-              ? panelUploads.length
-              : cornerUploads.length)
+            (activeTab === "panel" ? panelUploads.length : cornerUploads.length)
           }
           isLoading={uploadMutation.isPending}
           onUpload={handleUpload}
@@ -98,6 +95,7 @@ export default function Uploads() {
                   pageCount={panelPages}
                   onPageChange={setPanelPage}
                   onDelete={handleDelete}
+                  type={panels.panel.key}
                   isUserList
                 />
               ),
@@ -114,6 +112,7 @@ export default function Uploads() {
                   pageCount={cornerPages}
                   onPageChange={setCornerPage}
                   onDelete={handleDelete}
+                  type={panels.corner.key}
                   isUserList
                 />
               ),

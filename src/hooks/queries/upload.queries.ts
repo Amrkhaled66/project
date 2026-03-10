@@ -6,35 +6,62 @@ import {
   getUserUploadsService,
 } from "src/services/upload.service";
 import Toast from "src/components/ui/Toast";
+import { panels } from "src/utils/defaultSettings";
+
+/* ===============================
+   Get All User Uploads
+================================ */
 
 export const useGetAllUploads = (page: number, limit: number) => {
   return useQuery({
-    queryKey: ["uploads", "me", page, limit],
+    queryKey: ["uploads", panels.panel.key, "all", page, limit],
     queryFn: () => getUserUploadsService(page, limit),
   });
 };
+
+/* ===============================
+   Get Unused Uploads
+================================ */
+
 export const useMyUploads = (page: number, limit: number) => {
   return useQuery({
-    queryKey: ["uploads", "me", page, limit],
+    queryKey: ["uploads", panels.panel.key, "unused", page, limit],
     queryFn: () => getUserUnusedUploadsService(page, limit),
   });
 };
 
+/* ===============================
+   Custom Panels
+================================ */
+
 export const useMyCustomPanels = (page: number, limit: number) => {
   return useQuery({
-    queryKey: ["custom-panels", "me", page, limit],
+    queryKey: ["uploads", panels.custome_panel.key, "custom", page, limit],
     queryFn: () =>
-      getUserUnusedUploadsService(page, limit, undefined, "CUSTOME_PANEL"),
+      getUserUnusedUploadsService(
+        page,
+        limit,
+        undefined,
+        panels.custome_panel.key,
+      ),
   });
 };
 
+/* ===============================
+   Corners
+================================ */
+
 export const useMyCorners = (page: number, limit: number) => {
   return useQuery({
-    queryKey: ["corners", "me", page, limit],
+    queryKey: ["uploads", panels.corner.key, "corner", page, limit],
     queryFn: () =>
-      getUserUnusedUploadsService(page, limit, undefined, "CORNER"),
+      getUserUnusedUploadsService(page, limit, undefined, panels.corner.key),
   });
 };
+
+/* ===============================
+   Upload Images
+================================ */
 
 export const useUploadMyImages = () => {
   const qc = useQueryClient();
@@ -43,27 +70,38 @@ export const useUploadMyImages = () => {
     mutationFn: ({ files, type }: { files: File[]; type: string }) =>
       uploadImagesService(files, type),
 
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["uploads"] });
-      qc.invalidateQueries({ queryKey: ["custom-panels"] });
-      qc.invalidateQueries({ queryKey: ["corners"] });
+    onSuccess: (_, { type }) => {
+      Toast("Uploaded successfully!", "success", "#ecfdf5", "top");
+
+      qc.invalidateQueries({
+        queryKey: ["uploads", type],
+      });
+    },
+
+    onError: (err: any) => {
+      Toast(err?.message || "Upload failed", "error", "#fee2e2", "top");
     },
   });
 };
+
+/* ===============================
+   Delete Upload
+================================ */
 
 export const useDeleteMyUpload = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (uploadId: string) => deleteUploadService(uploadId),
+    mutationFn: ({ uploadId, type }: { uploadId: string; type: string }) =>
+      deleteUploadService(uploadId),
 
-    onSuccess: () => {
+    onSuccess: (_, { type }) => {
       Toast("Deleted successfully!", "success", "#ecfdf5", "top");
 
-      // refresh uploads & custom panels
-      qc.invalidateQueries({ queryKey: ["uploads", "me"] });
-      qc.invalidateQueries({ queryKey: ["custom-panels"] });
-      qc.invalidateQueries({ queryKey: ["corners"] });
+      console.log(type);
+      qc.invalidateQueries({
+        queryKey: ["uploads", type],
+      });
     },
 
     onError: (err: any) => {

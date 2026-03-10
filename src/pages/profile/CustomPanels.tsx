@@ -12,6 +12,7 @@ import PanelsLibrary from "src/components/Profile/CustomPanels/PanelsLibrary";
 import PanelMergePreview from "src/components/Profile/CustomPanels/PanelMergePreview";
 import UploadMergedPanel from "src/components/Profile/CustomPanels/UploadMergedPanel";
 import CustomPanelsList from "src/components/Profile/CustomPanels/CustomPanelsList";
+import { panels as defaultPanelsSettings } from "src/utils/defaultSettings";
 
 const ITEMS_PER_PAGE = 9;
 
@@ -39,7 +40,7 @@ export default function CustomPanels() {
     try {
       await uploadMutation.mutateAsync({
         files: [mergedFile],
-        type: "CUSTOME_PANEL",
+        type: defaultPanelsSettings.custome_panel.key,
       });
 
       Toast("Custom panel created successfully!", "success", "#ecfdf5", "top");
@@ -65,8 +66,8 @@ export default function CustomPanels() {
   const panels: Panel[] = data?.data || [];
   const pageCount = data?.pagination?.pages || 1;
 
-  const handleDeletePanel = (id: string) => {
-    deleteMutation.mutate(id);
+  const handleDeletePanel = (id: string, type: string) => {
+    deleteMutation.mutate({ uploadId: id, type });
   };
 
   /* ---------------- Selection handlers ---------------- */
