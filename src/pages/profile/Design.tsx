@@ -147,6 +147,7 @@ export default function BlanketDesigner() {
       name: data?.name || "",
       previewImage: data?.previewImage ?? null,
       price: Number(data?.price) || 0,
+      sizeId: designData?.canvas.size || " ",
     });
 
     Toast("Added to cart", "success", "#d1fae5", "top-end");

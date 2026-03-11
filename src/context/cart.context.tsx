@@ -5,6 +5,7 @@ import {
   clearCart as clearCartStorage,
 } from "src/utils/cartStorage";
 import Toast from "src/components/ui/Toast";
+import { BlanketSizeId } from "src/data/blanketSizes";
 // ----------------------------------
 // Types
 // ----------------------------------
@@ -12,7 +13,8 @@ export type CartItem = {
   designId: string;
   name: string;
   previewImage: string | null;
-  price: number; // ✅ added (required for totals)
+  sizeId:BlanketSizeId;
+  price: number; 
   quantity: number;
 };
 

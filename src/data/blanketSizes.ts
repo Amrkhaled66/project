@@ -24,6 +24,7 @@ export type BlanketSize = {
   price: number;
   rows: number;
   cols: number;
+  shippingPrice: number;
 };
 
 // Using the centralized sizes for the blanket sizes
@@ -36,6 +37,7 @@ export const BLANKET_SIZES: BlanketSize[] = [
     price: 99.86,
     rows: 2,
     cols: 3,
+    shippingPrice: 20,
   },
   {
     id: BLANKET_SIZE_IDS.THROW,
@@ -45,6 +47,7 @@ export const BLANKET_SIZES: BlanketSize[] = [
     price: 129.86,
     rows: 3,
     cols: 3,
+    shippingPrice: 20,
   },
   {
     id: BLANKET_SIZE_IDS.GAME,
@@ -54,6 +57,7 @@ export const BLANKET_SIZES: BlanketSize[] = [
     price: 149.86,
     rows: 3,
     cols: 4,
+    shippingPrice: 20,
   },
   {
     id: BLANKET_SIZE_IDS.STADIUM,
@@ -63,6 +67,7 @@ export const BLANKET_SIZES: BlanketSize[] = [
     price: 199.86,
     rows: 4,
     cols: 4,
+    shippingPrice: 20,
   },
   {
     id: BLANKET_SIZE_IDS.TWIN,
@@ -72,6 +77,7 @@ export const BLANKET_SIZES: BlanketSize[] = [
     price: 249.86,
     rows: 4,
     cols: 5,
+    shippingPrice: 30,
   },
   {
     id: BLANKET_SIZE_IDS.FULL,
@@ -81,6 +87,7 @@ export const BLANKET_SIZES: BlanketSize[] = [
     price: 299.86,
     rows: 5,
     cols: 5,
+    shippingPrice: 30,
   },
   {
     id: BLANKET_SIZE_IDS.QUEEN,
@@ -90,6 +97,7 @@ export const BLANKET_SIZES: BlanketSize[] = [
     price: 349.86,
     rows: 5,
     cols: 6,
+    shippingPrice: 40,
   },
   {
     id: BLANKET_SIZE_IDS.KING,
@@ -99,6 +107,7 @@ export const BLANKET_SIZES: BlanketSize[] = [
     price: 399.86,
     rows: 6,
     cols: 6,
+    shippingPrice: 40,
   },
 ];
 /**

@@ -33,6 +33,7 @@ export default function DesignLibraryPage() {
       name: design.name,
       previewImage: design.previewImage ?? null,
       price: design.price,
+      sizeId: design.sizeId || " ",
     });
   };
 
