@@ -1,61 +1,70 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   uploadImagesService,
-  getUserUnusedUploadsService,
-  deleteUploadService,
   getUserUploadsService,
+  deleteUploadService,
 } from "src/services/upload.service";
 import Toast from "src/components/ui/Toast";
-import { panels } from "src/utils/defaultSettings";
 
 /* ===============================
-   Get All User Uploads
+   Types
 ================================ */
 
-export const useGetAllUploads = (page: number, limit: number) => {
-  return useQuery({
-    queryKey: ["uploads", panels.panel.key, "all", page, limit],
-    queryFn: () => getUserUploadsService(page, limit),
-  });
+type UploadType = string | string[];
+
+interface UseUploadsParams {
+  type?: UploadType;
+  used: boolean;
+  page: number;
+  limit: number;
+  enabled?: boolean;
+}
+
+/* ===============================
+   Query Keys
+================================ */
+
+const uploadsKeys = {
+  all: ["uploads"] as const,
+
+  lists: () => [...uploadsKeys.all, "list"] as const,
+
+  list: (params: UseUploadsParams) => [
+    ...uploadsKeys.lists(),
+    params.type
+      ? Array.isArray(params.type)
+        ? [...params.type].sort().join("-")
+        : params.type
+      : "all",
+    params.used ?? "all",
+    params.page,
+    params.limit,
+  ] as const,
 };
 
 /* ===============================
-   Get Unused Uploads
+   Get User Uploads
 ================================ */
 
-export const useMyUploads = (page: number, limit: number) => {
+export const useUserUploads = ({
+  type,
+  used,
+  page,
+  limit,
+  enabled = true,
+}: UseUploadsParams) => {
   return useQuery({
-    queryKey: ["uploads", panels.panel.key, "unused", page, limit],
-    queryFn: () => getUserUnusedUploadsService(page, limit),
-  });
-};
+    queryKey: uploadsKeys.list({ type, used, page, limit }),
 
-/* ===============================
-   Custom Panels
-================================ */
-
-export const useMyCustomPanels = (page: number, limit: number) => {
-  return useQuery({
-    queryKey: ["uploads", panels.custome_panel.key, "custom", page, limit],
     queryFn: () =>
-      getUserUnusedUploadsService(
+      getUserUploadsService(
         page,
         limit,
         undefined,
-        panels.custome_panel.key,
+        used,
+        type
       ),
-  });
-};
-
-/* ===============================
-   Corners
-================================ */
-
-export const useMyCorners = (page: number, limit: number) => {
-  return useQuery({
-    queryKey: ["uploads", panels.corner.key, "corner", page, limit],
-    queryFn: () =>
-      getUserUnusedUploadsService(page, limit, undefined, panels.corner.key),
+    enabled,
   });
 };
 
@@ -70,11 +79,11 @@ export const useUploadMyImages = () => {
     mutationFn: ({ files, type }: { files: File[]; type: string }) =>
       uploadImagesService(files, type),
 
-    onSuccess: (_, { type }) => {
+    onSuccess: () => {
       Toast("Uploaded successfully!", "success", "#ecfdf5", "top");
 
       qc.invalidateQueries({
-        queryKey: ["uploads", type],
+        queryKey: uploadsKeys.all,
       });
     },
 
@@ -92,15 +101,25 @@ export const useDeleteMyUpload = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ uploadId, type }: { uploadId: string; type: string }) =>
-      deleteUploadService(uploadId),
+    mutationFn: ({
+      uploadId,
+      type,
+    }: {
+      uploadId: string;
+      type: string | string[];
+    }) => deleteUploadService(uploadId),
 
     onSuccess: (_, { type }) => {
       Toast("Deleted successfully!", "success", "#ecfdf5", "top");
 
-      console.log(type);
-      qc.invalidateQueries({
-        queryKey: ["uploads", type],
+      // handle multiple types
+      const types = Array.isArray(type) ? type : [type];
+
+      types.forEach((t) => {
+        qc.invalidateQueries({
+          queryKey: ["uploads", "list", t],
+          exact: false,
+        });
       });
     },
 

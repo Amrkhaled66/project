@@ -18,44 +18,30 @@ export const uploadImagesService = async (files: File[], type: string) => {
   return res.data;
 };
 
-export const getUserUnusedUploadsService = async (
-  page: number,
-  limit: number,
-  userId?: string,
-  type?: string,
-) => {
-  const res = await axiosPrivate.get("/uploads/unused", {
-    params: {
-      page,
-      limit,
-      ...(userId && { userId }),
-      type: type,
-    },
-  });
-
-  return res.data;
-};
 export const getUserUploadsService = async (
   page: number,
   limit: number,
   userId?: string,
-  type?: string,
+  used?: boolean,
+  type?: string | string[],
 ) => {
   const res = await axiosPrivate.get("/uploads", {
     params: {
       page,
       limit,
       ...(userId && { userId }),
-      type: type,
+      ...(type && { type }),
+      ...(used !== undefined && { used }),
+    },
+    paramsSerializer: {
+      indexes: null,
     },
   });
 
   return res.data;
 };
 
-export const deleteUploadService = async (
-  uploadId: string,
-) => {
+export const deleteUploadService = async (uploadId: string) => {
   const res = await axiosPrivate.delete(`/uploads/${uploadId}`);
 
   return res.data;

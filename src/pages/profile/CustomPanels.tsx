@@ -2,7 +2,7 @@ import { useState } from "react";
 import Toast from "src/components/ui/Toast";
 
 import {
-  useMyUploads,
+  useUserUploads,
   useUploadMyImages,
   useDeleteMyUpload,
 } from "src/hooks/queries/upload.queries";
@@ -59,7 +59,12 @@ export default function CustomPanels() {
   };
 
   /* ---------------- Fetch base panels (library) ---------------- */
-  const { data, isLoading, isError } = useMyUploads(page, ITEMS_PER_PAGE);
+  const { data, isLoading, isError } = useUserUploads({
+    used: false,
+    type: [defaultPanelsSettings.corner.key, defaultPanelsSettings.panel.key],
+    limit: ITEMS_PER_PAGE,
+    page,
+  });
 
   const deleteMutation = useDeleteMyUpload();
 

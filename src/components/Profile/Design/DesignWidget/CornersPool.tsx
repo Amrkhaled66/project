@@ -3,19 +3,31 @@ import { useDraggable } from "@dnd-kit/core";
 import Pagination from "src/components/ui/Pagination";
 import { useDesign } from "src/context/desgin.context";
 import getImageLink from "src/utils/getImageLink";
+import { useUserUploads } from "src/hooks/queries/upload.queries";
+import { panels } from "src/utils/defaultSettings";
+import EmptyState from "src/components/ui/EmptyState";
 const ITEMS_PER_PAGE = 16;
-import { useMyCorners } from "src/hooks/queries/upload.queries";
+
 export default function CornersPool() {
-  // ---------------- PAGINATION ----------------
+  /* ---------------- PAGINATION ---------------- */
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useMyCorners(page, ITEMS_PER_PAGE);
+  /* ---------------- QUERY ---------------- */
+
+  const { data, isLoading } = useUserUploads({
+    type: panels.corner.key,
+    used: false,
+    page,
+    limit: ITEMS_PER_PAGE,
+  });
+
   const uploads = data?.data || [];
   const pagination = data?.pagination;
 
   const { designData, update } = useDesign();
 
-  // assigned corner images
+  /* ---------------- SELECTED CORNERS ---------------- */
+
   const cornerImages = designData.upgrades?.props?.cornerstones.images || {};
   const cornerEntries = Object.entries(cornerImages);
 
@@ -31,37 +43,38 @@ export default function CornersPool() {
     return <div className="p-3 text-sm text-neutral-500">Loading images…</div>;
   }
 
+  if (!uploads.length) {
+    return (
+      <EmptyState
+        title="No Heirloom Stone™ Available yet"
+        description="upload first to use them in your design."
+      />
+    );
+  }
+
   return (
     <div className="space-y-3">
       {/* IMAGES POOL */}
       <div className="flex flex-wrap items-center gap-4 rounded-lg bg-neutral-200 p-3">
-        {uploads.length > 0 ? (
-          uploads.map((img: any) => {
-            const foundEntry = cornerEntries.find(
-              ([, value]) => value === getImageLink(img.imageUrl),
-            );
+        {uploads.map((img: any) => {
+          const foundEntry = cornerEntries.find(
+            ([, value]) => value === getImageLink(img.imageUrl),
+          );
 
-            const isSelected = !!foundEntry;
-            const selectedCornerIndex = foundEntry
-              ? Number(foundEntry[0])
-              : null;
+          const isSelected = !!foundEntry;
+          const selectedCornerIndex = foundEntry ? Number(foundEntry[0]) : null;
 
-            return (
-              <CornerImage
-                key={img.id}
-                id={img.id}
-                src={getImageLink(img.imageUrl)}
-                isSelected={isSelected}
-                cornerIndex={selectedCornerIndex}
-                deleteCornerImage={deleteCornerImage}
-              />
-            );
-          })
-        ) : (
-          <div>
-            <p>No Corners Avaliable yet</p>
-          </div>
-        )}
+          return (
+            <CornerImage
+              key={img.id}
+              id={img.id}
+              src={getImageLink(img.imageUrl)}
+              isSelected={isSelected}
+              cornerIndex={selectedCornerIndex}
+              deleteCornerImage={deleteCornerImage}
+            />
+          );
+        })}
       </div>
 
       {/* PAGINATION */}

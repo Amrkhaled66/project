@@ -5,7 +5,8 @@ import { X, Check } from "lucide-react";
 import MainDashButton from "src/components/ui/MainDashButton";
 import Toast from "src/components/ui/Toast";
 import { useDesign } from "src/context/desgin.context";
-import { useMyUploads } from "src/hooks/queries/upload.queries";
+import { useUserUploads } from "src/hooks/queries/upload.queries";
+import { panels } from "src/utils/defaultSettings";
 import getImageLink from "src/utils/getImageLink";
 
 const ITEMS_PER_PAGE = 12;
@@ -19,16 +20,24 @@ export default function AddPhotosModel({
   onClose: () => void;
   itemsLength: number;
 }) {
-  // ---------------- PAGINATION ----------------
+  /* ---------------- PAGINATION ---------------- */
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useMyUploads(page, ITEMS_PER_PAGE);
+  /* ---------------- QUERY ---------------- */
+
+  const { data, isLoading } = useUserUploads({
+    type: panels.panel.key,
+    used: true,
+    page,
+    limit: ITEMS_PER_PAGE,
+  });
+
   const uploads = data?.data || [];
   const pagination = data?.pagination;
 
-  // ---------------- STATE ----------------
+  /* ---------------- STATE ---------------- */
+
   const [selected, setSelected] = useState<string[]>([]);
-  const [activeTab] = useState<"photos">("photos");
 
   const { designData, update } = useDesign();
   const items = designData?.photos?.items || [];
@@ -37,26 +46,28 @@ export default function AddPhotosModel({
 
   const isFull = itemsLength + selected.length >= maxphoto;
 
-  // ---------------- SELECT ----------------
+  /* ---------------- SELECT ---------------- */
+
   const toggleSelect = (src: string) => {
     setSelected((prev) =>
       prev.includes(src)
         ? prev.filter((s) => s !== src)
         : !isFull
-          ? [...prev, src]
-          : (() => {
-              Toast(
-                "Maximum photo slots filled!",
-                "warning",
-                "#fff3cd",
-                "top-end",
-              );
-              return prev;
-            })(),
+        ? [...prev, src]
+        : (() => {
+            Toast(
+              "Maximum photo slots filled!",
+              "warning",
+              "#fff3cd",
+              "top-end"
+            );
+            return prev;
+          })()
     );
   };
 
-  // ---------------- ADD ----------------
+  /* ---------------- ADD ---------------- */
+
   const handleAddSelected = () => {
     selected.slice(0, maxphoto).forEach((src) => {
       update((d) => {
@@ -71,7 +82,8 @@ export default function AddPhotosModel({
     onClose();
   };
 
-  // ---------------- UI ----------------
+  /* ---------------- UI ---------------- */
+
   return (
     <Model isOpen={isOpen} onClose={onClose}>
       <div className="space-y-3 bg-white p-4">
@@ -116,7 +128,9 @@ export default function AddPhotosModel({
             })
           ) : (
             <div className="w-full">
-              <p className="text-center font-medium text-sm">No Panels Avaliable yet</p>
+              <p className="text-center text-sm font-medium">
+                No Panels Available yet
+              </p>
             </div>
           )}
         </div>

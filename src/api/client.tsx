@@ -5,12 +5,17 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
+      staleTime: 1000 * 60 * 5, // 5 minutes cache
       refetchOnWindowFocus: false,
+      refetchOnMount: false, // optional
     },
   },
 });
 
-
 export const ReactQueryProvider = ({ children }: { children: ReactNode }) => {
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
 };

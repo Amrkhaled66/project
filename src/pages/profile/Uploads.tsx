@@ -4,8 +4,7 @@ import UploadedImagesList from "src/components/Profile/Uploads/UploadedImagesLis
 import Tabs from "src/components/ui/Tabs";
 import {
   useUploadMyImages,
-  useGetAllUploads,
-  useMyCorners,
+  useUserUploads,
   useDeleteMyUpload,
 } from "src/hooks/queries/upload.queries";
 import Toast from "src/components/ui/Toast";
@@ -16,8 +15,10 @@ const ITEMS_PER_PAGE = 9;
 
 export default function Uploads() {
   usePageTitle("Panel Library");
+
   /* ---------------- Tabs ---------------- */
   const [activeTab, setActiveTab] = useState<IMAGE_TYPE>("panel");
+  const [hasVisitedCornerTab, setHasVisitedCornerTab] = useState(false);
 
   /* ---------------- Pagination ---------------- */
   const [panelPage, setPanelPage] = useState(1);
@@ -29,7 +30,7 @@ export default function Uploads() {
   const handleUpload = async (
     files: File[],
     type: IMAGE_TYPE,
-    clear: () => void,
+    clear: () => void
   ) => {
     try {
       await uploadMutation.mutateAsync({ files, type });
@@ -41,15 +42,31 @@ export default function Uploads() {
   };
 
   /* ---------------- Queries ---------------- */
-  const panelsQuery = useGetAllUploads(panelPage, ITEMS_PER_PAGE);
-  const cornersQuery = useMyCorners(cornerPage, ITEMS_PER_PAGE);
+
+  const panelsQuery = useUserUploads({
+    type: panels.panel.key,
+    used: false,
+    page: panelPage,
+    limit: ITEMS_PER_PAGE,
+  });
+
+  const cornersQuery = useUserUploads({
+    type: panels.corner.key,
+    used: false,
+    page: cornerPage,
+    limit: ITEMS_PER_PAGE,
+    enabled: hasVisitedCornerTab || activeTab === "corner",
+  });
 
   /* ---------------- Delete ---------------- */
+
   const deleteMutation = useDeleteMyUpload();
+
   const handleDelete = (id: string, type: IMAGE_TYPE) =>
     deleteMutation.mutate({ uploadId: id, type });
 
   /* ---------------- Extract Data ---------------- */
+
   const panelUploads = panelsQuery.data?.data || [];
   const panelPages = panelsQuery.data?.pagination?.pages || 1;
 
@@ -81,7 +98,11 @@ export default function Uploads() {
         {/* TABS */}
         <Tabs
           activeTab={activeTab}
-          onChange={(key) => setActiveTab(key as IMAGE_TYPE)}
+          onChange={(key) => {
+            const tab = key as IMAGE_TYPE;
+            setActiveTab(tab);
+            if (tab === "corner") setHasVisitedCornerTab(true);
+          }}
           tabs={[
             {
               key: "panel",

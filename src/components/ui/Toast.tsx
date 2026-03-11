@@ -12,11 +12,8 @@ export default function Toast(
     toast: true,
     position: position || "top",
     showConfirmButton: false,
-    timer: 1500,
+    timer: 1200,
     timerProgressBar: true,
-    customClass: {
-      popup: "custom-toast",
-    },
   }).fire({
     icon,
     title: title,

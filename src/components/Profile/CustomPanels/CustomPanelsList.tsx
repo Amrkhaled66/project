@@ -4,13 +4,12 @@ import EmptyState from "src/components/ui/EmptyState";
 import ConfirmDialog from "src/components/ui/ConfirmDialog";
 import Pagination from "src/components/ui/Pagination";
 
-import {
-  useMyCustomPanels,
-  useMyCorners,
-} from "src/hooks/queries/upload.queries";
+import { useUserUploads } from "src/hooks/queries/upload.queries";
+
 import { Trash } from "lucide-react";
 import getImageLink from "src/utils/getImageLink";
 import { IMAGE_TYPE, panels } from "src/utils/defaultSettings";
+
 type CustomPanel = {
   id: string;
   imageUrl: string;
@@ -26,12 +25,18 @@ const ITEMS_PER_PAGE = 9;
 export default function CustomPanelsList({ onDelete }: Props) {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isError } = useMyCustomPanels(page, ITEMS_PER_PAGE);
+  const { data, isLoading, isError } = useUserUploads({
+    type: panels.custome_panel.key,
+    used: false,
+    page,
+    limit: ITEMS_PER_PAGE,
+  });
 
-  const panels: CustomPanel[] = data?.data || [];
+  const panelsList: CustomPanel[] = data?.data || [];
   const pageCount = data?.pagination?.pages || 1;
 
   /* ---------------- Loading ---------------- */
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -46,6 +51,7 @@ export default function CustomPanelsList({ onDelete }: Props) {
   }
 
   /* ---------------- Error ---------------- */
+
   if (isError) {
     return (
       <EmptyState
@@ -56,7 +62,8 @@ export default function CustomPanelsList({ onDelete }: Props) {
   }
 
   /* ---------------- Empty ---------------- */
-  if (!panels.length) {
+
+  if (!panelsList.length) {
     return (
       <EmptyState
         title="No Custom Heirloom Panels™ Yet"
@@ -69,7 +76,7 @@ export default function CustomPanelsList({ onDelete }: Props) {
     <div className="space-y-6 rounded-xl border border-gray-200 bg-gray-50 p-6 shadow-sm">
       {/* GRID */}
       <div className="flex flex-wrap gap-4">
-        {panels.map((panel) => (
+        {panelsList.map((panel) => (
           <PanelCard key={panel.id} panel={panel} onDelete={onDelete} />
         ))}
       </div>
@@ -101,12 +108,11 @@ function PanelCard({
       <img
         src={getImageLink(panel.imageUrl)}
         alt="Custom Panel"
-        className="object-fit aspect-square w-40"
+        className="aspect-square w-40 object-cover"
       />
 
       {/* OVERLAY */}
       <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition group-hover:opacity-100">
-        {/* DELETE */}
         <ConfirmDialog
           title="Delete Custom Panel?"
           description="This action cannot be undone."

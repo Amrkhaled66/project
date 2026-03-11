@@ -2,9 +2,12 @@ import { useState } from "react";
 import { Check } from "lucide-react";
 
 import { useDesign } from "src/context/desgin.context";
-import { useMyCustomPanels } from "src/hooks/queries/upload.queries";
+import { useUserUploads } from "src/hooks/queries/upload.queries";
+import { panels } from "src/utils/defaultSettings";
+
 import EmptyState from "src/components/ui/EmptyState";
 import Button from "src/components/ui/Button";
+
 import getImageLink from "src/utils/getImageLink";
 
 type CustomPanelItem = {
@@ -19,12 +22,22 @@ const CustomPanel = () => {
 
   const maxphoto = designData.canvas.cols * designData.canvas.rows;
 
-  /* ---------------- Fetch custom panels ---------------- */
-  const { data, isLoading, isError } = useMyCustomPanels(1, ITEMS_PER_PAGE);
+  /* ---------------- Pagination ---------------- */
+  const [page] = useState(1);
 
-  const panels: CustomPanelItem[] = data?.data || [];
+  /* ---------------- Fetch custom panels ---------------- */
+
+  const { data, isLoading, isError } = useUserUploads({
+    type: panels.custome_panel.key,
+    used: false,
+    page,
+    limit: ITEMS_PER_PAGE,
+  });
+
+  const panelsList: CustomPanelItem[] = data?.data || [];
 
   /* ---------------- Selection ---------------- */
+
   const [selected, setSelected] = useState<string[]>([]);
 
   const toggleSelect = (src: string) => {
@@ -32,12 +45,13 @@ const CustomPanel = () => {
       prev.includes(src)
         ? prev.filter((i) => i !== src)
         : designData.photos.items.length + selected.length < maxphoto
-          ? [...prev, src]
-          : [...prev],
+        ? [...prev, src]
+        : [...prev]
     );
   };
 
   /* ---------------- Add to design ---------------- */
+
   const handleAddSelected = () => {
     selected.slice(0, maxphoto).forEach((src) => {
       update((d) => {
@@ -53,6 +67,7 @@ const CustomPanel = () => {
   };
 
   /* ---------------- Loading ---------------- */
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -67,6 +82,7 @@ const CustomPanel = () => {
   }
 
   /* ---------------- Error ---------------- */
+
   if (isError) {
     return (
       <EmptyState
@@ -77,7 +93,8 @@ const CustomPanel = () => {
   }
 
   /* ---------------- Empty ---------------- */
-  if (!panels.length) {
+
+  if (!panelsList.length) {
     return (
       <EmptyState
         title="No Custom Panels"
@@ -90,7 +107,7 @@ const CustomPanel = () => {
     <div className="space-y-4">
       {/* GRID */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        {panels.map((panel) => {
+        {panelsList.map((panel) => {
           const src = panel.imageUrl;
           const isSelected = selected.includes(src);
 
@@ -122,11 +139,7 @@ const CustomPanel = () => {
       </div>
 
       {/* ACTION */}
-      <div className="flex items-center justify-between border-t pt-4">
-        {/* <span className="text-sm text-gray-600">
-          Selected {selected.length} / {maxphoto}
-        </span> */}
-
+      <div className="flex items-center justify-end border-t pt-4">
         <Button onClick={handleAddSelected} disabled={!selected.length}>
           Add to Design
         </Button>
