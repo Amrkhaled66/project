@@ -117,7 +117,7 @@ const Cart = () => {
         </div>
 
         <div className="lg:col-span-4">
-          <CartSummary state={values.state} />
+          <CartSummary />
         </div>
       </div>
     </div>
