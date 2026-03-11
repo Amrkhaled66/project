@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { CirclePlus, FlipHorizontal } from "lucide-react";
+import { useState, useCallback, useRef } from "react";
+import { CirclePlus, FlipHorizontal, RotateCcw } from "lucide-react";
 
 import DesginContainer from "./DesginContainer";
 import Canvas from "./Canvas/Canvas";
@@ -7,8 +7,9 @@ import AddPhotosModel from "./AddPhotosModel";
 
 import { useDesign } from "src/context/desgin.context";
 import Toast from "src/components/ui/Toast";
+import Button from "src/components/ui/Button";
 const DesignArea = () => {
-  const { designData, update } = useDesign();
+  const { designData, update, resetDesign } = useDesign();
 
   const items = designData?.photos?.items ?? [];
   const backingColor = designData?.colors?.backing;
@@ -73,35 +74,44 @@ const DesignArea = () => {
     >
       <div className="flex flex-col gap-4">
         {/* Toolbar */}
-        <div className="mx-auto flex items-center gap-3 rounded-xl bg-neutral-50 px-3 py-2 shadow-xl">
-          <button
+        <div className="mx-auto flex items-center gap-3 rounded-xl bg-white px-3 py-2 shadow-md">
+          <Button
             onClick={() => {
               previewDirtyRef.current = true;
               setIsAddPhotoModelOpen(true);
             }}
-            className="bg-primary/90 hover:bg-primary flex items-center gap-1 rounded-md px-3 py-1.5 text-sm text-white transition-all"
+            className="flex items-center gap-1 px-3 py-1.5 text-xs"
           >
             <CirclePlus className="size-4" />
             Add
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={
               !backingColor
                 ? () =>
-                  Toast(
-                    "Please select a backing color",
-                    "warning",
-                    "#fff3cd",
-                    "top-end",
-                  )
+                    Toast(
+                      "Please select a backing color",
+                      "warning",
+                      "#fff3cd",
+                      "top-end",
+                    )
                 : toggleFlipped
             }
-            className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm text-gray-700 transition-all hover:bg-gray-200 disabled:opacity-50"
+            className="flex items-center gap-1 px-3 py-1.5 text-xs"
+            variant="outline"
           >
             <FlipHorizontal className="size-4" />
             Flip
-          </button>
+          </Button>
+          <Button
+            className="flex items-center gap-1 px-3 py-1.5 text-xs"
+            variant="danger"
+            onClick={resetDesign}
+          >
+            <RotateCcw className="size-4" />
+            Reset
+          </Button>
         </div>
 
         {/* Canvas */}

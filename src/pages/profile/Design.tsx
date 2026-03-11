@@ -121,6 +121,7 @@ export default function BlanketDesigner() {
     price,
     flushSave,
     data,
+    resetDesign
   } = useDesign();
 
   const { addOrIncrease, isItemInCart, updateItemPrice } = useCart();

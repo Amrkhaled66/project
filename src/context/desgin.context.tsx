@@ -56,6 +56,7 @@ type DesignContextType = {
   updateQualityPreserveColor: (color: string | null) => void;
   toggleUpgrade: (id: string) => void;
   updateCanvasSize: (sizeObj: sizeObj) => void;
+  resetDesign: () => void;
 
   hasCornerstones: boolean;
   hasDoubleCorner: boolean;
@@ -327,6 +328,20 @@ export const DesignProvider = ({
       }
     });
 
+  const resetDesign = () => {
+    setDesignData((prev) => {
+      const size = BLANKET_SIZES.find((s) => s.id === prev.startingSize);
+      return {
+        ...initialDesignState,
+        startingSize: prev.startingSize,
+        canvas: {
+          size: prev.startingSize,
+          rows: size?.rows ?? BLANKET_SIZES[0].rows,
+          cols: size?.cols ?? BLANKET_SIZES[0].cols,
+        },
+      };
+    });
+  };
   /* ------------------------------------------------------------------------ */
   /* Context value                                                            */
   /* ------------------------------------------------------------------------ */
@@ -365,6 +380,7 @@ export const DesignProvider = ({
           d.canvas.rows = sizeObj.rows;
           d.canvas.cols = sizeObj.cols;
         }),
+      resetDesign,
 
       hasCornerstones,
       hasDoubleCorner:
