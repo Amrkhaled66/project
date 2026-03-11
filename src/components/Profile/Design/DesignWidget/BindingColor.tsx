@@ -12,7 +12,7 @@ export default function BindingColor() {
   };
   return (
     <ColorSelector
-      header="Binding Color"
+      header="Heirloom Edge™ Color"
       selectedColor={
         designData.upgrades.selected.some((u) => u === "binding")
           ? designData.colors.binding
