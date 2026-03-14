@@ -9,8 +9,8 @@ export const validateFullName = (value: string) => {
 };
 export const validateFirstName = (value: string) => {
   if (!value.trim()) return "First name is required";
-  if (value.trim().length < 3)
-    return "First name must be at least 3 characters";
+  if (value.trim().length < 2)
+    return "First name must be at least 2 characters";
   return "";
 };
 
