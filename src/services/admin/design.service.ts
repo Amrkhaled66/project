@@ -17,6 +17,7 @@ export type AdminDesignListParams = {
   page?: number;
   limit?: number;
   status?: "sold" | "unsold";
+  source?: "ADMIN" | "STRIPE";
   search?: string;
 };
 
@@ -27,6 +28,7 @@ export type AdminDesignListItem = {
   previewImage: string | null;
   orderId: string | null;
   isSold: boolean;
+  creationSource: "ADMIN" | "STRIPE";
   createdAt: string;
   user: {
     id: string;
@@ -43,6 +45,7 @@ export type AdminDesignListResponse = {
     totalPages: number;
     filters: {
       status: string | null;
+      source: string | null;
       search: string | null;
     };
   };
@@ -54,6 +57,14 @@ export const getAdminDesigns = async (
 ): Promise<AdminDesignListResponse> => {
   const res = await axiosAdmin.get("/designs", {
     params,
+  });
+
+  return res.data;
+};
+
+export const adminDeleteDesignService = async (designId: string, note: string) => {
+  const res = await axiosAdmin.delete(`/designs/${designId}`, {
+    data: { note },
   });
 
   return res.data;

@@ -1,19 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Layers3, Search } from "lucide-react";
+import { Layers3, Search, Trash2 } from "lucide-react";
 import { TableColumn } from "react-data-table-component";
 
 import Table from "src/components/ui/DataTable";
 import FormSelect from "src/components/ui/FormSelect";
 import AdminPageHeader from "src/components/admin/AdminPageHeader";
-import { useAdminDesigns } from "src/hooks/queries/admin/design.queries";
+import DeleteDesignModel from "src/components/Profile/Design/DeleteDesignModel";
+import {
+  useAdminDeleteDesignMutation,
+  useAdminDesigns,
+} from "src/hooks/queries/admin/design.queries";
 import { useDebounce } from "src/hooks/useDebounce";
 import {
   AdminDesignListItem,
 } from "src/services/admin/design.service";
 import priceFormmater from "src/utils/priceFormmater";
 import getImageLink from "src/utils/getImageLink";
-
+import Button from "src/components/ui/Button";
 const PAGE_SIZE = 5;
 
 const DESIGN_STATUS_OPTIONS = [
@@ -22,13 +26,25 @@ const DESIGN_STATUS_OPTIONS = [
   { label: "Unsold", value: "unsold" },
 ];
 
+const SOURCE_BADGE_STYLES: Record<
+  AdminDesignListItem["creationSource"],
+  string
+> = {
+  ADMIN: "bg-sky-100 text-sky-700",
+  STRIPE: "bg-violet-100 text-violet-700",
+};
+
 const PremiumBuilds = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(PAGE_SIZE);
+  const [selectedDesign, setSelectedDesign] = useState<AdminDesignListItem | null>(
+    null,
+  );
 
   const debouncedSearch = useDebounce(search, 500);
+  const deleteDesignMutation = useAdminDeleteDesignMutation();
 
   useEffect(() => {
     setPage(1);
@@ -39,6 +55,7 @@ const PremiumBuilds = () => {
     limit,
     status:
       statusFilter !== "ALL" ? (statusFilter as "sold" | "unsold") : undefined,
+    source: "STRIPE",
     search: debouncedSearch.trim() || undefined,
   });
 
@@ -109,12 +126,37 @@ const PremiumBuilds = () => {
         ),
       },
       {
+        name: "Source",
+        sortable: true,
+        cell: (row) => (
+          <span
+            className={`rounded-full px-2 py-1 text-xs font-semibold ${SOURCE_BADGE_STYLES[row.creationSource]}`}
+          >
+            {row.creationSource}
+          </span>
+        ),
+      },
+      {
         name: "Created",
         sortable: true,
         cell: (row) => (
           <span className="text-sm text-gray-600">
             {new Date(row.createdAt).toLocaleDateString()}
           </span>
+        ),
+      },
+      {
+        name: "Actions",
+        right: true,
+        cell: (row) => (
+          <Button
+            onClick={() => setSelectedDesign(row)}
+            variant="danger"
+            className="flex items-center gap-2"
+          >
+            <Trash2 size={16} />
+            Delete
+          </Button>
         ),
       },
     ],
@@ -195,6 +237,32 @@ const PremiumBuilds = () => {
           }}
         />
       </div>
+
+      <DeleteDesignModel
+        isOpen={!!selectedDesign}
+        onClose={() => {
+          if (!deleteDesignMutation.isPending) {
+            setSelectedDesign(null);
+          }
+        }}
+        onConfirm={async (note) => {
+          if (!selectedDesign) return;
+
+          await deleteDesignMutation.mutateAsync({
+            designId: selectedDesign.id,
+            note,
+          });
+          setSelectedDesign(null);
+        }}
+        title="Delete Premium Build?"
+        description={
+          selectedDesign
+            ? `This will soft delete "${selectedDesign.name}" and save your delete note.`
+            : "This will soft delete the selected build and save your delete note."
+        }
+        confirmLabel="Delete Build"
+        isSubmitting={deleteDesignMutation.isPending}
+      />
     </motion.div>
   );
 };
