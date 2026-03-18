@@ -29,17 +29,18 @@ const uploadsKeys = {
 
   lists: () => [...uploadsKeys.all, "list"] as const,
 
-  list: (params: UseUploadsParams) => [
-    ...uploadsKeys.lists(),
-    params.type
-      ? Array.isArray(params.type)
-        ? [...params.type].sort().join("-")
-        : params.type
-      : "all",
-    params.used ?? "all",
-    params.page,
-    params.limit,
-  ] as const,
+  list: (params: UseUploadsParams) =>
+    [
+      ...uploadsKeys.lists(),
+      params.type
+        ? Array.isArray(params.type)
+          ? [...params.type].sort().join("-")
+          : params.type
+        : "all",
+      params.used ?? "all",
+      params.page,
+      params.limit,
+    ] as const,
 };
 
 /* ===============================
@@ -53,17 +54,11 @@ export const useUserUploads = ({
   limit,
   enabled = true,
 }: UseUploadsParams) => {
-  return useQuery({  
+  return useQuery({
     queryKey: uploadsKeys.list({ type, used, page, limit }),
 
-    queryFn: () =>
-      getUserUploadsService(
-        page,
-        limit,
-        undefined,
-        used,
-        type
-      ),
+    queryFn: () => getUserUploadsService(page, limit, undefined, used, type),
+    staleTime: 0,
     enabled,
   });
 };
