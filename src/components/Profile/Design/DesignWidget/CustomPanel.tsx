@@ -45,8 +45,8 @@ const CustomPanel = () => {
       prev.includes(src)
         ? prev.filter((i) => i !== src)
         : designData.photos.items.length + selected.length < maxphoto
-        ? [...prev, src]
-        : [...prev]
+          ? [...prev, src]
+          : [...prev],
     );
   };
 
@@ -103,18 +103,20 @@ const CustomPanel = () => {
     );
   }
 
+  console.log(designData.photos);
   return (
     <div className="space-y-4">
       {/* GRID */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         {panelsList.map((panel) => {
           const src = panel.imageUrl;
-          const isSelected = selected.includes(src);
-
+          const included = designData.photos.items.some((i) => i.id === src);
+          const isSelected = selected.includes(src) || included;
           return (
             <button
               key={panel.id}
               onClick={() => toggleSelect(src)}
+              disabled={included}
               className={`relative overflow-hidden rounded-lg border transition ${
                 isSelected ? "border-primary shadow-md" : "border-gray-200"
               }`}
@@ -126,13 +128,14 @@ const CustomPanel = () => {
               />
 
               {/* SELECTED OVERLAY */}
-              {isSelected && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
-                    <Check className="text-primary h-5 w-5" />
+              {designData.photos.items.some((i) => i === src) ||
+                (isSelected && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
+                      <Check className="text-primary h-5 w-5" />
+                    </div>
                   </div>
-                </div>
-              )}
+                ))}
             </button>
           );
         })}

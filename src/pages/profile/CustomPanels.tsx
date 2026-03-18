@@ -124,7 +124,7 @@ export default function CustomPanels() {
         />
 
         {/* RIGHT — MERGE WORKSPACE */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <PanelMergePreview
             panels={selectedPanels}
             onMerged={setMergedFile}

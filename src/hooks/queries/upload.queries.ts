@@ -53,7 +53,7 @@ export const useUserUploads = ({
   limit,
   enabled = true,
 }: UseUploadsParams) => {
-  return useQuery({
+  return useQuery({  
     queryKey: uploadsKeys.list({ type, used, page, limit }),
 
     queryFn: () =>

@@ -98,7 +98,7 @@ export default function PanelMergePreview({
           <img
             src={preview}
             alt="Merged panel preview"
-            className="aspect-square max-w-xs rounded-lg border bg-white"
+            className="aspect-square max-w-60 rounded-lg border bg-white"
           />
         </div>
       )}
