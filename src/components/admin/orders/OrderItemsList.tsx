@@ -1,294 +1,367 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { BLANKET_SIZES } from "src/data/blanketSizes";
+import {
+  getUpgradePrice,
+  upgradeMap,
+  UPGRADE_IDS,
+} from "src/data/upgrades";
 import getImageLink from "src/utils/getImageLink";
+import priceFormmater from "src/utils/priceFormmater";
 import { Design } from "src/types/design.types";
-import { UPGRADE_IDS } from "src/data/upgrades";
+
 type Props = {
   items: Design[];
 };
+
+const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <div className="mb-3 flex items-center gap-2">
+    <span className="text-[11px] font-bold tracking-[0.12em] text-gray-400 uppercase">
+      {children}
+    </span>
+    <div className="h-px flex-1 bg-gray-100" />
+  </div>
+);
+
+const InfoChip = ({ label, value }: { label: string; value: React.ReactNode }) => (
+  <div className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm shadow-sm">
+    <span className="text-gray-400">{label}</span>
+    <span className="font-semibold text-gray-800">{value}</span>
+  </div>
+);
 
 const OrderItemsList = ({ items }: Props) => {
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-gray-900">
-        Order Items ({items.length})
-      </h2>
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex items-baseline justify-between">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+          Order Items
+        </h2>
+        <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-500">
+          {items.length} {items.length === 1 ? "item" : "items"}
+        </span>
+      </div>
 
       {items.map((item: Design) => {
         const { designData } = item;
+        const canvasSize = BLANKET_SIZES.find(
+          (size) => size.id === designData.canvas.size,
+        );
+        const startingSize = BLANKET_SIZES.find(
+          (size) => size.id === designData.startingSize,
+        );
+        const sizeDifference =
+          canvasSize && startingSize ? canvasSize.price - startingSize.price : 0;
+        const hasSizeDifference =
+          !!canvasSize &&
+          !!startingSize &&
+          designData.canvas.size !== designData.startingSize;
+        const shippingPrice = canvasSize?.shippingPrice ?? 0;
 
         return (
-          <div
+          <motion.div
             key={item.id}
-            className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
           >
-            {/* Header with Name and Price */}
-            <div className="mb-6 flex items-start justify-between border-b pb-4">
-              <div className="flex items-start gap-4">
+            {/* ── Item Header ── */}
+            <div className="flex items-start justify-between gap-4 border-b border-gray-100 bg-gray-50/60 px-6 py-5">
+              <div className="flex items-center gap-4">
                 {item.previewImage && (
-                  <img
-                    src={getImageLink(item.previewImage)}
-                    alt={item.name}
-                    className="h-24 w-24 cursor-pointer rounded-lg border border-gray-200 object-cover transition-transform hover:scale-105"
+                  <div
+                    className="group relative h-20 w-20 shrink-0 cursor-zoom-in overflow-hidden rounded-xl border border-gray-200 shadow-sm"
                     onClick={() =>
                       setZoomedImage(getImageLink(item.previewImage || ""))
                     }
-                  />
+                  >
+                    <img
+                      src={getImageLink(item.previewImage)}
+                      alt={item.name}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover:bg-black/20">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm0 0l4 4"
+                        />
+                      </svg>
+                    </div>
+                  </div>
                 )}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {item.name}
-                  </h3>
+                  <h3 className="text-lg font-bold text-gray-900">{item.name}</h3>
                   {item.previewImage && (
-                    <p className="mt-1 text-sm text-gray-500">Design Preview</p>
+                    <p className="mt-0.5 text-xs text-gray-400">Design Preview</p>
                   )}
                 </div>
               </div>
-              <div className="text-xl font-bold text-gray-900">
-                ${item.price}
-              </div>
-            </div>
-
-            {/* Size Information */}
-            <div className="mb-6">
-              <h4 className="mb-3 text-base font-semibold text-gray-900">
-                Size
-              </h4>
-              <div className="rounded-lg bg-gray-50 p-4">
-                <div className="flex items-center gap-4">
-                  <span className="text-sm text-gray-600">Canvas Size:</span>
-                  <span className="font-medium text-gray-900">
-                    {designData.canvas.size}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    ({designData.canvas.rows} × {designData.canvas.cols})
-                  </span>
+              <div className="shrink-0 text-right">
+                <div className="text-2xl font-extrabold tracking-tight text-gray-900">
+                  ${item.price}
                 </div>
+                <div className="mt-0.5 text-xs text-gray-400">total</div>
               </div>
             </div>
 
-            {/* Upgrades Section */}
-            {designData.upgrades.selected.length > 0 && (
-              <div className="mb-6">
-                <h4 className="mb-3 text-base font-semibold text-gray-900">
-                  Upgrades ({designData.upgrades.selected.length})
-                </h4>
-                <div className="space-y-4">
-                  {designData.upgrades.selected.map(
-                    (upgrade: string, i: number) => (
-                      <div
-                        key={i}
-                        className="rounded-lg border border-gray-200 bg-gray-50 p-4"
-                      >
-                        <div className="mb-3 font-medium text-gray-900 capitalize">
-                          {upgrade}
-                        </div>
-
-                        {/* Embroidery Details */}
-                        {upgrade === UPGRADE_IDS.HEIRLOOM_SCRIPT &&
-                          designData.upgrades.props.embroidery?.zones && (
-                            <div className="space-y-3">
-                              <div className="text-sm font-medium text-gray-700">
-                                Embroidery Zones:
-                              </div>
-                              {designData.upgrades.props.embroidery.zones.map(
-                                (
-                                  zone: {
-                                    id: string;
-                                    font: string;
-                                    text: string;
-                                    color: string;
-                                    notes: string;
-                                  },
-                                  zoneIndex: number,
-                                ) => (
-                                  <div
-                                    key={zoneIndex}
-                                    className="rounded border border-gray-300 bg-white p-3"
-                                  >
-                                    <div className="mb-2 grid grid-cols-2 gap-2 text-sm">
-                                      <div>
-                                        <span className="text-gray-600">
-                                          Position:
-                                        </span>
-                                        <span className="ml-2 font-medium">
-                                          {zone.id}
-                                        </span>
-                                      </div>
-                                      <div>
-                                        <span className="text-gray-600">
-                                          Font:
-                                        </span>
-                                        <span className="ml-2 font-medium">
-                                          {zone.font}
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="mb-2 text-sm">
-                                      <span className="text-gray-600">
-                                        Text:
-                                      </span>
-                                      <span className="ml-2 font-medium">
-                                        {zone.text}
-                                      </span>
-                                    </div>
-                                    <div className="mb-2 flex items-center gap-2 text-sm">
-                                      <span className="text-gray-600">
-                                        Color:
-                                      </span>
-                                      <div
-                                        className="h-5 w-5 rounded border border-gray-300"
-                                        style={{ backgroundColor: zone.color }}
-                                      />
-                                      <span className="font-medium">
-                                        {zone.color}
-                                      </span>
-                                    </div>
-                                    {zone.notes && (
-                                      <div className="text-sm">
-                                        <span className="text-gray-600">
-                                          Notes:
-                                        </span>
-                                        <span className="ml-2 text-gray-700 italic">
-                                          {zone.notes}
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
-                                ),
-                              )}
-                            </div>
-                          )}
-
-                        {/* Custom Panel Details */}
-                        {/* {upgrade === "customPanel" &&
-                          designData.upgrades && (
-                            <div className="space-y-2 text-sm">
-                              {designData.upgrades.props.customPanel.text && (
-                                <div>
-                                  <span className="text-gray-600">Text:</span>
-                                  <span className="ml-2 font-medium">
-                                    {designData.upgrades.props.customPanel.text}
-                                  </span>
-                                </div>
-                              )}
-                              {designData.upgrades.props.customPanel.image && (
-                                <div>
-                                  <span className="text-gray-600">Image:</span>
-                                  <span className="ml-2 font-medium">
-                                    Included
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          )} */}
-
-                        {/* Cornerstones Details */}
-                        {(upgrade === UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE ||
-                          upgrade === UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE) &&
-                          designData.upgrades.props.cornerstones?.type && (
-                            <div className="text-sm">
-                              <span className="text-gray-600">Type:</span>
-                              <span className="ml-2 font-medium capitalize">
-                                {designData.upgrades.props.cornerstones.type}
-                              </span>
-                            </div>
-                          )}
+            <div className="divide-y divide-gray-100 px-6">
+              {/* ── Size ── */}
+              <div className="py-5">
+                <SectionLabel>Size</SectionLabel>
+                <div className="flex flex-wrap gap-2">
+                  <InfoChip label="Canvas" value={designData.canvas.size} />
+                  <InfoChip
+                    label="Grid"
+                    value={`${designData.canvas.rows} × ${designData.canvas.cols}`}
+                  />
+                  {hasSizeDifference && (
+                    <>
+                      <InfoChip label="Starting" value={designData.startingSize} />
+                      <div className="flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm">
+                        <span className="text-amber-500 font-semibold">
+                          +{priceFormmater(sizeDifference)} upsize
+                        </span>
                       </div>
-                    ),
+                    </>
                   )}
                 </div>
               </div>
-            )}
 
-            {/* Additional Details */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <div className="rounded-lg bg-gray-50 p-4">
-                <div className="mb-1 text-xs font-medium text-gray-600 uppercase">
-                  Photos
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {designData.photos.items.length}
+              {/* ── Shipping ── */}
+              <div className="py-5">
+                <SectionLabel>Shipping</SectionLabel>
+                <div className="flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 8h14M5 8a2 2 0 1 0 0-4h14a2 2 0 1 0 0 4M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8m-9 4h4"
+                    />
+                  </svg>
+                  <span className="text-sm text-gray-600">Shipping</span>
+                  <span className="ml-auto font-semibold text-gray-900">
+                    {priceFormmater(shippingPrice)}
+                  </span>
                 </div>
               </div>
-              {/* <div className="rounded-lg bg-gray-50 p-4">
-                <div className="mb-1 text-xs font-medium text-gray-600 uppercase">
-                  Text Items
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {designData.upgrades.selected.length}
-                </div>
-              </div> */}
-              <div className="rounded-lg bg-gray-50 p-4">
-                <div className="mb-3 text-xs font-medium text-gray-600 uppercase">
-                  Colors
-                </div>
-                <div className="space-y-2">
-                  {Object.entries(designData.colors || {})
-                    .filter(([_, value]) => value)
-                    .map(([key, value]) => {
-                      if (key === "blocking") {
+
+              {/* ── Upgrades ── */}
+              {designData.upgrades.selected.length > 0 && (
+                <div className="py-5">
+                  <SectionLabel>
+                    Upgrades ({designData.upgrades.selected.length})
+                  </SectionLabel>
+                  <div className="space-y-3">
+                    {designData.upgrades.selected.map(
+                      (upgrade: string, i: number) => {
+                        const matchedUpgrade =
+                          upgradeMap[upgrade as keyof typeof upgradeMap];
+                        const upgradePrice = matchedUpgrade
+                          ? getUpgradePrice(
+                              matchedUpgrade.id,
+                              designData.canvas.size,
+                            )
+                          : 0;
+
                         return (
                           <div
-                            key={key}
-                            className="flex items-center gap-2 text-sm"
+                            key={i}
+                            className="rounded-xl border border-gray-100 bg-gray-50 p-4"
                           >
-                            <div
-                              className="h-5 w-5 rounded border border-gray-300"
-                              style={{ backgroundColor: value as string }}
-                            />
-                            <span className="text-gray-600">{key}:</span>
-                            <span className="font-medium">
-                              {value &&
-                              typeof value === "object" &&
-                              !value.random ? (
-                                value.colors[0]
-                              ) : typeof value === "object" ? (
-                                <div className="flex items-center gap-1">
-                                  {value &&
-                                    value.colors.map(
-                                      (color: string, index: number) => (
-                                        <div
-                                          key={index}
-                                          className="h-5 w-5 rounded border border-gray-300"
-                                          style={{ backgroundColor: color }}
-                                        />
-                                      ),
-                                    )}
+                            {/* Upgrade Title Row */}
+                            <div className="mb-3 flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-indigo-400" />
+                                <span className="font-semibold text-gray-900">
+                                  {matchedUpgrade?.name || upgrade}
+                                </span>
+                              </div>
+                              <span className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-600">
+                                {priceFormmater(upgradePrice)}
+                              </span>
+                            </div>
+
+                            {/* Embroidery Zones */}
+                            {upgrade === UPGRADE_IDS.HEIRLOOM_SCRIPT &&
+                              designData.upgrades.props.embroidery?.zones && (
+                                <div className="space-y-2">
+                                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                                    Embroidery Zones
+                                  </p>
+                                  {designData.upgrades.props.embroidery.zones.map(
+                                    (
+                                      zone: {
+                                        id: string;
+                                        font: string;
+                                        text: string;
+                                        color: string;
+                                        notes: string;
+                                      },
+                                      zoneIndex: number,
+                                    ) => (
+                                      <div
+                                        key={zoneIndex}
+                                        className="rounded-lg border border-gray-200 bg-white p-3 text-sm"
+                                      >
+                                        <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1">
+                                          <span>
+                                            <span className="text-gray-400">Position: </span>
+                                            <span className="font-medium text-gray-800">
+                                              {zone.id}
+                                            </span>
+                                          </span>
+                                          <span>
+                                            <span className="text-gray-400">Font: </span>
+                                            <span className="font-medium text-gray-800">
+                                              {zone.font}
+                                            </span>
+                                          </span>
+                                        </div>
+                                        <div className="mb-2">
+                                          <span className="text-gray-400">Text: </span>
+                                          <span className="font-medium text-gray-800">
+                                            {zone.text}
+                                          </span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-gray-400">Color:</span>
+                                          <div
+                                            className="h-4 w-4 rounded-full border border-gray-300 shadow-sm"
+                                            style={{ backgroundColor: zone.color }}
+                                          />
+                                          <span className="font-mono text-xs text-gray-600">
+                                            {zone.color}
+                                          </span>
+                                        </div>
+                                        {zone.notes && (
+                                          <div className="mt-2 rounded bg-amber-50 px-2 py-1 text-xs text-amber-700 italic">
+                                            {zone.notes}
+                                          </div>
+                                        )}
+                                      </div>
+                                    ),
+                                  )}
                                 </div>
-                              ) : (
-                                value
                               )}
-                            </span>
+
+                            {/* Cornerstone Type */}
+                            {(upgrade === UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE ||
+                              upgrade === UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE) &&
+                              designData.upgrades.props.cornerstones?.type && (
+                                <div className="text-sm">
+                                  <span className="text-gray-400">Type: </span>
+                                  <span className="font-medium capitalize text-gray-800">
+                                    {designData.upgrades.props.cornerstones.type}
+                                  </span>
+                                </div>
+                              )}
                           </div>
                         );
-                      }
-                      return (
-                        <div
-                          key={key}
-                          className="flex items-center gap-2 text-sm"
-                        >
-                          <div
-                            className="h-5 w-5 rounded border border-gray-300"
-                            style={{ backgroundColor: value as string }}
-                          />
-                          <span className="text-gray-600">{key}:</span>
-                          <span className="font-medium">
-                            {value?.toString()}
-                          </span>
-                        </div>
-                      );
-                    })}
+                      },
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Photos & Colors ── */}
+              <div className="py-5">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {/* Photos */}
+                  <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                    <SectionLabel>Photos</SectionLabel>
+                    <div className="flex items-end gap-1.5">
+                      <span className="text-4xl font-extrabold tracking-tight text-gray-900">
+                        {designData.photos.items.length}
+                      </span>
+                      <span className="mb-1 text-sm text-gray-400">
+                        {designData.photos.items.length === 1 ? "photo" : "photos"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Colors */}
+                  <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                    <SectionLabel>Colors</SectionLabel>
+                    <div className="space-y-2">
+                      {Object.entries(designData.colors || {})
+                        .filter(([_, value]) => value)
+                        .map(([key, value]) => {
+                          if (key === "blocking") {
+                            const isObj =
+                              value && typeof value === "object";
+                            const colors = isObj
+                              ? (value as any).colors
+                              : [value as string];
+                            return (
+                              <div
+                                key={key}
+                                className="flex items-center gap-2 text-sm"
+                              >
+                                <span className="w-16 capitalize text-gray-400">
+                                  {key}
+                                </span>
+                                <div className="flex items-center gap-1">
+                                  {colors.map((c: string, ci: number) => (
+                                    <div
+                                      key={ci}
+                                      className="h-5 w-5 rounded-full border border-gray-300 shadow-sm"
+                                      style={{ backgroundColor: c }}
+                                      title={c}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return (
+                            <div
+                              key={key}
+                              className="flex items-center gap-2 text-sm"
+                            >
+                              <span className="w-16 capitalize text-gray-400">
+                                {key}
+                              </span>
+                              <div
+                                className="h-5 w-5 rounded-full border border-gray-300 shadow-sm"
+                                style={{ backgroundColor: value as string }}
+                                title={value?.toString()}
+                              />
+                              <span className="font-mono text-xs text-gray-600">
+                                {value?.toString()}
+                              </span>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         );
       })}
 
-      {/* Image Zoom Modal */}
+      {/* ── Zoom Modal ── */}
       <AnimatePresence>
         {zoomedImage && (
           <motion.div
@@ -296,31 +369,32 @@ const OrderItemsList = ({ items }: Props) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="bg-opacity-75 fixed inset-0 z-50 flex items-center justify-center bg-black p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
             onClick={() => setZoomedImage(null)}
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.3, type: "spring", damping: 25 }}
+              exit={{ scale: 0.85, opacity: 0 }}
+              transition={{ duration: 0.25, type: "spring", damping: 22 }}
               className="relative max-h-[90vh] max-w-[90vw]"
+              onClick={(e) => e.stopPropagation()}
             >
               <img
                 src={zoomedImage}
                 alt="Zoomed preview"
-                className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
-                onClick={(e) => e.stopPropagation()}
+                className="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl"
               />
               <motion.button
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
-                className="absolute top-2 right-2 rounded-full bg-white p-2 text-gray-800 shadow-lg hover:bg-gray-100"
+                transition={{ duration: 0.15 }}
+                className="absolute right-3 top-3 rounded-full bg-white/90 p-2 text-gray-700 shadow-lg backdrop-blur-sm hover:bg-white"
                 onClick={() => setZoomedImage(null)}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
+                  className="h-5 w-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

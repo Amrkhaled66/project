@@ -138,6 +138,14 @@ export const upgrades: UpgradeOption[] = [
   },
 ];
 
+export const upgradeMap: Record<UpgradeId, UpgradeOption> = upgrades.reduce(
+  (acc, upgrade) => {
+    acc[upgrade.id] = upgrade;
+    return acc;
+  },
+  {} as Record<UpgradeId, UpgradeOption>,
+);
+
 type UpgradePriceBySize = Record<BlanketSizeId, number>;
 
 export const priceMap: Partial<Record<UpgradeId, UpgradePriceBySize>> = {
@@ -218,4 +226,11 @@ export const priceMap: Partial<Record<UpgradeId, UpgradePriceBySize>> = {
     [BLANKET_SIZE_IDS.QUEEN]: 119.86,
     [BLANKET_SIZE_IDS.KING]: 129.86,
   },
+};
+
+export const getUpgradePrice = (
+  upgradeId: UpgradeId,
+  sizeId: BlanketSizeId,
+): number => {
+  return priceMap[upgradeId]?.[sizeId] ?? 0;
 };

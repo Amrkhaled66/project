@@ -21,7 +21,7 @@ const DeleteDesignModel: React.FC<DeleteDesignModelProps> = ({
   isSubmitting = false,
 }) => {
   const [note, setNote] = useState("");
-
+  debugger;
   useEffect(() => {
     if (!isOpen) {
       setNote("");
@@ -36,7 +36,7 @@ const DeleteDesignModel: React.FC<DeleteDesignModelProps> = ({
 
   return (
     <Model isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white rounded-xl shadow-xl p-6 space-y-4">
+      <div className="space-y-4 rounded-xl bg-white p-6 shadow-xl">
         <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
 
         <p className="text-sm text-gray-600">{description}</p>
@@ -54,7 +54,7 @@ const DeleteDesignModel: React.FC<DeleteDesignModelProps> = ({
             onChange={(e) => setNote(e.target.value)}
             placeholder="Write why this design is being deleted"
             rows={4}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 transition outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
           />
           <p className="text-xs text-gray-500">
             This note will be saved with the soft-deleted design.
@@ -65,7 +65,7 @@ const DeleteDesignModel: React.FC<DeleteDesignModelProps> = ({
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 transition"
+            className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-100"
           >
             Cancel
           </button>
@@ -73,7 +73,7 @@ const DeleteDesignModel: React.FC<DeleteDesignModelProps> = ({
           <button
             onClick={handleConfirm}
             disabled={!note.trim() || isSubmitting}
-            className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 transition disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg bg-red-600 px-4 py-2 text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? "Deleting..." : confirmLabel}
           </button>

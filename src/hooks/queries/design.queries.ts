@@ -1,11 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DesignService } from "src/services/design.service";
 import { Design, DesignData } from "src/types/design.types";
-
+// import { useAuth } from "src/context/auth.context";
 /* -------------------------------------------------------------------------- */
 /* GET ALL DESIGNS                                                             */
 /* -------------------------------------------------------------------------- */
 export const useDesigns = () => {
+  // const {
+  //   authData: { user },
+  // } = useAuth();
   return useQuery<Design[]>({
     queryKey: ["designs"],
     queryFn: () => DesignService.getAll(),

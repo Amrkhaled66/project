@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, ReactNode } from "react";
+// import { useQueryClient } from "@tanstack/react-query";
+
 import {
   setToken,
   clearToken,
   getToken,
   setUser,
   clearUser,
-  getUser
+  getUser,
 } from "src/utils/authStorage";
 import type { User } from "src/types/User";
 import { useCart } from "./cart.context";
@@ -32,6 +34,7 @@ const AuthContext = createContext<AuthContextType>({
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const { clearCart } = useCart();
+  // const queryClient = useQueryClient();
   const [authData, setAuthData] = useState<AuthData>(() => {
     const token = getToken();
     const user = getUser();
@@ -55,6 +58,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     clearToken();
     clearUser();
     clearCart();
+    // queryClient.invalidateQueries();
   };
   const isAuthenticated = !!authData.token;
 

@@ -73,7 +73,7 @@ export default function DesignLibraryPage() {
       </div>
 
       {/* CONTENT */}
-      <div className="mx-auto max-w-6xl">
+      <div className=" max-w-6xl">
         {isLoading && (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (

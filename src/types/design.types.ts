@@ -1,4 +1,5 @@
 import { BlanketSizeId } from "src/data/blanketSizes";
+import { UpgradeId } from "src/data/upgrades";
 
 export interface sizeObj {
   size: BlanketSizeId;
@@ -22,7 +23,7 @@ export interface DesignData {
   };
 
   upgrades: {
-    selected: string[];
+    selected: Array<UpgradeId | string>;
     props: {
       embroidery: {
         zones: any;
