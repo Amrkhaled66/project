@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   DndContext,
@@ -12,125 +12,40 @@ import { Navigate, useParams } from "react-router-dom";
 import DesginArea from "src/components/Profile/Design/DesignArea";
 import priceFormmater from "src/utils/priceFormmater";
 
-import Sizes from "src/components/Profile/Design/DesignWidget/Sizes";
-import BlanketColor from "src/components/Profile/Design/DesignWidget/BlanketColor";
-import BorderColor from "src/components/Profile/Design/DesignWidget/BorderColor";
-import BackingColorSelector from "src/components/Profile/Design/DesignWidget/BackingColor";
-import BindingColor from "src/components/Profile/Design/DesignWidget/BindingColor";
-import BlockingColor from "src/components/Profile/Design/DesignWidget/BlockingColor";
-import QualityPreserveColor from "src/components/Profile/Design/DesignWidget/QualityPreservedColor";
 import Button from "src/components/ui/Button";
-import GoastButton from "src/components/ui/GoastButton";
-
-import Upgrades from "src/components/Profile/Design/DesignWidget/Upgrades";
-import Text from "src/components/Profile/Design/DesignWidget/Text";
-import CornersPool from "src/components/Profile/Design/DesignWidget/CornersPool";
-import CustomPanelTab from "src/components/Profile/Design/DesignWidget/CustomPanel";
+import TabButton, {
+  TabId,
+} from "src/components/Profile/Design/upgrades/TabButton";
 
 import { useDesign } from "src/context/desgin.context";
 import { useCart } from "src/context/cart.context";
-import { useDesign as useDesignQuery } from "src/hooks/queries/design.queries";
-import Toast from "src/components/ui/Toast";
+import LeavePageModal from "src/components/Profile/Design/Canvas/LeavePageModal";
 import Skeleton from "react-loading-skeleton";
+import useGetUpgradeTabs from "src/hooks/useGetUpgradeTabs";
+import useUnsavedChangesBlocker from "src/hooks/useUnsavedChangesBlocker";
 import "react-loading-skeleton/dist/skeleton.css";
-
-/* -------------------------------------------------------------------------- */
-/* Types                                                                      */
-/* -------------------------------------------------------------------------- */
-type TabId =
-  | "size"
-  | "materials"
-  | "elements"
-  | "script"
-  | "corners"
-  | "customPanel";
-
-interface Tab {
-  id: TabId;
-  label: string;
-  component: React.ReactNode;
-  isActive: boolean;
-}
-
-/* -------------------------------------------------------------------------- */
-/* UI Components                                                              */
-/* -------------------------------------------------------------------------- */
-const TabButton = ({
-  tab,
-  isActive,
-  onClick,
-}: {
-  tab: Tab;
-  isActive: boolean;
-  onClick: () => void;
-}) => (
-  <button
-    onClick={onClick}
-    className={`relative px-1 py-2 text-sm font-medium transition-colors duration-200 ${
-      isActive ? "text-primary" : "hover:text-primary text-neutral-600"
-    }`}
-  >
-    {tab.label}
-    {isActive && (
-      <motion.div
-        layoutId="activeTabUnderline"
-        className="bg-primary absolute right-0 bottom-0 left-0 h-[2px] rounded-full"
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-      />
-    )}
-  </button>
-);
-
-const ColorGrid = ({
-  hasBinding,
-  hasBlocking,
-  isQualityPreserve,
-}: {
-  hasBinding: boolean;
-  hasBlocking: boolean;
-  isQualityPreserve: boolean;
-}) => (
-  <div className="grid gap-4">
-    <BlanketColor />
-    <BorderColor />
-    {hasBinding && <BindingColor />}
-    {hasBlocking && <BlockingColor />}
-    {isQualityPreserve && <QualityPreserveColor />}
-    <BackingColorSelector />
-  </div>
-);
 
 /* -------------------------------------------------------------------------- */
 /* Page Component                                                             */
 /* -------------------------------------------------------------------------- */
 export default function BlanketDesigner() {
   const { id: designId } = useParams<{ id: string }>();
+  const tabs = useGetUpgradeTabs();
 
   const {
     designData,
-    hasBinding,
-    hasBlocking,
-    hasEmbroidery,
-    hasCornerstones,
-    hasCustomPanel,
-    hasQualityPreserve,
     handleDragEnd,
     isLoading,
     isError,
     hasChanged,
     price,
-    flushSave,
     data,
-    resetDesign
   } = useDesign();
 
   const { addOrIncrease, isItemInCart, updateItemPrice } = useCart();
+  const [activeTab, setActiveTab] = useState<TabId>(tabs[0].id);
 
   const inCart = designId ? isItemInCart(designId) : false;
-
-  const [activeTab, setActiveTab] = useState<TabId>("size");
-
-  const selectedUpgrades = designData?.upgrades?.selected ?? [];
 
   useEffect(() => {
     if (inCart) {
@@ -138,91 +53,30 @@ export default function BlanketDesigner() {
     }
   }, [hasChanged]);
 
-  /* ------------------------------------------------------------------------ */
-  /* Tabs                                                                     */
-  /* ------------------------------------------------------------------------ */
-
-  const handleAddToCart = () => {
-    addOrIncrease({
-      designId: designId || " ",
-      name: data?.name || "",
-      previewImage: data?.previewImage ?? null,
-      price: Number(data?.price) || 0,
-      sizeId: designData?.canvas.size || " ",
-    });
-
-    Toast("Added to cart", "success", "#d1fae5", "top-end");
-  };
-
-  const tabs = useMemo<Tab[]>(
-    () => [
-      {
-        id: "size",
-        label: "Size",
-        component: <Sizes />,
-        isActive: true,
-      },
-      {
-        id: "materials",
-        label: "Materials",
-        component: (
-          <ColorGrid
-            hasBinding={hasBinding}
-            hasBlocking={hasBlocking}
-            isQualityPreserve={hasQualityPreserve}
-          />
-        ),
-        isActive: true,
-      },
-      {
-        id: "elements",
-        label: "Elements",
-        component: <Upgrades selectedUpgrades={selectedUpgrades} />,
-        isActive: true,
-      },
-      {
-        id: "script",
-        label: "Heirloom Script™",
-        component: <Text />,
-        isActive: hasEmbroidery,
-      },
-      {
-        id: "corners",
-        label: "Corners",
-        component: <CornersPool />,
-        isActive: hasCornerstones,
-      },
-      {
-        id: "customPanel",
-        label: "Custom Panels™",
-        component: <CustomPanelTab />,
-        isActive: true,
-      },
-    ],
-    [
-      hasBinding,
-      hasBlocking,
-      hasEmbroidery,
-      hasQualityPreserve,
-      hasCornerstones,
-      hasCustomPanel,
-      selectedUpgrades,
-    ],
-  );
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
+  const {
+    isModalOpen,
+    isLeaving,
+    handleStay,
+    handleLeave,
+    closeModal,
+  } = useUnsavedChangesBlocker({
+  });
 
   const activeTabs = tabs.filter((t) => t.isActive);
   const activeTabContent = tabs.find((t) => t.id === activeTab)?.component;
 
+  useEffect(() => {
+    if (!activeTabs.some((tab) => tab.id === activeTab) && activeTabs.length > 0) {
+      setActiveTab(activeTabs[0].id);
+    }
+  }, [activeTab, activeTabs]);
+
   if (isError) {
     return <Navigate replace to="/profile/design-library" />;
   }
-
-  const handleUpdate = () => {
-    flushSave();
-  };
   /* ------------------------------------------------------------------------ */
   /* Render                                                                   */
   /* ------------------------------------------------------------------------ */
@@ -245,24 +99,21 @@ export default function BlanketDesigner() {
               Total: <span>{priceFormmater(Number(price))}</span>
             </p>
             <div className="flex gap-4">
-              {/* <Button disabled={!hasChanged} onClick={handleUpdate}>
-                Save Your Updates
-              </Button> */}
-
               <Button
                 disabled={inCart}
                 className="px-3"
-                onClick={() => handleAddToCart()}
+                onClick={() =>
+                  addOrIncrease({
+                    designId: designId || " ",
+                    name: data?.name || "",
+                    previewImage: data?.previewImage ?? null,
+                    price: Number(data?.price) || 0,
+                    sizeId: designData?.canvas.size || " ",
+                  })
+                }
               >
                 {inCart ? "Added" : "Commission Build"}
               </Button>
-
-              {/* <GoastButton
-                className="px-3"
-                onClick={() => handleAddToCart(designData)}
-              >
-                Add To Cart
-              </GoastButton> */}
             </div>
           </header>
         )}
@@ -283,10 +134,6 @@ export default function BlanketDesigner() {
 
           {/* Sidebar */}
           <aside className="sticky top-2 flex h-fit w-full flex-col space-y-4 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm lg:w-[40%]">
-            {/* <div>
-              <h2 className="sm:text-xl font-bold">Build Configuration</h2>
-              <p className="text-sm font-medium">Configure your Premium Build™ Blueprin</p>
-            </div> */}
             <div className="page-header flex h-fit items-start justify-between">
               <div className="max-w-[75%] space-y-1">
                 <h2 className="text-xl font-medium">Build Configuration</h2>
@@ -336,6 +183,14 @@ export default function BlanketDesigner() {
           </aside>
         </div>
       </div>
+
+      <LeavePageModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onStay={handleStay}
+        onLeave={handleLeave}
+        isLeaving={isLeaving}
+      />
     </DndContext>
   );
 }

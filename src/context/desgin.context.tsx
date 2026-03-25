@@ -46,8 +46,6 @@ type DesignContextType = {
   handleDragEnd: (event: any) => void;
   isDragging: boolean;
   data: any;
-  flushSave: () => Promise<void>;
-
   updateBlanketColor: (color: string | null) => void;
   updateBorderColor: (color: string | null) => void;
   updateBackingColor: (color: string | null) => void;
@@ -128,7 +126,6 @@ export const DesignProvider = ({
 }) => {
   const { data, isLoading, isError } = useDesignQuery(designId);
   const updateMutation = useUpdateDesign();
-
   /* ------------------------------------------------------------------------ */
   /* State                                                                    */
   /* ------------------------------------------------------------------------ */
@@ -140,6 +137,7 @@ export const DesignProvider = ({
   const hydrated = useRef(false);
   const isDragging = useRef(false);
   const canvasRef = useRef<HTMLDivElement | null>(null);
+  const latestDesignDataRef = useRef(designData);
 
   const updaterRef = useRef<ReturnType<
     typeof createDesignUpdater<DesignData & Record<string, unknown>>
@@ -208,19 +206,35 @@ export const DesignProvider = ({
   /* ------------------------------------------------------------------------ */
   /* Autosave (debounced, diff-based)                                          */
   /* ------------------------------------------------------------------------ */
+
   useEffect(() => {
     if (!hydrated.current) return;
     updaterRef.current?.schedule(designData as any);
+    latestDesignDataRef.current = designData;
   }, [designData]);
 
   /* ------------------------------------------------------------------------ */
   /* Manual flush save                                                         */
   /* ------------------------------------------------------------------------ */
-  const flushSave = useCallback(async () => {
-    if (!hydrated.current) return;
-    await updaterRef.current?.flush(designData as any);
-  }, [designData]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!hydrated.current) return;
+
+      const hasChanges = updaterRef.current?.hasPendingChanges(
+        latestDesignDataRef.current as any,
+      );
+
+      if (!hasChanges) return;
+
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
   /* ------------------------------------------------------------------------ */
   /* Drag handlers                                                            */
   /* ------------------------------------------------------------------------ */
@@ -264,9 +278,6 @@ export const DesignProvider = ({
       UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE,
     ].includes(u),
   );
-
-  const hasChanged =
-    updaterRef.current?.hasPendingChanges(designData as any) || false;
 
   /* ------------------------------------------------------------------------ */
   /* toggle updrade                                                           */
@@ -355,13 +366,9 @@ export const DesignProvider = ({
       isError,
       price: calculateDesignPrice(designData).toString(),
       canvasRef,
-
       handleDragStart,
       handleDragEnd,
       isDragging: isDragging.current,
-
-      flushSave,
-
       updateBlanketColor: (c) => update((d) => (d.colors.blanket = c)),
       updateBorderColor: (c) => update((d) => (d.colors.border = c)),
       updateBackingColor: (c) => update((d) => (d.colors.backing = c)),
@@ -406,9 +413,18 @@ export const DesignProvider = ({
       hasFringe: designData.upgrades.selected.includes(
         UPGRADE_IDS.HEIRLOOM_SEAL,
       ),
-      hasChanged,
+      hasChanged:
+        updaterRef.current?.hasPendingChanges(
+          latestDesignDataRef.current as any,
+        ) || false,
     }),
-    [designId, designData, isLoading, isError, flushSave],
+    [
+      designId,
+      designData,
+      isLoading,
+      isError,
+      updaterRef.current?.hasPendingChanges(latestDesignDataRef.current as any),
+    ],
   );
 
   return (

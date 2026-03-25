@@ -3,13 +3,13 @@ import {
   useEffect,
   useRef,
   forwardRef,
+  useCallback
 } from "react";
 
 import CanvasFront from "./FrontGrid";
 import CanvasBack from "./BackGrid";
 import { GridItemType } from "src/components/Profile/Design/Canvas/GridItem";
 import { useDesign } from "src/context/desgin.context";
-
 export interface CanvasHandle {
   getSnapshot: () => Promise<string>;
 }

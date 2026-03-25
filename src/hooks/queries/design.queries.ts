@@ -12,6 +12,9 @@ export const useDesigns = () => {
   return useQuery<Design[]>({
     queryKey: ["designs"],
     queryFn: () => DesignService.getAll(),
+     staleTime: 0, // always stale → always refetch
+    refetchOnMount: true, // refetch every time component mounts
+    refetchOnWindowFocus: true,
   });
 };
 

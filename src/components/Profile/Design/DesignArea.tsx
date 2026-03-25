@@ -47,12 +47,12 @@ const DesignArea = () => {
   /* ------------------------------------------------------------------------ */
   /* Delete item                                                              */
   /* ------------------------------------------------------------------------ */
-  const handleDeleteItem = (id: string) => {
+  const handleDeleteItem = useCallback((id: string) => {
     previewDirtyRef.current = true;
     update((d) => {
       d.photos.items = d.photos.items.filter((i) => i.id !== id);
     });
-  };
+  }, []);
 
   /* ------------------------------------------------------------------------ */
   /* Upload preview on unmount                                                */

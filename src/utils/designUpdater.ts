@@ -24,8 +24,7 @@ export function createDesignUpdater<T extends Record<string, unknown>>(options: 
     let preview: Blob | null | undefined = null;
 
     if (
-      options.generatePreview &&
-      VISUAL_KEYS.some((k) => k in changed)
+      options.generatePreview 
     ) {
       preview = await options.generatePreview();
     }

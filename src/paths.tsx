@@ -1,35 +1,37 @@
 import {
-  BrowserRouter,
-  Routes,
-  Route,
+  createBrowserRouter,
+  createRoutesFromElements,
   Navigate,
+  Outlet,
+  Route,
+  RouterProvider,
   useParams,
 } from "react-router-dom";
 
 import {
-  Home,
-  Dashboard,
-  Uploads,
+  AddDesign,
+  AddUser,
+  AdminLogin,
   Cart,
-  UserProfile,
-  Orders,
-  OrderSuccess,
-  OrderCancel,
+  CustomPanels,
+  Dashboard,
   Design,
+  DesignLibrary,
+  Home,
+  LoginAsUser,
   LoginPage,
+  OrderCancel,
+  OrderDetails,
+  Orders,
+  OrdersMangment,
+  OrderSuccess,
+  PremiumBuilds,
   SetPassword,
   SignupPage,
-  DesignLibrary,
-  OrdersMangment,
-  AdminLogin,
-  OrderDetails,
-  UserManagement,
+  Uploads,
   UserDetails,
-  CustomPanels,
-  LoginAsUser,
-  AddUser,
-  AddDesign,
-  PremiumBuilds,
+  UserManagement,
+  UserProfile,
 } from "./pages";
 
 import MainLayout from "./layouts/MainLayout";
@@ -38,7 +40,6 @@ import AdminDashboardLayout from "./layouts/AdminDashBoardLayout";
 
 import ScrollToTop from "./components/ui/ScroolToTop";
 
-// Guards
 import CartGuard from "./middleware/CartGuard";
 import AuthRoutes from "./middleware/AuthRoutes";
 import OnlyGuestRoute from "./middleware/onlyGuestUser";
@@ -50,138 +51,133 @@ import { AxiosProvider } from "src/context/axiosProvider";
 import { AdminContextProvider } from "src/context/adminAuth.context";
 import { ADMIN_PATH } from "./utils/defaultSettings";
 
-export default function AppRouter() {
+function AppRouterShell() {
   return (
-    <BrowserRouter>
-      <AxiosProvider>
-        <ScrollToTop />
-
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-
-          {/* ================= Public ================= */}
-          <Route path="/" element={<MainLayout />}>
-            <Route
-              path="order-success"
-              element={
-                <AuthRoutes>
-                  <OrderSuccess />
-                </AuthRoutes>
-              }
-            />
-            <Route
-              path="order-cancel"
-              element={
-                <AuthRoutes>
-                  <OrderCancel />
-                </AuthRoutes>
-              }
-            />
-          </Route>
-
-          {/* ================= User Dashboard ================= */}
-          <Route
-            path="/profile"
-            element={<Navigate to="/profile/dashboard" replace />}
-          />
-
-          <Route
-            path="/profile"
-            element={
-              <AuthRoutes>
-                <AdminContextProvider>
-                  <DashBoardLayout />
-                </AdminContextProvider>
-              </AuthRoutes>
-            }
-          >
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="uploads" element={<Uploads />} />
-            <Route path="custom-panels" element={<CustomPanels />} />
-            <Route
-              path="cart"
-              element={
-                <CartGuard>
-                  <Cart />
-                </CartGuard>
-              }
-            />
-            <Route path="user-profile" element={<UserProfile />} />
-            <Route path="design-library" element={<DesignLibrary />} />
-            <Route
-              path="design-library/:id"
-              element={<DesignWithIdWrapper />}
-            />
-            <Route path="orders" element={<Orders />} />
-          </Route>
-
-          {/* ================= Admin Routes ================= */}
-          <Route
-            path={ADMIN_PATH}
-            element={
-              <AdminContextProvider>
-                <AdminRoutes>
-                  <AdminDashboardLayout />
-                </AdminRoutes>
-              </AdminContextProvider>
-            }
-          >
-            {/* /admin → /admin/orders */}
-            <Route index element={<Navigate to="orders" replace />} />
-            <Route path="orders" element={<OrdersMangment />} />
-            <Route path="orders/:id" element={<OrderDetails />} />
-            <Route path="user" element={<UserManagement />} />
-            <Route path="user/:id" element={<UserDetails />} />
-            <Route path="login-as-user" element={<LoginAsUser />} />
-            <Route path="add-user" element={<AddUser />} />
-            <Route path="add-design" element={<AddDesign />} />
-            <Route path="premium-builds" element={<PremiumBuilds />} />
-          </Route>
-
-          {/* ================= Admin Login ================= */}
-          <Route
-            path={`${ADMIN_PATH}/login`}
-            element={
-              <AdminContextProvider>
-                <IsAdmin>
-                  <AdminLogin />
-                </IsAdmin>
-              </AdminContextProvider>
-            }
-          />
-
-          {/* ================= Auth ================= */}
-          {/* <Route path="/register" element={<SignupPage />} /> */}
-          <Route
-            path="/login"
-            element={
-              <OnlyGuestRoute>
-                <LoginPage />
-              </OnlyGuestRoute>
-            }
-          />
-          <Route
-            path="/auth/setup"
-            element={
-              <OnlyGuestRoute>
-                <SetPassword />
-              </OnlyGuestRoute>
-            }
-          />
-        </Routes>
-      </AxiosProvider>
-    </BrowserRouter>
+    <AxiosProvider>
+      <ScrollToTop />
+      <Outlet />
+    </AxiosProvider>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Helpers                                                                    */
-/* -------------------------------------------------------------------------- */
 function DesignWithIdWrapper() {
   const { id } = useParams();
+
   return (
     <DesignProvider designId={id || ""}>
       <Design />
     </DesignProvider>
   );
+}
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route element={<AppRouterShell />}>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+
+      <Route path="/" element={<MainLayout />}>
+        <Route
+          path="order-success"
+          element={
+            <AuthRoutes>
+              <OrderSuccess />
+            </AuthRoutes>
+          }
+        />
+        <Route
+          path="order-cancel"
+          element={
+            <AuthRoutes>
+              <OrderCancel />
+            </AuthRoutes>
+          }
+        />
+      </Route>
+
+      <Route
+        path="/profile"
+        element={<Navigate to="/profile/dashboard" replace />}
+      />
+
+      <Route
+        path="/profile"
+        element={
+          <AuthRoutes>
+            <AdminContextProvider>
+              <DashBoardLayout />
+            </AdminContextProvider>
+          </AuthRoutes>
+        }
+      >
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="uploads" element={<Uploads />} />
+        <Route path="custom-panels" element={<CustomPanels />} />
+        <Route
+          path="cart"
+          element={
+            <CartGuard>
+              <Cart />
+            </CartGuard>
+          }
+        />
+        <Route path="user-profile" element={<UserProfile />} />
+        <Route path="design-library" element={<DesignLibrary />} />
+        <Route path="design-library/:id" element={<DesignWithIdWrapper />} />
+        <Route path="orders" element={<Orders />} />
+      </Route>
+
+      <Route
+        path={ADMIN_PATH}
+        element={
+          <AdminContextProvider>
+            <AdminRoutes>
+              <AdminDashboardLayout />
+            </AdminRoutes>
+          </AdminContextProvider>
+        }
+      >
+        <Route index element={<Navigate to="orders" replace />} />
+        <Route path="orders" element={<OrdersMangment />} />
+        <Route path="orders/:id" element={<OrderDetails />} />
+        <Route path="user" element={<UserManagement />} />
+        <Route path="user/:id" element={<UserDetails />} />
+        <Route path="login-as-user" element={<LoginAsUser />} />
+        <Route path="add-user" element={<AddUser />} />
+        <Route path="add-design" element={<AddDesign />} />
+        <Route path="premium-builds" element={<PremiumBuilds />} />
+      </Route>
+
+      <Route
+        path={`${ADMIN_PATH}/login`}
+        element={
+          <AdminContextProvider>
+            <IsAdmin>
+              <AdminLogin />
+            </IsAdmin>
+          </AdminContextProvider>
+        }
+      />
+
+      <Route
+        path="/login"
+        element={
+          <OnlyGuestRoute>
+            <LoginPage />
+          </OnlyGuestRoute>
+        }
+      />
+      <Route
+        path="/auth/setup"
+        element={
+          <OnlyGuestRoute>
+            <SetPassword />
+          </OnlyGuestRoute>
+        }
+      />
+    </Route>,
+  ),
+);
+
+export default function AppRouter() {
+  return <RouterProvider router={router} />;
 }

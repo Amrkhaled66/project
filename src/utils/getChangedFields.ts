@@ -42,9 +42,7 @@ export function getChangedFields<T extends AnyRecord>(
     const prevValue = prev?.[key];
     const currentValue = current?.[key];
 
-    // field اتضاف أو اتغير
     if (!deepEqual(prevValue, currentValue)) {
-      // لو current undefined → ما تبعتوش
       if (currentValue !== undefined) {
         changed[key] = currentValue;
       }
