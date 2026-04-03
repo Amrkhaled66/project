@@ -55,8 +55,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   };
 
   return (
-    <header className="mx-auto w-full">
-      <div className="flex items-center justify-between py-3">
+    <header className="mx-auto px-6 w-full">
+      <div className="flex items-center justify-between py-1">
         {/* Left */}
         <div className="flex items-center justify-between gap-4">
           <button

@@ -31,13 +31,13 @@ const DashBoardLayout: React.FC = () => {
           }}
         />
 
-        <div className="w-full space-y-5 bg-white px-6 py-2">
+        <div className="w-full bg-white py-2">
           <DashboardHeader
             isSidebarOpen={isSidebarOpen}
             onMenuToggle={() => setIsSidebarOpen((v) => !v)}
           />
 
-          <div className="pb-4 lg:pb-8">
+          <div className="pb-4 bg-[#F5F5F7] py-10 px-6 lg:pb-8">
             <Outlet />
           </div>
         </div>

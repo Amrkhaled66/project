@@ -15,7 +15,7 @@ const ProfileFeatureCard = ({
   to: string;
 }) => {
   return (
-    <div className="animate bg-mainProfile flex h-full flex-col items-center justify-between gap-y-5 rounded-xl px-4 py-5 shadow-sm hover:shadow-lg sm:px-6">
+    <div className="animate bg-white flex h-full flex-col items-center justify-between gap-y-5 rounded-xl px-4 py-5 shadow-sm hover:shadow-lg sm:px-6">
       {/* icon can scale via parent text size if you wrap it */}
       <div className="text-2xl sm:text-3xl">{Icon}</div>
 
