@@ -3,26 +3,28 @@ const DesginContainer = ({
   header,
   subHeader,
   children,
-  headerComponenet,
+  headerComponent,
 }: {
   className?: string;
   header?: string;
   subHeader?: string;
   children?: React.ReactNode;
-  headerComponenet?: React.ReactNode;
+  headerComponent?: React.ReactNode;
 }) => {
   return (
     <div
-      className={`bg-mainProfile flex flex-col justify-between space-y-4 rounded-xl p-4 ${className}`}
+      className={`flex flex-col justify-between space-y-4 rounded-3xl bg-white p-4 drop-shadow-sm ${className}`}
     >
-      <div className="page-header flex h-fit items-start justify-between">
-        <div className="space-y-1 ">
-          <h2 className="text-xl font-medium">{header}</h2>
+      <div className="flex h-fit items-start justify-between">
+        <div className="space-y-1">
+          <h2 className="font-header font-bold text-xl">{header}</h2>
           {subHeader && (
-            <h3 className="text-sm max-w-[75%] text-neutral-500">{subHeader}</h3>
+            <h3 className="max-w-[75%] text-sm text-subTitle">
+              {subHeader}
+            </h3>
           )}
         </div>
-        {headerComponenet}
+        {headerComponent}
       </div>
       <div className="flex-1">{children}</div>
     </div>

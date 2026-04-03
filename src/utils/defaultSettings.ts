@@ -21,7 +21,7 @@ const ORDER_STATUS: Record<
   },
   PAID: {
     label: "Commissioned",
-    color: "bg-blue-100 text-blue-700",
+    color: "bg-green-100 text-green-700",
     icon: CheckCircle2,
     stepOrder: 2,
   },

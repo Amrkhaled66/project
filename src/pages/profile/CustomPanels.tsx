@@ -1,17 +1,16 @@
 import { useState } from "react";
+import PanelsLibrary from "src/components/Profile/CustomPanels/PanelsLibrary";
+import PanelMergePreview from "src/components/Profile/CustomPanels/PanelMergePreview";
+import UploadMergedPanel from "src/components/Profile/CustomPanels/UploadMergedPanel";
+import CustomPanelsList from "src/components/Profile/CustomPanels/CustomPanelsList";
+import PageHeader from "src/components/ui/PageHeader";
 import Toast from "src/components/ui/Toast";
-
 import {
   useUserUploads,
   useUploadMyImages,
   useDeleteMyUpload,
 } from "src/hooks/queries/upload.queries";
 import usePageTitle from "src/hooks/useUpdatePageTitle";
-
-import PanelsLibrary from "src/components/Profile/CustomPanels/PanelsLibrary";
-import PanelMergePreview from "src/components/Profile/CustomPanels/PanelMergePreview";
-import UploadMergedPanel from "src/components/Profile/CustomPanels/UploadMergedPanel";
-import CustomPanelsList from "src/components/Profile/CustomPanels/CustomPanelsList";
 import { panels as defaultPanelsSettings } from "src/utils/defaultSettings";
 
 const ITEMS_PER_PAGE = 9;
@@ -24,14 +23,11 @@ type Panel = {
 
 export default function CustomPanels() {
   usePageTitle("Custom Panel Studio™");
-  /* ---------------- Pagination (library only) ---------------- */
   const [page, setPage] = useState(1);
 
-  /* ---------------- Selection & Merge ---------------- */
   const [selectedPanels, setSelectedPanels] = useState<Panel[]>([]);
   const [mergedFile, setMergedFile] = useState<File | null>(null);
 
-  /* ---------------- Upload merged panel ---------------- */
   const uploadMutation = useUploadMyImages();
 
   const handleUploadMergedPanel = async () => {
@@ -44,8 +40,6 @@ export default function CustomPanels() {
       });
 
       Toast("Custom panel created successfully!", "success", "#ecfdf5", "top");
-
-      // reset merge flow
       setSelectedPanels([]);
       setMergedFile(null);
     } catch (err: any) {
@@ -58,7 +52,6 @@ export default function CustomPanels() {
     }
   };
 
-  /* ---------------- Fetch base panels (library) ---------------- */
   const { data, isLoading, isError } = useUserUploads({
     used: false,
     type: [defaultPanelsSettings.corner.key, defaultPanelsSettings.panel.key],
@@ -75,7 +68,6 @@ export default function CustomPanels() {
     deleteMutation.mutate({ uploadId: id, type });
   };
 
-  /* ---------------- Selection handlers ---------------- */
   const handleSelectPanel = (panel: Panel) => {
     setSelectedPanels((prev) => {
       if (prev.some((p) => p.id === panel.id)) return prev;
@@ -94,23 +86,14 @@ export default function CustomPanels() {
 
   return (
     <div className="mx-auto space-y-10">
-      {/* HEADER */}
-      <div className="page-header">
-        <h1 className="text-2xl font-semibold sm:text-3xl">
-          Custom Panel Studio™
-        </h1>
-        <p className="text-base font-light sm:text-lg">
-          Compose Custom Heirloom Panels™ by selecting up to four Blueprint™
-          components and combining them into a single panel element.
-        </p>
-      </div>
+      <PageHeader
+        title="Custom Panel Studio™"
+        subtitle="Compose custom Heirloom Panels™ by combining Blueprint™ components into a single panel element."
+      />
 
-      {/* 1️⃣ EXISTING CUSTOM PANELS (MERGED RESULTS) */}
       <CustomPanelsList onDelete={handleDeletePanel} />
 
-      {/* 2️⃣ LIBRARY + MERGE WORKSPACE */}
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-        {/* LEFT — PANELS LIBRARY */}
         <PanelsLibrary
           panels={panels}
           selectedPanels={selectedPanels}
@@ -123,7 +106,6 @@ export default function CustomPanels() {
           isError={isError}
         />
 
-        {/* RIGHT — MERGE WORKSPACE */}
         <div className="space-y-4">
           <PanelMergePreview
             panels={selectedPanels}

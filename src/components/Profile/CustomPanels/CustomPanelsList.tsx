@@ -73,7 +73,7 @@ export default function CustomPanelsList({ onDelete }: Props) {
   }
 
   return (
-    <div className="space-y-6 rounded-xl border border-gray-200 bg-gray-50 p-6 shadow-sm">
+    <div className="space-y-6 rounded-3xl bg-white drop-shadow-sm p-6">
       {/* GRID */}
       <div className="flex flex-wrap gap-4">
         {panelsList.map((panel) => (

@@ -23,7 +23,9 @@ import LeavePageModal from "src/components/Profile/Design/Canvas/LeavePageModal"
 import Skeleton from "react-loading-skeleton";
 import useGetUpgradeTabs from "src/hooks/useGetUpgradeTabs";
 import useUnsavedChangesBlocker from "src/hooks/useUnsavedChangesBlocker";
+import PageHeader from "src/components/ui/PageHeader";
 import "react-loading-skeleton/dist/skeleton.css";
+import MainDashButton from "src/components/ui/MainDashButton";
 
 /* -------------------------------------------------------------------------- */
 /* Page Component                                                             */
@@ -56,20 +58,17 @@ export default function BlanketDesigner() {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
-  const {
-    isModalOpen,
-    isLeaving,
-    handleStay,
-    handleLeave,
-    closeModal,
-  } = useUnsavedChangesBlocker({
-  });
+  const { isModalOpen, isLeaving, handleStay, handleLeave, closeModal } =
+    useUnsavedChangesBlocker({});
 
   const activeTabs = tabs.filter((t) => t.isActive);
   const activeTabContent = tabs.find((t) => t.id === activeTab)?.component;
 
   useEffect(() => {
-    if (!activeTabs.some((tab) => tab.id === activeTab) && activeTabs.length > 0) {
+    if (
+      !activeTabs.some((tab) => tab.id === activeTab) &&
+      activeTabs.length > 0
+    ) {
       setActiveTab(activeTabs[0].id);
     }
   }, [activeTab, activeTabs]);
@@ -94,14 +93,23 @@ export default function BlanketDesigner() {
             <Skeleton width={100} height={36} />
           </header>
         ) : (
-          <header className="page-header flex items-center justify-between font-bold">
-            <p>
-              Total: <span>{priceFormmater(Number(price))}</span>
-            </p>
-            <div className="flex gap-4">
-              <Button
+          <div className="items-ce flex justify-between">
+            <PageHeader
+              title="Blueprint Review™"
+              subtitle="Finalize your artisanal configuration before build commencement."
+            />
+            <div className="flex h-fit gap-x-12 px-8 items-center rounded-3xl bg-white  py-3 drop-shadow-sm">
+              <div className="flex flex-row">
+                <span className="text-subTitle tracking-wider uppercase">
+                  Total:
+                </span>
+
+                <span className="font-bold">{priceFormmater(Number(price))}</span>
+              </div>
+              <MainDashButton
                 disabled={inCart}
-                className="px-3"
+                text={inCart ? "Added" : "Commission Build"}
+                className="!h-fit !rounded-full px-3"
                 onClick={() =>
                   addOrIncrease({
                     designId: designId || " ",
@@ -111,11 +119,9 @@ export default function BlanketDesigner() {
                     sizeId: designData?.canvas.size || " ",
                   })
                 }
-              >
-                {inCart ? "Added" : "Commission Build"}
-              </Button>
+              />
             </div>
-          </header>
+          </div>
         )}
 
         <div className="flex flex-col gap-x-6 gap-y-4 lg:flex-row">
@@ -133,17 +139,17 @@ export default function BlanketDesigner() {
           </div>
 
           {/* Sidebar */}
-          <aside className="sticky top-2 flex h-fit w-full flex-col space-y-4 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm lg:w-[40%]">
-            <div className="page-header flex h-fit items-start justify-between">
-              <div className="max-w-[75%] space-y-1">
+          <aside className="sticky top-2 flex h-fit w-full flex-col space-y-4 rounded-3xl bg-white p-4 shadow-sm lg:w-[40%]">
+            <div className="flex h-fit items-start justify-between">
+              {/* <div className="max-w-[75%] space-y-1">
                 <h2 className="text-xl font-medium">Build Configuration</h2>
 
                 <h3 className="text-sm text-neutral-500">
                   Configure your Premium Build™ Blueprint
                 </h3>
-              </div>
+              </div> */}
             </div>
-            <nav className="relative flex w-full flex-wrap gap-1 border-b border-neutral-200 pb-2">
+            <nav className="relative grid grid-cols-4 border-b border-neutral-200 px-5 pb-2">
               {isLoading
                 ? [...Array(4)].map((_, i) => (
                     <Skeleton key={i} width={80} height={28} borderRadius={6} />

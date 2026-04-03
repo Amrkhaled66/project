@@ -33,81 +33,82 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
       transition={{ duration: 0.25 }}
       className="space-y-6"
     >
-      <h2 className="text-2xl font-semibold">Delivery Information</h2>
+      <h2 className="font-header text-primary-container font-bold tracking-wider">
+        Delivery Information
+      </h2>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormInput
-          label="Collector Name"
-          name="name"
-          value={values.name}
-          onChange={handleChange}
-          error={errors.name}
-          required
-        />
+      <div className="bg-white p-4 rounded-3xl drop-shadow-sm sm:p-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormInput
+            label="Collector Name"
+            name="name"
+            value={values.name}
+            onChange={handleChange}
+            error={errors.name}
+            required
+          />
 
-        <FormInput
-          label="Contact Phone"
-          name="phone"
-          value={values.phone}
-          onChange={handleChange}
-          error={errors.phone}
-          required
-        />
+          <FormInput
+            label="Contact Phone"
+            name="phone"
+            value={values.phone}
+            onChange={handleChange}
+            error={errors.phone}
+            required
+          />
 
-        <FormSelect
-          label="State / Region"
-          name="state"
-          options={
-            states
-              ? states.map((s: { name: string; code: string }) => ({
-                  label: s.name,
-                  value: s.name,
-                }))
-              : []
-          }
-          value={values.state}
-          onChange={handleChange}
-          error={errors.state}
-          required
-        />
+          <FormSelect
+            label="State / Region"
+            name="state"
+            options={
+              states
+                ? states.map((s: { name: string; code: string }) => ({
+                    label: s.name,
+                    value: s.name,
+                  }))
+                : []
+            }
+            value={values.state}
+            onChange={handleChange}
+            error={errors.state}
+            required
+          />
 
-        <FormInput
-          label="City"
-          name="city"
-          value={values.city}
-          onChange={handleChange}
-          error={errors.city}
-          required
-        />
+          <FormInput
+            label="City"
+            name="city"
+            value={values.city}
+            onChange={handleChange}
+            error={errors.city}
+            required
+          />
 
-        <FormInput
-          className="sm:col-span-2"
-          label="Delivery Address"
-          name="addressLine1"
-          value={values.addressLine1}
-          onChange={handleChange}
-          error={errors.addressLine1}
-          required
-        />
+          <FormInput
+            label="Delivery Address"
+            name="addressLine1"
+            value={values.addressLine1}
+            onChange={handleChange}
+            error={errors.addressLine1}
+            required
+          />
 
-        <FormInput
-          className="sm:col-span-2"
-          label="Address Line 2 (optional)"
-          name="addressLine2"
-          value={values.addressLine2}
-          onChange={handleChange}
-        />
+          <FormInput
+            label="Address Line 2 (optional)"
+            name="addressLine2"
+            value={values.addressLine2}
+            onChange={handleChange}
+          />
 
-        <FormInput
-          label="Postal Code"
-          name="zip"
-          value={values.zip}
-          onChange={handleChange}
-          error={errors.zip}
-          required
-        />
+          <FormInput
+            label="Postal Code"
+            name="zip"
+            value={values.zip}
+            onChange={handleChange}
+            error={errors.zip}
+            required
+          />
 
-        {/* <FormInput
+          {/* <FormInput
           className="sm:col-span-2"
           label="Email"
           name="email"
@@ -118,19 +119,20 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
           required
         /> */}
 
-        <FormTextarea
-          className="sm:col-span-2"
-          label="Commission Notes (Optional)"
-          name="notes"
-          value={values.notes}
-          onChange={handleChange}
-          rows={3}
-        />
-      </div>
+          <FormTextarea
+            className="sm:col-span-2"
+            label="Commission Notes (Optional)"
+            name="notes"
+            value={values.notes}
+            onChange={handleChange}
+            rows={3}
+          />
+        </div>
 
-      <Button isLoading={isPending} type="submit" className="w-full py-3">
-        Commission Payment
-      </Button>
+        {/* <Button isLoading={isPending} type="submit" className="w-full py-3">
+          Commission Payment
+        </Button> */}
+      </div>
     </motion.form>
   );
 };

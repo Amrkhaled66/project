@@ -54,27 +54,13 @@ const DesignArea = () => {
     });
   }, []);
 
-  /* ------------------------------------------------------------------------ */
-  /* Upload preview on unmount                                                */
-  /* ------------------------------------------------------------------------ */
-  // useEffect(() => {
-  //   return () => {
-  //     console.log(designData)
-  //   };
-  // }, [location.pathname]);
-
-  /* ------------------------------------------------------------------------ */
-  /* Render                                                                   */
-  /* ------------------------------------------------------------------------ */
   return (
     <DesginContainer
       className="!h-fit flex-1"
       header="Design Your Blanket"
       subHeader="Create a personalized blanket with your favorite memories"
-    >
-      <div className="flex flex-col gap-4">
-        {/* Toolbar */}
-        <div className="mx-auto flex items-center gap-3 rounded-xl bg-white px-3 py-2 shadow-md">
+      headerComponent={
+        <div className="mx-auto flex items-center gap-3">
           <Button
             onClick={() => {
               previewDirtyRef.current = true;
@@ -113,6 +99,10 @@ const DesignArea = () => {
             Reset
           </Button>
         </div>
+      }
+    >
+      <div className="flex flex-col gap-4">
+        {/* Toolbar */}
 
         {/* Canvas */}
         <div className="flex w-full justify-center">

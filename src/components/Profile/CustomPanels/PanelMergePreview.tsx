@@ -48,7 +48,7 @@ export default function PanelMergePreview({
   }, [panels, onMerged]);
 
   return (
-    <div className="space-y-4 rounded-xl border border-gray-200 bg-gray-50 p-6 shadow-sm">
+    <div className="space-y-4 rounded-3xl bg-white drop-shadow-sm p-6 ">
       {/* TITLE */}
       <div className="flex items-center justify-between">
         <h3 className="text-base font-semibold text-gray-800">

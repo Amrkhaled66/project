@@ -21,7 +21,7 @@ export default function Table<T extends { id: string | number }>({
 }: TableProps<T>) {
   return (
     <div>
-      <InvertedCorner label={label} pageBg="#fff" className="p-4">
+      <InvertedCorner label={label}  className="p-4">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left text-sm text-gray-700">
             <thead>

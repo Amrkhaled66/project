@@ -32,10 +32,8 @@ const DropZone = ({
       onClick={openDialog}
       role="button"
       tabIndex={0}
-      className={`cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all ${
-        dragActive
-          ? "border-blue-600 bg-blue-50/60"
-          : "border-neutral-300 bg-white"
+      className={`bg-subTitle/2 border-subTitle mx-auto w-[95%] cursor-pointer rounded-xl border border-dashed p-8 text-center transition-all ${
+        dragActive ? "border-blue-600 bg-blue-50/60" : ""
       } `}
     >
       <input
@@ -57,15 +55,13 @@ const DropZone = ({
         />
       </div>
 
-      <p className="text-sm text-neutral-600">
-        Drag or select images to add components to your Panel Library™.{" "}
-      </p>
+      <p className="text-lg font-semibold font-subTitle text-primary-container">Drag or select images... </p>
 
       <p className="mt-1 text-xs text-neutral-400">Remaining: {remaining}</p>
 
       <button
         type="button"
-        className="mt-4 inline-flex items-center justify-center rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 active:scale-[.99]"
+        className="bg-subTitle/20 animate mt-4 inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-medium text-black hover:scale-105 active:scale-[.99]"
       >
         Select Files
       </button>

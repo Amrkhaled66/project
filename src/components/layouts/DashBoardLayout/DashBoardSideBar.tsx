@@ -43,7 +43,7 @@ const ReusableSidebar: React.FC<ReusableSidebarProps> = ({
 
       {/* Sidebar */}
       <aside
-        className={`animate fixed z-40 min-h-screen bg-[#0C2340] ps-3 lg:relative ${
+        className={`animate bg-primary-container fixed z-40 min-h-screen ps-3 lg:relative ${
           isOpen ? "w-80 translate-0" : "-translate-x-100 lg:w-22"
         } space-y-9 lg:translate-x-0`}
       >
@@ -51,14 +51,16 @@ const ReusableSidebar: React.FC<ReusableSidebarProps> = ({
           {/* Header */}
           <div className="flex items-center">
             <div className="flex items-center gap-3 px-2">
-              <div className="flex size-10 items-center justify-center rounded-full bg-[#BB0027] text-white">
+              <div className="bg-secondary flex size-10 items-center justify-center rounded-full text-white">
                 {userInfo?.name?.charAt(0).toUpperCase()}
               </div>
 
               {isOpen && userInfo && (
                 <div className="text-white">
-                  <p className="text-lg font-medium">{userInfo.name?.split(" ")[0]}</p>
-                  <p className="text-xs text-[#94A3B8] uppercase">
+                  <p className="text-lg font-medium">
+                    {userInfo.name?.split(" ")[0]}
+                  </p>
+                  <p className="text-stroke text-xs uppercase">
                     Private Atelier
                   </p>
                   {/* <p className="text-xs font-light">{userInfo.email}</p> */}
@@ -69,7 +71,7 @@ const ReusableSidebar: React.FC<ReusableSidebarProps> = ({
             <div>
               <button
                 onClick={isOpen ? onClose : onOpen}
-                className="translate-x-18 rounded-lg bg-gray-500 px-1 py-1"
+                className={` rounded-lg bg-gray-500 px-1 py-1 ${isOpen ? "translate-x-16" : "translate-x-2"}`}
               >
                 <ChevronLeft
                   className={`animate size-5 text-white ${
@@ -94,9 +96,9 @@ const ReusableSidebar: React.FC<ReusableSidebarProps> = ({
                       className={({ isActive }) =>
                         `${
                           isActive
-                            ? "bg-white/10 text-white before:absolute before:start-0 before:top-0 before:h-full before:w-1 before:bg-[#BB0027]"
-                            : "text-[#94A3B8]"
-                        } group flex items-center gap-x-3 p-2 ps-3 text-sm transition-colors hover:bg-white/10`
+                            ? "before:bg-secondary bg-white/10 text-white before:absolute before:start-0 before:top-0 before:h-full before:w-1"
+                            : "text-stroke"
+                        } group font-subTitle flex items-center gap-x-3 p-2 ps-3 text-sm transition-colors hover:bg-white/10`
                       }
                     >
                       <Icon size={20} />

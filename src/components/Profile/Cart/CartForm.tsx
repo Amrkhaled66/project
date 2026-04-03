@@ -19,16 +19,14 @@ const CartForm = ({
   isPending,
 }: CartFormProps) => {
   return (
-    <div className="space-y-4">
-      <div className="rounded-xl border border-neutral-200 bg-white p-4 sm:p-6">
-        <ShippingInfo
-          values={values}
-          errors={errors}
-          handleChange={handleChange}
-          handleSubmit={handleSubmit}
-          isPending={isPending}
-        />
-      </div>
+    <div>
+      <ShippingInfo
+        values={values}
+        errors={errors}
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+        isPending={isPending}
+      />
     </div>
   );
 };

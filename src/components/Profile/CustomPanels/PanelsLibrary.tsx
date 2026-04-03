@@ -40,7 +40,7 @@ export default function PanelsLibrary({
   /* ---------------- Loading ---------------- */
   if (isLoading) {
     return (
-      <div className="space-y-4 rounded-xl border bg-gray-50 p-6 shadow-sm">
+      <div className="space-y-4 rounded-xl  bg-gray-50 p-6 shadow-sm">
         <Skeleton height={18} width={160} />
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -73,7 +73,7 @@ export default function PanelsLibrary({
   }
 
   return (
-    <div className="space-y-6 rounded-xl border bg-gray-50 p-6 shadow-sm">
+    <div className="space-y-6 rounded-3xl bg-white drop-shadow-sm p-6">
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">

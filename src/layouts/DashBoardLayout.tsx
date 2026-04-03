@@ -13,7 +13,7 @@ const DashBoardLayout: React.FC = () => {
   const { authData } = useAuth();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(
-    () => window.innerWidth >= 1024
+    () => window.innerWidth >= 1024,
   );
 
   return (
@@ -31,13 +31,13 @@ const DashBoardLayout: React.FC = () => {
           }}
         />
 
-        <div className="w-full bg-white py-2">
+        <div className="w-full py-2">
           <DashboardHeader
             isSidebarOpen={isSidebarOpen}
             onMenuToggle={() => setIsSidebarOpen((v) => !v)}
           />
 
-          <div className="pb-4 bg-[#F5F5F7] py-10 px-6 lg:pb-8">
+          <div className="bg-[#f9f9fb] px-6 py-10 pb-4 lg:pb-8">
             <Outlet />
           </div>
         </div>

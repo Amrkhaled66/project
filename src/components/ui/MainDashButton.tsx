@@ -17,7 +17,7 @@ const MainDashButton = ({
 }) => {
   return (
     <button
-      className={`bg-mainProfile-600 group hover:text-mainProfile-600 border-mainProfile-600 animate flex w-full items-center justify-center gap-2 rounded-lg border py-2 text-white hover:bg-transparent ${className}`}
+      className={`group bg-primary-container hover:bg-secondary flex w-full items-center justify-center gap-2 rounded-xl px-6 py-4 text-sm font-medium text-white transition-all duration-300 ${className}`}
       onClick={onClick}
       disabled={disabled || isLoading}
       type={type}

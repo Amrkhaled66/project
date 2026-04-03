@@ -10,15 +10,11 @@ export default function EmptyState({
   action,
 }: EmptyStateProps) {
   return (
-    <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed p-10 text-center">
-      <h2 className="text-lg font-semibold text-gray-900">
-        {title}
-      </h2>
+    <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-white p-10 text-center drop-shadow-sm">
+      <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
 
       {description && (
-        <p className="mt-2 max-w-sm text-sm text-gray-500">
-          {description}
-        </p>
+        <p className="mt-2 max-w-sm text-sm text-gray-500">{description}</p>
       )}
 
       {action && <div className="mt-4">{action}</div>}

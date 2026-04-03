@@ -27,7 +27,9 @@ const FormTextarea: React.FC<FormTextareaProps> = ({
 }) => {
   return (
     <label className={`flex flex-col gap-1 ${className}`}>
-      <span className="text-lg font-medium">{label}</span>
+      <span className="text-start text-xs font-bold tracking-wider uppercase">
+        {label}
+      </span>
       <textarea
         name={name}
         placeholder={placeholder}
@@ -36,7 +38,7 @@ const FormTextarea: React.FC<FormTextareaProps> = ({
         onBlur={onBlur}
         required={required}
         rows={rows}
-        className={`rounded-md border px-3 py-2 text-sm outline-none placeholder:text-gray-400 focus:ring-0 ${
+        className={`bg-subTitle/5 animate rounded-2xl border px-3 py-2 text-sm outline-none placeholder:text-gray-400 focus:ring-0 ${
           error
             ? "border-red-500 focus:border-red-500"
             : "border-gray-300 focus:border-gray-400"

@@ -1,14 +1,22 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 @import "tailwindcss";
-
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 @theme {
   --color-primary: #002051;
   --color-primary-50: #ebf3ff;
   --color-strokeFont: #a098ae;
   --color-mainProfile: #dedede;
   --color-mainProfile-600: #565e6d;
-  --color-stroke: #f3f4f6;
+  --color-stroke: #94a3b8;
+  --color-subTitle: #44474d;
+
+  --color-primary-container: #0c2340;
+  --color-secondary: #bb0027;
+
+  --font-primary: "Inter", sans-serif;
+  --font-header: "Plus Jakarta Sans", sans-serif;
+  --font-subTitle: "Manrope", sans-serif;
 }
 
 @layer base {
@@ -22,7 +30,7 @@
 }
 
 body {
-  font-family: "Inter", sans-serif;
+  font-family: "Manrope", sans-serif ;
 }
 
 button {
@@ -74,7 +82,6 @@ button {
   }
 }
 
-
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
   display: none;
@@ -83,7 +90,6 @@ input[type="password"]::-ms-clear {
 input[type="password"]::-webkit-textfield-decoration-container {
   display: none;
 }
-
 
 /* Hide arrows for number input */
 .hide-arrows::-webkit-outer-spin-button,

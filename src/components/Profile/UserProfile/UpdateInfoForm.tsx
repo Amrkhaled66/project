@@ -52,33 +52,31 @@ export default function UpdateInfoForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-xl border-neutral-200 bg-white sm:p-6 lg:border"
+      className="rounded-xl bg-white "
     >
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+      <div className="flex gap-6">
         {/* Inputs */}
-        <div className="flex flex-col gap-6 lg:col-span-3">
+        <div className="flex w-1/2 flex-col gap-6 py-9 p-6">
           {/* First / Last Name */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormInput
-              label="Collector Name"
-              name="name"
-              placeholder="Jane"
-              value={values.name}
-              onChange={handleChange}
-              error={errors.name}
-            />
+          <FormInput
+            label="Collector Name"
+            name="name"
+            placeholder="Jane"
+            value={values.name}
+            onChange={handleChange}
+            error={errors.name}
+          />
 
-            {/* Phone */}
-            <FormInput
-              label="Contact Phone"
-              name="phone"
-              type="number"
-              placeholder="555-555-5555"
-              value={values.phone}
-              onChange={handleChange}
-              error={errors.phone}
-            />
-          </div>
+          {/* Phone */}
+          <FormInput
+            label="Contact Phone"
+            name="phone"
+            type="number"
+            placeholder="555-555-5555"
+            value={values.phone}
+            onChange={handleChange}
+            error={errors.phone}
+          />
 
           {/* Password (optional) */}
           <PasswordInput
@@ -92,12 +90,17 @@ export default function UpdateInfoForm() {
         </div>
 
         {/* Side panel */}
-        <div className="flex flex-col items-center justify-between gap-4 lg:col-span-2 lg:gap-8">
-          <p className="text-center text-base font-light text-neutral-600 sm:text-lg">
-            Your contact information is used for communication, project
-            coordination, and delivery of commissioned Jersey Blanket™
-            artifacts. Please keep these details current.
-          </p>
+        <div className="bg-subTitle/5 flex w-1/2 flex-col justify-between gap-4 p-6 lg:gap-8">
+          <div className="space-y-3">
+            <h2 className="text-primary-container font-header text-start text-xl font-bold">
+              Security & Communications
+            </h2>
+            <p className="text-subTitle w-[80%] text-start text-base sm:text-lg">
+              Your contact information is used for communication, project
+              coordination, and delivery of commissioned Jersey Blanket™
+              artifacts. Please keep these details current.
+            </p>
+          </div>
 
           <div className="w-full">
             <div className="sticky bottom-3 lg:hidden">
