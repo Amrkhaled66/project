@@ -181,7 +181,7 @@ const CanvasFront: React.FC<CanvasFrontProps> = ({ onDeleteItem }) => {
   return (
     <div
       ref={canvasRef}
-      className="drop-shadow-x snapshot-safe relative overflow-hidden p-5"
+      className="drop-shadow-xl snapshot-safe relative overflow-hidden p-5"
       style={borderStyle}
       id="canvas-front"
     >

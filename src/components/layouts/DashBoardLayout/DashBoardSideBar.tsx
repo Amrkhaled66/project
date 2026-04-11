@@ -60,10 +60,10 @@ const ReusableSidebar: React.FC<ReusableSidebarProps> = ({
                   <p className="text-lg font-medium">
                     {userInfo.name?.split(" ")[0]}
                   </p>
-                  <p className="text-stroke text-xs uppercase">
+                  {/* <p className="text-stroke text-xs uppercase">
                     Private Atelier
-                  </p>
-                  {/* <p className="text-xs font-light">{userInfo.email}</p> */}
+                  </p> */}
+                  <p className="text-stroke text-xs">{userInfo.email}</p>
                 </div>
               )}
             </div>

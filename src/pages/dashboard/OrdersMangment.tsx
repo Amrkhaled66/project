@@ -92,7 +92,7 @@ const OrdersManagement = () => {
       />
 
       {/* Filters */}
-      <div className="rounded-2xl border bg-white p-6 shadow-sm">
+      <div className="rounded-3xl bg-white p-6 drop-shadow-md">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
           {/* Search */}
           <div className="max-w-md flex-1">
@@ -127,7 +127,7 @@ const OrdersManagement = () => {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+      <div className="overflow-hidden">
         <Table<AdminOrder>
           columns={columns}
           data={orders}
