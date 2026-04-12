@@ -4,6 +4,7 @@ import {
   getAdminOrderById,
   AdminOrderListParams,
   updateOrder,
+  createShipment,
 } from "src/services/admin/orders.service";
 import Toast from "src/components/ui/Toast";
 
@@ -37,13 +38,43 @@ export const useUpdateOrder = () => {
     onSuccess: (_, { orderId }) => {
       Toast("Order updated successfully", "success");
 
-      queryClient.invalidateQueries({ queryKey: ["order", orderId] });
-      queryClient.invalidateQueries({ queryKey: ["latest-order"] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin-order-details", orderId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["admin-orders"],
+      });
     },
 
     onError: (error: any) => {
       const message =
         error?.response?.data?.message || "Failed to update order";
+
+      Toast(message, "error");
+    },
+  });
+};
+
+export const useCreateShipment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (orderId: string) => createShipment(orderId),
+
+    onSuccess: (data, orderId) => {
+      Toast(data?.message || "Shipment created successfully", "success");
+
+      queryClient.invalidateQueries({
+        queryKey: ["admin-order-details", orderId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["admin-orders"],
+      });
+    },
+
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message || "Failed to create shipment";
 
       Toast(message, "error");
     },

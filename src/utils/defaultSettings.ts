@@ -89,3 +89,6 @@ const panels: Record<IMAGE_TYPE, { label: string; key: IMAGE_TYPE }> = {
 };
 export { ORDER_STATUS, ADMIN_PATH, MAX_UPLOAD_SIZE, panels };
 export type { IMAGE_TYPE };
+
+
+

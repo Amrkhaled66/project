@@ -51,10 +51,37 @@ export type AdminOrderDetailsItem = {
   designSnapshot: DesignData;
 };
 
+export type AdminOrderShipment = {
+  id: string;
+  carrier: string;
+  shipmentId: string;
+  trackingNumber: string;
+  labelUrl: string;
+  transportationCharges: string | number | null;
+  serviceOptionsCharges: string | number | null;
+  totalCharges: string | number | null;
+  billingWeight: string | number | null;
+  billingWeightUnit: string | null;
+  serviceCode: string | null;
+  serviceDescription: string | null;
+  status: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type AdminOrderDetailsResponse = {
   /* ---------------- Order Core ---------------- */
   id: string;
-  status: "PENDING_PAYMENT" | "PROCESSING" | "COMPLETED" | "CANCELLED";
+  status:
+    | "PENDING_PAYMENT"
+    | "PAID"
+    | "IN_DESIGN"
+    | "DESIGN_APPROVED"
+    | "IN_PRODUCTION"
+    | "SHIPPED"
+    | "DELIVERED"
+    | "CANCELLED"
+    | "REFUNDED";
 
   createdAt: string;
   updatedAt: string;
@@ -85,6 +112,7 @@ export type AdminOrderDetailsResponse = {
 
   /* ---------------- Items ---------------- */
   items: Design[];
+  shipment: AdminOrderShipment | null;
 };
 
 export const getAdminOrderById = async (
@@ -116,5 +144,22 @@ export const updateOrder = async (
     `${API_BASE}/admin/orders/${orderId}`,
     payload,
   );
+  return res.data;
+};
+
+export type CreateShipmentResponse = {
+  message?: string;
+  shipment?: AdminOrderShipment | null;
+  order?: AdminOrderDetailsResponse;
+  [key: string]: any;
+};
+
+export const createShipment = async (
+  orderId: string,
+): Promise<CreateShipmentResponse> => {
+  const res = await axiosAdmin.post(
+    `${API_BASE}/admin/orders/${orderId}/shipment`,
+  );
+
   return res.data;
 };

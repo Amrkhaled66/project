@@ -17,7 +17,7 @@ const OrderDetailsView = ({ order }: Props) => {
     });
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-6">
+    <div className="mx-auto space-y-6">
       {/* Header */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex items-start justify-between">
