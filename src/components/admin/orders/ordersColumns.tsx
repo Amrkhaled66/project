@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { AdminOrder } from "src/types/adminOrder.types";
-import { ORDER_STATUS_OPTIONS } from "src/config/orderStatusOptions";
 import Button from "src/components/ui/Button";
 import { ADMIN_PATH } from "src/utils/defaultSettings";
 import { ORDER_STATUS } from "src/utils/defaultSettings";
