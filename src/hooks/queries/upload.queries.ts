@@ -74,12 +74,12 @@ export const useUploadMyImages = () => {
     mutationFn: ({
       files,
       type,
-      usedPanelIds,
+      extraData,
     }: {
       files: File[];
       type: string;
-      usedPanelIds: string[];
-    }) => uploadService({ files, type, extraData: { usedPanelIds } }),
+      extraData?: any;
+    }) => uploadService({ files, type, extraData }),
 
     onSuccess: () => {
       Toast("Uploaded successfully!", "success", "#ecfdf5", "top");

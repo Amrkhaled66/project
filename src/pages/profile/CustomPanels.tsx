@@ -40,7 +40,9 @@ export default function CustomPanels() {
     try {
       await uploadMutation.mutateAsync({
         files: [mergedFile],
-        usedPanelIds: selectedPanels.map((p) => p.id),
+        extraData: {
+          usedPanelIds: selectedPanels.map((p) => p.id),
+        },
         type: defaultPanelsSettings.custome_panel.key,
       });
 
