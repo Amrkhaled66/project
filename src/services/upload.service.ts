@@ -1,15 +1,37 @@
 import { axiosPrivate } from "src/api/axios";
 import compressImage from "src/utils/CompressImage";
 
-export const uploadImagesService = async (files: File[], type: string) => {
+type UploadOptions = {
+  type: string;
+  files: File[];
+  extraData?: Record<string, any>;
+};
+
+export const uploadService = async ({
+  files,
+  type,
+  extraData = {},
+}: UploadOptions) => {
   const form = new FormData();
+
   form.append("type", type);
 
-  // 🔹 Compress all images here
+  // append extra fields dynamically
+  Object.entries(extraData).forEach(([key, value]) => {
+    form.append(
+      key,
+      typeof value === "string" ? value : JSON.stringify(value)
+    );
+  });
+
+  // 🔹 Compress all images
   const compressedFiles = await Promise.all(
-    files.map((file) => compressImage(file)),
+    files.map((file) => compressImage(file))
   );
-  compressedFiles.forEach((file) => form.append("files", file));
+
+  compressedFiles.forEach((file) => {
+    form.append("files", file);
+  });
 
   const res = await axiosPrivate.post("/uploads", form, {
     headers: { "Content-Type": "multipart/form-data" },

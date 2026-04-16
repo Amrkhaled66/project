@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  uploadImagesService,
+  uploadService,
   getUserUploadsService,
   deleteUploadService,
 } from "src/services/upload.service";
@@ -71,8 +71,15 @@ export const useUploadMyImages = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ files, type }: { files: File[]; type: string }) =>
-      uploadImagesService(files, type),
+    mutationFn: ({
+      files,
+      type,
+      usedPanelIds,
+    }: {
+      files: File[];
+      type: string;
+      usedPanelIds: string[];
+    }) => uploadService({ files, type, extraData: { usedPanelIds } }),
 
     onSuccess: () => {
       Toast("Uploaded successfully!", "success", "#ecfdf5", "top");
