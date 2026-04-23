@@ -27,7 +27,7 @@ export default function AddPhotosModel({
 
   const { data, isLoading } = useUserUploads({
     type: panels.panel.key,
-    used: true,
+    // used: false,
     page,
     limit: ITEMS_PER_PAGE,
   });
@@ -48,6 +48,7 @@ export default function AddPhotosModel({
 
   /* ---------------- SELECT ---------------- */
 
+  
   const toggleSelect = (src: string) => {
     setSelected((prev) =>
       prev.includes(src)

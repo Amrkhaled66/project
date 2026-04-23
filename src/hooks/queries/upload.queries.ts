@@ -14,7 +14,7 @@ type UploadType = string | string[];
 
 interface UseUploadsParams {
   type?: UploadType;
-  used: boolean;
+  used?: boolean;
   page: number;
   limit: number;
   enabled?: boolean;
