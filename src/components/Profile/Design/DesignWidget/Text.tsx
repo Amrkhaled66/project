@@ -5,6 +5,7 @@ import MainDashButton from "src/components/ui/MainDashButton";
 import { motion, AnimatePresence } from "framer-motion";
 import FormInput from "src/components/ui/FormInput";
 import { embroideryZones } from "src/data/zones";
+import showDesignViewer from "src/utils/designViewer";
 
 const fonts = [
   { label: "Cursive", value: "Cursive" },
@@ -37,9 +38,15 @@ const Text = () => {
   };
 
   const handleAddOrUpdate = () => {
+    const trimmedText = text.trim();
+    if (!trimmedText) {
+      showDesignViewer("Enter embroidery text before applying", "warning");
+      return;
+    }
+
     const newZone = {
       id: selectedZone,
-      text,
+      text: trimmedText,
       font,
       color,
       notes,
@@ -54,6 +61,8 @@ const Text = () => {
       d.upgrades.props.embroidery.zones = updatedZones;
     });
 
+    showDesignViewer(editingId ? "Embroidery updated" : "Embroidery applied");
+
     resetForm();
     setShowForm(false);
   };
@@ -64,6 +73,7 @@ const Text = () => {
     update((d) => {
       d.upgrades.props.embroidery.zones = updated;
     });
+    showDesignViewer("Embroidery removed");
   };
 
   const handleEdit = (z: any) => {

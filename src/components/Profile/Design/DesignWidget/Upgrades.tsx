@@ -5,6 +5,7 @@ import Model from "src/components/ui/Model";
 import { useDesign } from "src/context/desgin.context";
 import { priceMap, upgrades, UpgradeOption } from "src/data/upgrades";
 import UpgradeTab from "src/components/Profile/Design/upgrades/UpgradeTab";
+import showDesignViewer from "src/utils/designViewer";
 
 type AddonsCheckboxProps = {
   selectedUpgrades: string[];
@@ -54,9 +55,16 @@ export default function AddonsCheckbox({
 
   const handleToggle = useCallback(
     (id: string) => {
+      const isSelected = selectedSet.has(id);
+      const upgrade = upgrades.find((item) => item.id === id);
       toggleUpgrade(id);
+      showDesignViewer(
+        isSelected
+          ? `${upgrade?.name ?? "Upgrade"} removed`
+          : `${upgrade?.name ?? "Upgrade"} applied`,
+      );
     },
-    [toggleUpgrade],
+    [selectedSet, toggleUpgrade],
   );
 
   // image loading handling

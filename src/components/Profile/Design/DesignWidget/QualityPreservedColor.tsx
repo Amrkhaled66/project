@@ -3,6 +3,7 @@ import ColorSelector from "src/components/ui/ColorSelector";
 import { useDesign } from "src/context/desgin.context";
 
 import { UPGRADE_IDS } from "src/data/upgrades";
+import showDesignViewer from "src/utils/designViewer";
 export default function QualityPreserveColor() {
   const {
     updateQualityPreserveColor,
@@ -18,6 +19,7 @@ export default function QualityPreserveColor() {
 
   const onSelectColor = (color: string) => {
     updateQualityPreserveColor(color);
+    showDesignViewer("Heirloom preserve stitch color applied");
   };
 
   return (

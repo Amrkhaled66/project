@@ -8,6 +8,7 @@ import {
 
 import { useDesign } from "src/context/desgin.context";
 import { RotateCcw } from "lucide-react";
+import showDesignViewer from "src/utils/designViewer";
 
 const Sizes = () => {
   const { designData, updateCanvasSize } = useDesign();
@@ -28,12 +29,12 @@ const Sizes = () => {
 
   const onSelectSize = (id: BlanketSizeId) => {
     const s = getSizeById(id);
-    // Update the canvas size in the state
     updateCanvasSize({
       size: s.id,
       cols: s.cols,
       rows: s.rows,
     });
+    showDesignViewer(`Size updated to ${s.name}`);
   };
 
   const handleFlipOrientation = () => {
@@ -46,6 +47,7 @@ const Sizes = () => {
         cols: flipped.cols,
         rows: flipped.rows,
       });
+      showDesignViewer(`Orientation updated to ${flipped.cols}x${flipped.rows}`);
     }
   };
 

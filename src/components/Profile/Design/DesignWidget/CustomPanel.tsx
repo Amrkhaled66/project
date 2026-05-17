@@ -9,6 +9,7 @@ import EmptyState from "src/components/ui/EmptyState";
 import Button from "src/components/ui/Button";
 
 import getImageLink from "src/utils/getImageLink";
+import showDesignViewer from "src/utils/designViewer";
 
 type CustomPanelItem = {
   id: string;
@@ -41,6 +42,15 @@ const CustomPanel = () => {
   const [selected, setSelected] = useState<string[]>([]);
 
   const toggleSelect = (src: string) => {
+    const reachedLimit =
+      !selected.includes(src) &&
+      designData.photos.items.length + selected.length >= maxphoto;
+
+    if (reachedLimit) {
+      showDesignViewer("No empty photo slots left for custom panels", "warning");
+      return;
+    }
+
     setSelected((prev) =>
       prev.includes(src)
         ? prev.filter((i) => i !== src)
@@ -53,6 +63,8 @@ const CustomPanel = () => {
   /* ---------------- Add to design ---------------- */
 
   const handleAddSelected = () => {
+    const addedCount = Math.min(selected.length, maxphoto);
+
     selected.slice(0, maxphoto).forEach((src) => {
       update((d) => {
         d.photos.items.push({
@@ -63,6 +75,9 @@ const CustomPanel = () => {
       });
     });
 
+    showDesignViewer(
+      `${addedCount} custom panel${addedCount === 1 ? "" : "s"} added to design`,
+    );
     setSelected([]);
   };
 

@@ -6,6 +6,7 @@ import getImageLink from "src/utils/getImageLink";
 import { useUserUploads } from "src/hooks/queries/upload.queries";
 import { panels } from "src/utils/defaultSettings";
 import EmptyState from "src/components/ui/EmptyState";
+import showDesignViewer from "src/utils/designViewer";
 const ITEMS_PER_PAGE = 16;
 
 export default function CornersPool() {
@@ -37,6 +38,7 @@ export default function CornersPool() {
         delete d.upgrades.props.cornerstones.images[index];
       }
     });
+    showDesignViewer("Corner image removed");
   };
 
   if (isLoading) {

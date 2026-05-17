@@ -20,6 +20,8 @@ import { toBlob } from "html-to-image";
 
 import { createDesignUpdater } from "src/utils/designUpdater";
 import { calculateDesignPrice } from "src/utils/calcDesignPrice";
+import showDesignViewer from "src/utils/designViewer";
+import DesignViewer from "src/components/ui/DesignViewer";
 
 import { BLANKET_SIZES } from "src/data/blanketSizes";
 import { UPGRADE_IDS } from "src/data/upgrades";
@@ -250,14 +252,20 @@ export const DesignProvider = ({
     const type = active.data.current?.type;
 
     if (type === "grid-item") {
+      let moved = false;
       update((d) => {
         const list = d.photos.items;
         const oldIndex = list.findIndex((i) => i.id === active.id);
         const newIndex = list.findIndex((i) => i.id === over.id);
         if (oldIndex >= 0 && newIndex >= 0) {
           d.photos.items = arrayMove(list, oldIndex, newIndex);
+          moved = oldIndex !== newIndex;
         }
       });
+
+      if (moved) {
+        showDesignViewer("Photo layout updated");
+      }
     }
 
     if (type === "corner-image") {
@@ -266,6 +274,7 @@ export const DesignProvider = ({
       update((d) => {
         d.upgrades.props.cornerstones.images[index] = url;
       });
+      showDesignViewer(`Corner image applied to slot ${index + 1}`);
     }
   };
 
@@ -428,7 +437,10 @@ export const DesignProvider = ({
   );
 
   return (
-    <DesignContext.Provider value={value}>{children}</DesignContext.Provider>
+    <DesignContext.Provider value={value}>
+      <DesignViewer />
+      {children}
+    </DesignContext.Provider>
   );
 };
 

@@ -1,6 +1,7 @@
 import ColorSelector from "src/components/ui/ColorSelector";
 import { DEFAULT_COLORS } from "src/data/colors";
 import { useDesign } from "src/context/desgin.context";
+import showDesignViewer from "src/utils/designViewer";
 export default function BlockingColor() {
   const { updateBlocking, designData } = useDesign();
 
@@ -8,10 +9,12 @@ export default function BlockingColor() {
 
   const onSelectColor = (color: string) => {
     updateBlocking([color], false);
+    showDesignViewer("Heirloom block color applied");
   };
 
   const onRandomize = () => {
     updateBlocking(DEFAULT_COLORS, true);
+    showDesignViewer("Heirloom block colors randomized");
   };
 
   return (

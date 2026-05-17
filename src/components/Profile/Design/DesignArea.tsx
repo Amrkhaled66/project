@@ -8,6 +8,7 @@ import AddPhotosModel from "./AddPhotosModel";
 import { useDesign } from "src/context/desgin.context";
 import Toast from "src/components/ui/Toast";
 import Button from "src/components/ui/Button";
+import showDesignViewer from "src/utils/designViewer";
 const DesignArea = () => {
   const { designData, update, resetDesign } = useDesign();
 
@@ -29,6 +30,7 @@ const DesignArea = () => {
   const toggleFlipped = () => {
     previewDirtyRef.current = true;
     setIsFlipped((prev) => !prev);
+    showDesignViewer("Canvas view flipped");
   };
 
   /* ------------------------------------------------------------------------ */
@@ -52,7 +54,8 @@ const DesignArea = () => {
     update((d) => {
       d.photos.items = d.photos.items.filter((i) => i.id !== id);
     });
-  }, []);
+    showDesignViewer("Photo removed from design");
+  }, [update]);
 
   /* ------------------------------------------------------------------------ */
   /* Upload preview on unmount                                                */
@@ -107,7 +110,10 @@ const DesignArea = () => {
           <Button
             className="flex items-center gap-1 px-3 py-1.5 text-xs"
             variant="danger"
-            onClick={resetDesign}
+            onClick={() => {
+              resetDesign();
+              showDesignViewer("Design reset");
+            }}
           >
             <RotateCcw className="size-4" />
             Reset

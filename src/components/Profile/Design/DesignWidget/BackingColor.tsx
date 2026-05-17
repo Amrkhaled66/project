@@ -2,6 +2,7 @@
 import DesginContainer from "../DesginContainer";
 import { backingColors } from "src/data/colors";
 import { useDesign } from "src/context/desgin.context";
+import showDesignViewer from "src/utils/designViewer";
 
 export default function BackingColorSelector() {
   const {
@@ -10,6 +11,7 @@ export default function BackingColorSelector() {
   } = useDesign();
   const onSelectColor = (color: string) => {
     updateBackingColor(color);
+    showDesignViewer(`${color} backing applied`);
   };
   const backingColor = designData.colors.backing || null;
   return (
