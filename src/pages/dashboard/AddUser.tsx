@@ -52,10 +52,10 @@ const AdminAddUserPage = () => {
         icon={UserPlus2Icon}
       />
 
-      <div className="relative overflow-hidden rounded-2xl bg-white bg-gradient-to-br from-gray-50 to-white px-6 py-10 shadow-md">
+      <div className="relative overflow-hidden rounded-3xl bg-white px-6 py-10 shadow-md drop-shadow-md">
         <div className="relative mx-auto max-w-2xl space-y-6">
           <div className="space-y-1 text-center">
-            <h3 className="text-xl font-semibold">User Information</h3>
+            <h3 className="text-xl font-semibold font-header">User Information</h3>
             <p className="text-sm text-gray-500">
               Fill in the details to create a new account
             </p>

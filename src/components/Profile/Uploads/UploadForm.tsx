@@ -3,7 +3,7 @@ import useUploadForm from "src/hooks/useUploadForm";
 import FilePreviewGrid from "./FilePreviewGrid";
 import DropZone from "./Dropzone";
 import FormSelect from "src/components/ui/FormSelect";
-
+import MainDashButton from "src/components/ui/MainDashButton";
 type UploadType = "panel" | "corner";
 
 type UploadFormProps = {
@@ -75,15 +75,17 @@ export default function UploadForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`h-fit space-y-8 rounded-2xl border bg-white/70 p-6 shadow-md backdrop-blur-md ${isLoading ? "pointer-events-none opacity-60" : ""}`}
+      className={`h-fit space-y-8 rounded-2xl bg-white p-6 drop-shadow-sm ${isLoading ? "pointer-events-none opacity-60" : ""}`}
     >
       {/* HEADER */}
       <header className="space-y-1">
-        <h2 className="text-xl font-semibold">Upload Components</h2>
-        <p className="text-sm text-neutral-500">
+        <h2 className="font-header text-primary-container text-xl font-semibold">
+          Upload Components
+        </h2>
+        {/* <p className="text-sm text-neutral-500">
           Upload images used to construct your Blueprint™ panels and stoning
           elements.
-        </p>
+        </p> */}
       </header>
 
       {/* TYPE SELECT */}
@@ -130,17 +132,11 @@ export default function UploadForm({
       />
 
       {/* SUBMIT */}
-      <button
+      <MainDashButton
+        text={isLoading ? "Uploading..." : "Add to Panel Library™"}
         type="submit"
         disabled={disabled}
-        className={`w-full rounded-xl px-4 py-3 font-semibold transition-all ${
-          disabled
-            ? "bg-neutral-300 text-neutral-600"
-            : "bg-neutral-900 text-white hover:bg-neutral-800"
-        }`}
-      >
-        {isLoading ? "Uploading..." : "Add to Panel Library™"}
-      </button>
+      />
     </form>
   );
 }

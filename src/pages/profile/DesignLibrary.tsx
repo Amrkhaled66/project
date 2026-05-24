@@ -6,14 +6,15 @@ import {
   ImageOff,
   FolderPlus,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import Skeleton from "react-loading-skeleton";
 import { useNavigate } from "react-router-dom";
-import { useDesigns } from "src/hooks/queries/design.queries";
+import PageHeader from "src/components/ui/PageHeader";
 import { useCart } from "src/context/cart.context";
-import priceFormmater from "src/utils/priceFormmater";
-import getImageLink from "src/utils/getImageLink";
-import { motion, AnimatePresence } from "framer-motion";
+import { useDesigns } from "src/hooks/queries/design.queries";
 import usePageTitle from "src/hooks/useUpdatePageTitle";
+import getImageLink from "src/utils/getImageLink";
+import priceFormmater from "src/utils/priceFormmater";
 
 export default function DesignLibraryPage() {
   usePageTitle("Blueprints");
@@ -22,9 +23,6 @@ export default function DesignLibraryPage() {
   const { addOrIncrease, isItemInCart } = useCart();
   const totalDesigns = designs?.length ?? 0;
 
-  // ----------------------------
-  // Helpers
-  // ----------------------------
   const handleEdit = (id: string) => navigate(`/profile/design-library/${id}`);
 
   const handleAddToCart = (design: any) => {
@@ -37,9 +35,6 @@ export default function DesignLibraryPage() {
     });
   };
 
-  // ----------------------------
-  // Animations
-  // ----------------------------
   const fadeUp = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
@@ -54,9 +49,6 @@ export default function DesignLibraryPage() {
     }),
   };
 
-  // ----------------------------
-  // Render
-  // ----------------------------
   return (
     <motion.div
       initial="hidden"
@@ -64,15 +56,11 @@ export default function DesignLibraryPage() {
       variants={fadeUp}
       className="min-h-screen space-y-4"
     >
-      {/* HEADER */}
-      <div className="page-header flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-gray-900">Blueprint Review™</h1>
-        <p className="text-sm text-gray-500">
-          {totalDesigns} saved Blueprints™
-        </p>
-      </div>
+      <PageHeader
+        title="Blueprint Review™"
+        subtitle={`${totalDesigns} saved Blueprint™${totalDesigns === 1 ? "" : "s"} ready for review, editing, or commissioning.`}
+      />
 
-      {/* CONTENT */}
       <div className=" max-w-6xl">
         {isLoading && (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -110,7 +98,6 @@ export default function DesignLibraryPage() {
                       "0 12px 32px rgba(0,32,81,0.12), 0 2px 8px rgba(0,32,81,0.06)",
                   }}
                 >
-                  {/* Preview image area */}
                   <div className="bg-primary/10 relative size-40 w-full overflow-hidden p-2">
                     {design?.previewImage ? (
                       <img
@@ -131,10 +118,9 @@ export default function DesignLibraryPage() {
                       </div>
                     )}
 
-                    {/* Sold ribbon */}
                     {design.sold && (
                       <div
-                        className="absolute top-0 right-0 flex items-center gap-1.5 rounded-bl-xl px-3 py-1.5"
+                        className="absolute right-0 top-0 flex items-center gap-1.5 rounded-bl-xl px-3 py-1.5"
                         style={{
                           background: "rgba(0,32,81,0.85)",
                           backdropFilter: "blur(8px)",
@@ -155,9 +141,7 @@ export default function DesignLibraryPage() {
                     )}
                   </div>
 
-                  {/* Card body */}
                   <div className="flex flex-1 flex-col gap-4 p-4">
-                    {/* Name & Price */}
                     <div className="flex items-start justify-between gap-2">
                       <h2
                         className="truncate text-base leading-tight font-semibold"
@@ -177,10 +161,8 @@ export default function DesignLibraryPage() {
                       </span>
                     </div>
 
-                    {/* Divider */}
                     <div style={{ height: "1px", background: "#f3f4f6" }} />
 
-                    {/* Actions */}
                     {design.sold ? (
                       <div className="mt-auto">
                         <div
@@ -204,7 +186,6 @@ export default function DesignLibraryPage() {
                       </div>
                     ) : (
                       <div className="mt-auto flex gap-2">
-                        {/* Edit */}
                         <motion.button
                           onClick={() => handleEdit(design.id)}
                           whileHover={{ scale: 1.02 }}
@@ -232,7 +213,6 @@ export default function DesignLibraryPage() {
                           Edit Blueprint™
                         </motion.button>
 
-                        {/* Add to Cart */}
                         <motion.button
                           onClick={() => !inCart && handleAddToCart(design)}
                           disabled={inCart}
@@ -298,12 +278,6 @@ export default function DesignLibraryPage() {
           </div>
         )}
       </div>
-
-      {/* <DeleteDesignModel
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={confirmDelete}
-      /> */}
     </motion.div>
   );
 }

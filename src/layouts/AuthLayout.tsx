@@ -38,7 +38,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         </div>
 
         <div
-          className={`bg-stroke flex h-full w-full flex-col items-center justify-center space-y-3 rounded-xl px-5 py-3 transition-opacity duration-700 lg:w-[50%] lg:px-8 ${
+          className={`bg-gray-100 drop-shadow-sm flex h-full w-full flex-col items-center justify-center space-y-3 rounded-xl px-5 py-3 transition-opacity duration-700 lg:w-[50%] lg:px-8 ${
             loaded ? "opacity-100" : "opacity-0"
           }`}
         >

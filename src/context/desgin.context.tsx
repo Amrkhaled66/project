@@ -21,7 +21,6 @@ import { toBlob } from "html-to-image";
 import { createDesignUpdater } from "src/utils/designUpdater";
 import { calculateDesignPrice } from "src/utils/calcDesignPrice";
 import showDesignViewer from "src/utils/designViewer";
-import DesignViewer from "src/components/ui/DesignViewer";
 
 import { BLANKET_SIZES } from "src/data/blanketSizes";
 import { UPGRADE_IDS } from "src/data/upgrades";
@@ -438,7 +437,6 @@ export const DesignProvider = ({
 
   return (
     <DesignContext.Provider value={value}>
-      <DesignViewer />
       {children}
     </DesignContext.Provider>
   );

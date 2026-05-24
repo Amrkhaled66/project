@@ -16,7 +16,7 @@ const customStyles: TableStyles = {
 
   headRow: {
     style: {
-      background: "linear-gradient(to right, #F9FAFB, #F3F4F6)",
+      // background: "linear-gradient(to right, #F9FAFB, #F3F4F6)",
       borderRadius: "12px",
       minHeight: "56px",
       borderBottom: "1px solid #E5E7EB",
@@ -48,7 +48,7 @@ const customStyles: TableStyles = {
 
     highlightOnHoverStyle: {
       backgroundColor: "#F8FAFC",
-      boxShadow: "inset 4px 0 0 #3B82F6",
+      boxShadow: "inset 4px 0 0 #bb0027",
       cursor: "pointer",
     },
   },
@@ -66,9 +66,9 @@ const customStyles: TableStyles = {
     style: {
       borderTop: "1px solid #E5E7EB",
       padding: "14px",
-      background: "#FAFAFA",
-      borderBottomLeftRadius: "16px",
-      borderBottomRightRadius: "16px",
+      // background: "#FAFAFA",
+      // borderBottomLeftRadius: "16px",
+      // borderBottomRightRadius: "16px",
     },
 
     pageButtonsStyle: {
@@ -138,7 +138,7 @@ export default function Table<T>({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
-      className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
+      className="overflow-hidden rounded-3xl  drop-shadow-xl  bg-white"
     >
       <DataTable<T>
         {...rest}
@@ -156,6 +156,7 @@ export default function Table<T>({
         paginationRowsPerPageOptions={[5, 10, 20, 50]}
         onChangePage={onPageChange}
         onChangeRowsPerPage={onRowsPerPageChange}
+        className="!border-none"
         /* Empty state */
         noDataComponent={
           !loading && (

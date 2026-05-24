@@ -101,5 +101,19 @@ export const useOrdersColumns = () => {
         fontSize: "13px",
       },
     },
+    {
+      name: "orderAt",
+      label: "Ordered At",
+      cell: (row: AdminOrder) => (
+        <span>
+          {new Date(row.createdAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      ),
+      sortable: true,
+    },
   ];
 };

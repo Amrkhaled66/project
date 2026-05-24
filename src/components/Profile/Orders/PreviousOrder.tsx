@@ -33,11 +33,11 @@ const OrderCard = ({
   const item = order.designs?.[0];
 
   return (
-    <div className="group relative flex items-start gap-3 rounded-xl border border-neutral-200 bg-white/60 p-3 transition hover:bg-neutral-50">
+    <div className="group relative flex items-start gap-3 p-3 transition hover:bg-neutral-50">
       <img
         src={getImageLink(item?.previewImage)}
         alt="Order preview"
-        className="size-16 rounded-lg object-cover ring-1 ring-neutral-200"
+        className="size-14 object-cover ring-1 ring-neutral-200"
       />
 
       <div className="min-w-0 flex-1">
@@ -47,7 +47,7 @@ const OrderCard = ({
           </h3>
 
           <span
-            className={`rounded-full px-2 py-0.5 text-center text-[8px] font-medium ${
+            className={`rounded-full px-2 py-0.5 text-center text-[10px] font-bold uppercase ${
               ORDER_STATUS[order.status as keyof typeof ORDER_STATUS]?.color
             }`}
           >
@@ -56,8 +56,6 @@ const OrderCard = ({
         </div>
 
         <p className="mt-0.5 text-xs text-neutral-600">
-          Placed on
-          <br />
           {order.createdAt
             ? new Date(order.createdAt).toLocaleDateString()
             : "—"}
@@ -73,7 +71,7 @@ const OrderCard = ({
 
       <button
         onClick={() => onOpen(order.id)}
-        className="absolute right-2 bottom-2 rounded-lg border border-neutral-200 bg-white px-2 py-1 text-xs text-neutral-700 sm:opacity-0 transition group-hover:opacity-100"
+        className="absolute right-2 bottom-2 rounded-lg border border-neutral-200 bg-white px-2 py-1 text-xs text-neutral-700 transition group-hover:opacity-100 sm:opacity-0"
       >
         View
       </button>
@@ -95,15 +93,15 @@ const PreviousOrder = () => {
     latestOrders.find((o: any) => o.id === openOrderId) || null;
 
   return (
-    <aside className="rounded-2xl border h-fit border-neutral-200 bg-white p-4 shadow-sm">
+    <aside className="h-fit rounded-2xl bg-white py-6 px-4 drop-shadow-sm">
       {/* Header */}
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Previous Commissions</h2>
+      <div className="border-b-stroke/30 mb-3 flex items-center justify-between border-b pb-3">
+        <h2 className="font-header test-sm font-bold">Previous Commissions</h2>
 
         {isLoading ? (
           <Skeleton width={40} height={18} />
         ) : (
-          <span className="rounded-lg bg-neutral-100 px-2 py-1 text-xs text-neutral-600">
+          <span className="bg-subTitle/10 text-subTitle rounded-lg px-3 py-1 text-xs font-bold uppercase">
             {latestOrders.length} total
           </span>
         )}
@@ -131,7 +129,9 @@ const PreviousOrder = () => {
           ))}
 
           {latestOrders.length === 0 && (
-            <p className="text-xs text-neutral-500">No previous Commissions yet.</p>
+            <p className="text-xs text-neutral-500">
+              No previous Commissions yet.
+            </p>
           )}
         </div>
       )}
@@ -139,7 +139,10 @@ const PreviousOrder = () => {
       {/* View All */}
       {latestOrders.length > 0 && (
         <Link to="/profile/user-profile" className="mt-4 block">
-          <MainDashButton text="View All Commissions" />
+          <MainDashButton
+            className="!rounded-full"
+            text="View All Commissions"
+          />
         </Link>
       )}
 

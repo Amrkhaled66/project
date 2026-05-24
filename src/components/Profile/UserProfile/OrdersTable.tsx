@@ -50,6 +50,7 @@ const OrdersTable = () => {
         </button>
       ),
     },
+   
   ];
 
   /* ---------------- Loading State ---------------- */
@@ -97,6 +98,7 @@ const OrdersTable = () => {
         </a>,
       actions: null,
       original: order,
+
     };
   });
 

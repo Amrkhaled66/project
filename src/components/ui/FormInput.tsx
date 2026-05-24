@@ -28,8 +28,8 @@ const FormInput: React.FC<FormInputProps> = ({
   error,
 }) => {
   return (
-    <label className={`flex flex-col gap-1`}>
-      <span className="text-start font-medium text-sm">{label}</span>
+    <label className={`flex  flex-col gap-1`}>
+      <span className="text-start font-bold uppercase tracking-wider text-xs">{label}</span>
       <input
         name={name}
         type={type}
@@ -39,7 +39,7 @@ const FormInput: React.FC<FormInputProps> = ({
         onBlur={onBlur}
         required={required}
         disabled={disabled}
-        className={`rounded-xl border hide-arrows animate px-3 py-2.5 text-sm outline-none placeholder:text-gray-400 focus:ring-0 ${
+        className={`rounded-xl border bg-subTitle/5 hide-arrows animate px-3 py-3.5 text-sm outline-none placeholder:text-black focus:ring-0 ${
           error
             ? "border-red-500 focus:border-red-500"
             : "border-gray-300 focus:border-gray-400"

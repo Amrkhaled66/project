@@ -1,10 +1,50 @@
-import { UpgradeOption } from "src/data/upgrades";
+import {
+  PRESERVATION_AXES,
+  upgradePreservationPoints,
+  UpgradeOption,
+} from "src/data/upgrades";
 
 import React from "react";
+import {
+  PRESERVATION_AXIS_ORDER,
+  preservationAxisVisuals,
+} from "src/components/Profile/Design/Viewer";
 import priceFormmater from "src/utils/priceFormmater";
 
 function cn(...classes: Array<string | false | undefined>) {
   return classes.filter(Boolean).join(" ");
+}
+
+function UpgradeAxisPoints({ upgradeId }: { upgradeId: string }) {
+  const points = upgradePreservationPoints[upgradeId as keyof typeof upgradePreservationPoints];
+
+  if (!points) {
+    return null;
+  }
+
+    return (
+    <div className="mt-2 flex flex-wrap gap-1.5">
+      {PRESERVATION_AXIS_ORDER.map((axis) => {
+        const value = points[axis];
+        const icon = preservationAxisVisuals[axis].icon;
+
+        if (!value) {
+          return null;
+        }
+
+        return (
+          <span
+            key={axis}
+            className="inline-flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary"
+            title={`${axis} +${value}`}
+          >
+            <span className="block size-3 text-current">{icon}</span>
+            +{value}
+          </span>
+        );
+      })}
+    </div>
+  );
 }
 type UpgradeTabProps = {
   selectedSet: Set<string>;
@@ -37,7 +77,7 @@ const UpgradeRow = React.memo(function UpgradeRow({
         "block cursor-pointer rounded-xl border p-2 transition-all",
         "hover:-translate-y-[1px] hover:shadow-sm",
         checked || active
-          ? "border-neutral-900 bg-neutral-50"
+          ? "border-primary bg-neutral-50"
           : "border-neutral-200",
       )}
     >
@@ -54,7 +94,8 @@ const UpgradeRow = React.memo(function UpgradeRow({
             />
 
             <div className="min-w-0">
-              <p className="text-sm text-neutral-900">{item.name}</p>
+              <p className="text-sm text-primary">{item.name}</p>
+              <UpgradeAxisPoints upgradeId={item.id} />
             </div>
           </div>
         </div>
@@ -65,8 +106,8 @@ const UpgradeRow = React.memo(function UpgradeRow({
               className={cn(
                 "rounded-full border px-2.5 py-1 text-xs font-semibold",
                 checked
-                  ? "border-neutral-900 bg-neutral-900 text-white"
-                  : "border-neutral-200 bg-neutral-50 text-neutral-900",
+                  ? "border-primary bg-primary text-white"
+                  : "border-neutral-200 bg-neutral-50 text-primary",
               )}
             >
               {priceFormmater(price)}
@@ -81,7 +122,7 @@ const UpgradeRow = React.memo(function UpgradeRow({
             }}
             className={cn(
               "flex size-7 items-center justify-center rounded-full border",
-              "border-neutral-200 bg-neutral-900 text-xs font-semibold text-white",
+              "border-neutral-200 bg-primary hover:bg-secondary animate text-xs font-semibold text-white",
               "transition-all hover:text-white",
             )}
             aria-label={`More info about ${item.name}`}

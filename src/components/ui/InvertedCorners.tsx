@@ -38,7 +38,7 @@ export default function InvertedCorner({
 
   return (
     <div
-      className={`relative rounded-xl bg-[#F3F3F3]  ${className}`}
+      className={`relative rounded-xl bg-white   ${className}`}
       style={{
         // Reserve space dynamically based on the label size
         paddingTop,
@@ -47,11 +47,7 @@ export default function InvertedCorner({
       {/* Corner notch "cut-out" */}
       <div
         ref={labelRef}
-        className="absolute top-0 left-0 rounded-br-xl px-3 py-1 text-xl font-semibold"
-        style={{
-          // This element visually erases the corner by matching the page background.
-          background: pageBg,
-        }}
+        className="absolute top-0 left-0 rounded-br-xl bg-[#f9f9fb] px-3 py-1 text-xl font-semibold"
       >
         {label}
       </div>

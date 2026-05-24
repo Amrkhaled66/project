@@ -5,10 +5,10 @@ import { PackageSearch } from "lucide-react";
 import { ORDER_STATUS } from "src/utils/defaultSettings";
 import priceFormmater from "src/utils/priceFormmater";
 import getImageLink from "src/utils/getImageLink";
-import Button from "src/components/ui/Button";
 import Model from "src/components/ui/Model";
 import OrderModal from "./OrderModel";
 import { useState } from "react";
+import MainDashButton from "src/components/ui/MainDashButton";
 export default function TrackOrder() {
   const { data: order, isLoading } = useLatestOrder();
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
@@ -78,98 +78,110 @@ export default function TrackOrder() {
 
         <div className="w-full min-w-0">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="w-1/2 font-semibold">Order #{order.id}</h2>
+            <h2 className="font-header lg:w-1/2 font-semibold">
+              Order #{order.id}
+            </h2>
 
             <div className="flex flex-col gap-2">
-              {statusUI && (
+              {/* {statusUI && (
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-center text-[10px] font-medium text-nowrap ${statusUI.color}`}
                 >
                   {statusUI.label}
                 </span>
-              )}
-              <Button
-                variant="primary"
+              )} */}
+              <MainDashButton
+                text="View Build →"
                 onClick={() => setOpenOrderId(order.id)}
-                className="text-xs"
-              >
-                View Build →
-              </Button>
+                className="!rounded-full md:block hidden !px-6 !py-3 text-xs !font-bold tracking-wider"
+                type="submit"
+              />
             </div>
           </div>
 
           <p className="mt-1 text-sm text-neutral-600">
-            Commissioned {placedDate}
+            Placed On {placedDate}
           </p>
 
-          <p className="mt-2 line-clamp-2 text-sm text-neutral-800">
-            Commission Value: {priceFormmater(order.totalPrice)}
+          <p className="font-header mt-2 line-clamp-2 text-sm font-bold">
+            {priceFormmater(order.totalPrice)}
           </p>
         </div>
       </div>
 
       {/* ==================== TRACKER ==================== */}
       <div className="border-t border-neutral-200 p-6">
-        <h3 className="mb-4 text-sm font-semibold text-neutral-900">
-          Build Progress
+        <h3 className="text-subTitle mb-4 text-xs font-semibold tracking-[.2em] uppercase">
+          Build Progress Timeline
         </h3>
 
-        <div className="relative ml-10 h-72">
-          {/* Static Track */}
-          <div className="absolute top-3 bottom-3 left-0 w-0.5 bg-neutral-200" />
-
-          {/* Progress Fill */}
-          <div
-            className="absolute top-3 left-0 w-0.5 rounded-full bg-neutral-900 transition-all"
-            style={{ height: `${progress}%` }}
-          />
-
+        <div className="relative">
           {/* Steps */}
-          <ul
-            className="relative grid h-full"
-            style={{ gridTemplateRows: `repeat(${steps.length}, 1fr)` }}
-          >
+          <ul className="relative flex flex-col gap-4">
             {steps.map((step, i) => {
               const Icon = step.icon;
-              const done = i <= currentIndex;
+              const isCompleted = i < currentIndex;
+              const isActive = i === currentIndex;
+              const isPending = i > currentIndex;
 
               return (
-                <li key={step.key} className="relative">
+                <li key={step.key} className="relative pl-12">
+                  {/* Vertical line */}
+                  {i !== steps.length - 1 && (
+                    <span
+                      className={`absolute top-10 left-[17px] w-[2px] ${
+                        i < currentIndex
+                          ? "bg-primary-container"
+                          : "bg-neutral-200"
+                      } h-[calc(100%+0.5rem)]`}
+                    />
+                  )}
+
                   {/* Dot */}
                   <span
-                    className={`absolute top-1/2 -left-[7px] size-3.5 -translate-y-1/2 rounded-full shadow ring-2 ring-white ${
-                      done ? "bg-neutral-900" : "bg-neutral-300"
+                    className={`absolute top-3 left-0 flex h-9 w-9 items-center justify-center rounded-full border-2 shadow-sm transition-all duration-300 ${
+                      isCompleted
+                        ? "border-primary-container bg-primary-container text-white"
+                        : isActive
+                          ? "border-secondary bg-secondary ring-secondary/10 text-white ring-4"
+                          : "border-neutral-300 text-neutral-400"
                     }`}
-                  />
+                  >
+                    <Icon className="h-4 w-4" />
+                  </span>
 
-                  {/* Label + Icon */}
-                  <div className="ml-4 flex items-center gap-2">
-                    <span
-                      className={`flex size-7 items-center justify-center rounded-lg border ${
-                        done
-                          ? "border-neutral-300 bg-white text-neutral-900"
-                          : "border-neutral-200 bg-neutral-50 text-neutral-400"
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </span>
+                  {/* Content */}
+                  <div
+                    className={`rounded-2xl px-4 py-3 transition-all duration-300`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex flex-col">
+                        <span
+                          className={`text-sm font-semibold ${
+                            isActive || isCompleted
+                              ? "text-neutral-900"
+                              : "text-neutral-500"
+                          }`}
+                        >
+                          {step.label}
+                        </span>
 
-                    <div className="flex flex-col">
-                      <span
-                        className={`text-sm font-medium ${
-                          done ? "text-neutral-900" : "text-neutral-500"
-                        }`}
-                      >
-                        {step.label}
-                      </span>
-
-                      <span className="text-xs text-neutral-500">
-                        {i === currentIndex
-                          ? "In progress"
-                          : done
-                            ? "Completed"
-                            : "Pending"}
-                      </span>
+                        <span
+                          className={`mt-1 text-xs ${
+                            isActive
+                              ? "text-secondary font-medium"
+                              : isCompleted
+                                ? "text-neutral-500"
+                                : "text-neutral-400"
+                          }`}
+                        >
+                          {isActive
+                            ? "In progress"
+                            : isCompleted
+                              ? "Completed"
+                              : "Pending"}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </li>

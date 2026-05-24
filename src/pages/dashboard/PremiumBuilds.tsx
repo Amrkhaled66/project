@@ -188,7 +188,7 @@ const PremiumBuilds = () => {
         icon={Layers3}
       />
 
-      <div className="rounded-2xl border bg-white p-6 shadow-sm">
+      <div className="rounded-3xl  bg-white p-6 drop-shadow-xl">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
           <div className="max-w-md flex-1">
             <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -220,7 +220,7 @@ const PremiumBuilds = () => {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+      <div className="overflow-hidden ">
         <Table<AdminDesignListItem>
           columns={columns}
           data={data?.data || []}

@@ -1,4 +1,4 @@
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, ArrowRight, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -7,7 +7,6 @@ import { useCart } from "src/context/cart.context";
 import { useLatestDesign } from "src/hooks/queries/design.queries";
 import priceFormatter from "src/utils/priceFormmater";
 import getImageLink from "src/utils/getImageLink";
-
 const CurrentDesignCard = () => {
   const { cartItems } = useCart();
   const { data: latestDesign, isLoading, isError } = useLatestDesign();
@@ -42,63 +41,78 @@ const CurrentDesignCard = () => {
   // Render
   // ----------------------------------
   return (
-    <div className="flex w-full flex-col space-y-6 rounded-xl border-2 bg-white py-4 shadow-md transition hover:shadow-lg">
+    <div className="flex flex-col gap-6 rounded-3xl border border-gray-100 bg-white p-6 shadow-lg transition hover:shadow-xl">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4">
-        <ImageIcon />
-        <p className="text-xl font-semibold">Blueprint™ In Progress</p>
+      <div className="flex items-center gap-3">
+        <div className="bg-primary-container/10 flex h-10 w-10 items-center justify-center rounded-full">
+          <ImageIcon className="text-pribg-primary-container" />
+        </div>
+        <h2 className="text-pribg-primary-container text-lg font-semibold">
+          Blueprint™ In Progress
+        </h2>
       </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-4 px-4 md:flex-row">
+      <div className="flex flex-col gap-5 md:flex-row">
         {/* Image */}
-        <div className="flex-shrink-0">
+        <div className="h-32 w-full flex-shrink-0 overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 md:w-40">
           {latestDesign.previewImage ? (
             <img
-              src={ getImageLink(latestDesign.previewImage)}
+              src={getImageLink(latestDesign.previewImage)}
               alt={latestDesign.name}
-              className="h-32 w-40 rounded-lg border object-contain"
+              className="h-full w-full object-contain p-2"
             />
           ) : (
-            <div className="flex h-32 w-40 items-center justify-center rounded-lg border bg-gray-100 text-sm text-gray-400">
+            <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
               No Preview
             </div>
           )}
         </div>
 
         {/* Info */}
-        <div className="flex flex-1 flex-col justify-between gap-2 text-sm">
-          <div className="space-y-1">
-            <p className="text-base font-semibold">{latestDesign.name}</p>
-
-            <p>
-              Price:
-              <span className="font-medium">
-                {priceFormatter(latestDesign.price)}
-              </span>
+        <div className="flex flex-1 flex-col justify-between">
+          <div className="space-y-2">
+            <p className="text-base font-semibold text-gray-900">
+              {latestDesign.name}
             </p>
 
-            <p>
-              Quantity in cart:
-              <span className="font-medium">{quantity}</span>
-            </p>
+            <div className="flex flex-col gap-1 text-sm text-gray-600">
+              <p>
+                Price:{" "}
+                <span className="font-medium text-gray-900">
+                  {priceFormatter(latestDesign.price)}
+                </span>
+              </p>
+
+              <p>
+                Quantity:{" "}
+                <span className="font-medium text-gray-900">{quantity}</span>
+              </p>
+            </div>
           </div>
 
+          {/* Total */}
           {quantity > 0 && (
-            <p className="pt-1 text-sm font-semibold">
-              Total:
-              <span>{priceFormatter(totalPrice)}</span>
-            </p>
+            <div className="mt-3 flex items-center justify-between border-t pt-3">
+              <span className="text-sm text-gray-500">Total</span>
+              <span className="text-secondary text-base font-semibold">
+                {priceFormatter(totalPrice)}
+              </span>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Action */}
+      {/* CTA */}
       <Link
         to={`/profile/design-library/${latestDesign.id}`}
-        className="mx-auto w-[90%] rounded-xl border border-black/70 bg-black py-3 text-center text-white transition hover:bg-white hover:text-black lg:w-[80%]"
+        className="group bg-primary-container hover:bg-secondary flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-medium text-white transition-all duration-300"
       >
         Continue Blueprint™
+        <ArrowRight
+          size={16}
+          className="transition-transform duration-300 group-hover:translate-x-1"
+        />
       </Link>
     </div>
   );
@@ -106,9 +120,41 @@ const CurrentDesignCard = () => {
 
 export default CurrentDesignCard;
 
+const NoDesignCTA = () => {
+  return (
+    <div className="flex w-full flex-col gap-6 rounded-3xl border border-gray-100 bg-white p-10 text-start shadow-lg">
+      {/* Icon */}
+      <div className="bg-secondary/10 flex size-16 items-center justify-center rounded-xl">
+        <ImageIcon className="text-secondary h-7 w-7" />
+      </div>
+
+      {/* Text */}
+      <div className="max-w-xs space-y-2">
+        <h3 className="font-header text-primary-container text-2xl font-semibold">
+          No Design Yet
+        </h3>
+        <p className="font-subTitle text-subTitle text-sm leading-relaxed">
+          Start crafting your first Blueprint™ and bring your vision to life.
+        </p>
+      </div>
+
+      {/* CTA */}
+      <Link
+        to="/profile/design-library"
+        className="group bg-secondary flex w-fit items-center justify-center gap-2 rounded-full px-10 py-4 text-sm font-medium text-white transition-all duration-300"
+      >
+        Create New Design
+        <Plus
+          size={16}
+          className="transition-transform duration-300 group-hover:translate-x-1"
+        />
+      </Link>
+    </div>
+  );
+};
 const CurrentDesignSkeleton = () => {
   return (
-    <div className="flex w-full flex-col space-y-6 rounded-xl border-2 bg-white py-4 shadow-md">
+    <div className="flex w-full flex-col space-y-6 rounded-xl  bg-white py-4 shadow-md">
       {/* Header */}
       <div className="flex items-center gap-3 px-4">
         <Skeleton circle width={24} height={24} />
@@ -136,30 +182,6 @@ const CurrentDesignSkeleton = () => {
       <div className="px-4">
         <Skeleton height={48} className="rounded-xl" />
       </div>
-    </div>
-  );
-};
-
-const NoDesignCTA = () => {
-  return (
-    <div className="flex w-full flex-col items-center justify-center gap-4 rounded-xl border-2 bg-white py-10 shadow-md">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-        <ImageIcon className="h-7 w-7 text-gray-500" />
-      </div>
-
-      <div className="space-y-1 text-center">
-        <p className="text-lg font-semibold">No Design Yet</p>
-        <p className="text-sm text-gray-500">
-          Start creating your first design and bring it to life.
-        </p>
-      </div>
-
-      <Link
-        to="/profile/design-library"
-        className="mt-2 rounded-xl bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
-      >
-        Create New Design
-      </Link>
     </div>
   );
 };

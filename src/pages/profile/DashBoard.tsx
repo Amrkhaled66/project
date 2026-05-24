@@ -6,11 +6,8 @@ import { motion, Variants } from "framer-motion";
 import Draw from "src/components/ui/icons/Draw";
 import Upload from "src/components/ui/icons/Upload";
 import Orders from "src/components/ui/icons/Orders";
-import { useAuth } from "src/context/auth.context";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
 import usePageTitle from "src/hooks/useUpdatePageTitle";
-
+import PageHeader from "src/components/ui/PageHeader";
 const container = {
   hidden: { opacity: 1 },
   show: {
@@ -26,30 +23,16 @@ const item: Variants = {
 
 const DashBoard = () => {
   usePageTitle("Atelier");
-  const isLoading = false;
-  const {
-    authData: { user },
-  } = useAuth();
   return (
-    <div className=" mx-auto space-y-5 lg:space-y-10">
-      <div className="page-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold sm:text-3xl">
-          Private Atelier™ Lobby
-        </h1>
-        <p className="text-base font-semibold text-gray-700 sm:text-lg">
-          Welcome back, <span className="underline">{user?.name.split(" ")[0]}!</span>
-        </p>
-      </div>
+    <div className="mx-auto space-y-5 lg:space-y-10">
+      <PageHeader
+        title="Private Atelier™ Lobby"
+        subtitle="Your exclusive creative suite for bespoke textile architecture and commission management. Start a new blueprint or review your archive."
+      />
 
       <div className="space-y-4 lg:space-y-12">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {isLoading ? (
-            <div className="w-full">
-              <Skeleton className="!h-[280px] w-full sm:!h-[300px]" />
-            </div>
-          ) : (
-            <CurrentOrderCard  />
-          )}
+          <CurrentOrderCard />
           <CurrentDesignCard />
         </div>
 

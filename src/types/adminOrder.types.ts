@@ -9,4 +9,5 @@ export interface AdminOrder {
   id: string;
   userEmail: string;
   status: OrderStatus;
+  createdAt: Date;
 }

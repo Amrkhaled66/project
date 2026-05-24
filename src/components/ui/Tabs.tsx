@@ -19,7 +19,12 @@ const Tabs = ({
   const active = tabs.find((t) => t.key === activeTab);
 
   return (
-    <div className="space-y-4 border bg-white/70 p-6 shadow-md backdrop-blur-md rounded-2xl">
+    <div className="space-y-4 rounded-2xl bg-white p-6 drop-shadow-sm">
+      <div>
+        <h2 className="text-primary-container text-2xl font-semibold">
+          Component Library
+        </h2>
+      </div>
       {/* Tabs Header */}
       <div
         className="rounded-xl border-2 bg-white"
@@ -34,12 +39,11 @@ const Tabs = ({
               <button
                 key={tab.key}
                 onClick={() => onChange(tab.key)}
-                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all
-                  ${
-                    isActive
-                      ? "bg-primary text-white shadow-sm"
-                      : "text-gray-500 hover:bg-gray-100"
-                  }`}
+                className={`relative flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+                  isActive
+                    ? "text-secondary after:bg-secondary after:absolute after:bottom-0 after:left-0 after:h-1 after:w-full"
+                    : "text-gray-500 hover:bg-gray-100"
+                }`}
               >
                 {Icon && <Icon className="h-4 w-4" />}
                 {tab.label}

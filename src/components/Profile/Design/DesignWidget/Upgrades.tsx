@@ -2,8 +2,17 @@ import React, { useEffect, useMemo, useState, useCallback } from "react";
 import DesginContainer from "../DesginContainer";
 import priceFormmater from "src/utils/priceFormmater";
 import Model from "src/components/ui/Model";
+import {
+  PRESERVATION_AXIS_ORDER,
+  preservationAxisVisuals,
+} from "src/components/Profile/Design/Viewer";
 import { useDesign } from "src/context/desgin.context";
-import { priceMap, upgrades, UpgradeOption } from "src/data/upgrades";
+import {
+  priceMap,
+  upgradePreservationPoints,
+  upgrades,
+  UpgradeOption,
+} from "src/data/upgrades";
 import UpgradeTab from "src/components/Profile/Design/upgrades/UpgradeTab";
 import showDesignViewer from "src/utils/designViewer";
 
@@ -101,6 +110,9 @@ export default function AddonsCheckbox({
   const activeIsSelected = activeUpgrade
     ? selectedSet.has(activeUpgrade.id)
     : false;
+  const activeUpgradePoints = activeUpgrade
+    ? upgradePreservationPoints[activeUpgrade.id]
+    : null;
 
   return (
     <>
@@ -173,6 +185,35 @@ export default function AddonsCheckbox({
                     ? activeUpgrade.brief
                     : "Upgrade details"}
                 </p>
+
+                {activeUpgradePoints && (
+                  <div className="mt-4 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                      Preservation Contribution
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {PRESERVATION_AXIS_ORDER.map((axis) => {
+                        const value = activeUpgradePoints[axis];
+                        const icon = preservationAxisVisuals[axis].icon;
+
+                        if (!value) {
+                          return null;
+                        }
+
+                        return (
+                          <div
+                            key={axis}
+                            className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-semibold "
+                            title={`${axis} +${value}`}
+                          >
+                            <span className="block size-4 ">{icon}</span>
+                            +{value}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Footer */}

@@ -69,9 +69,9 @@ const FormSelect: React.FC<FormSelectProps> = ({
   const selectedOption = options.find((o) => o.value === value);
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
+    <div ref={containerRef} className={`relative  ${className}`}>
       {/* Label */}
-      <label className="mb-1 block">
+      <label className="text-start font-bold uppercase tracking-wider text-xs">
         {label} {required && "*"}
       </label>
 
@@ -79,7 +79,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={`flex h-12 w-full items-center justify-between rounded-lg border bg-white px-3 text-sm transition ${
+        className={`flex h-12 w-full items-center justify-between rounded-2xl  border bg-subTitle/10 px-3 text-sm transition ${
           error
             ? "border-red-500"
             : open
@@ -108,7 +108,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute z-50 mt-2 max-h-50 w-full overflow-auto rounded-lg border bg-white shadow-lg"
+            className="absolute z-50 mt-2 max-h-50 w-full overflow-auto rounded-lg bg-white drop-shadow-sm "
           >
             {options.map((option, index) => (
               <motion.li
@@ -118,7 +118,9 @@ const FormSelect: React.FC<FormSelectProps> = ({
                 initial="hidden"
                 animate="visible"
                 onClick={() => {
-                  onChange?.({ target: { name: name, value: option.value } } as any);
+                  onChange?.({
+                    target: { name: name, value: option.value },
+                  } as any);
                   setOpen(false);
                 }}
                 className={`cursor-pointer px-4 py-2 text-sm transition hover:bg-gray-100 ${

@@ -20,6 +20,7 @@ export type AdminOrderListItem = {
   user: {
     email: string;
   };
+  createdAt: Date;
 };
 
 export type AdminOrderListResponse = {

@@ -75,7 +75,7 @@ const OrderShipmentSection = ({
                   ? "bg-primary-50 text-primary"
                   : canCreateShipment
                     ? "bg-amber-100 text-amber-700"
-                    : "bg-stroke text-mainProfile-600"
+                    : "bg-primary text-white"
               }`}
             >
               {isShipmentCreated
@@ -177,12 +177,12 @@ const OrderShipmentSection = ({
             </div>
           </div>
         ) : !canCreateShipment ? (
-          <div className="mt-5 rounded-xl border border-strokeFont/30 bg-stroke p-4">
+          <div className="mt-5 rounded-xl border border-strokeFont/30 bg-white drop-shadow-md p-4">
             <div className="flex items-start gap-3">
               <CircleAlert className="mt-0.5 text-mainProfile-600" size={18} />
-              <p className="text-sm text-mainProfile-600">
+              <p className="text-sm text-primary">
                 Move the order to{" "}
-                <span className="font-semibold text-primary">IN_PRODUCTION</span>{" "}
+                <span className="font-semibold text-secondary">IN_PRODUCTION</span>{" "}
                 before creating a shipment.
               </p>
             </div>

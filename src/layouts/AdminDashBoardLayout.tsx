@@ -32,13 +32,13 @@ const AdminDashboardLayout: React.FC = () => {
         />
 
         {/* Main Content */}
-        <div className="w-full space-y-5 bg-white px-6 py-2">
+        <div className="w-full space-y-5 bg-white  py-2">
           <DashboardHeader
             isSidebarOpen={isSidebarOpen}
             onMenuToggle={() => setIsSidebarOpen((v) => !v)}
           />
 
-          <div className="pb-4 lg:pb-8">
+          <div className="pb-4 bg-[#f9f9fb] px-6 lg:pb-8">
             <Outlet />
           </div>
         </div>

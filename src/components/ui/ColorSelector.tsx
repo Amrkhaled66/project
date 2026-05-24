@@ -17,7 +17,7 @@ export default function ColorSelector({
   headerComponenet
 }: Props) {
   return (
-    <DesginContainer headerComponenet={headerComponenet} header={header}>
+    <DesginContainer headerComponent={headerComponenet} header={header}>
       <div className="flex flex-wrap gap-x-2 gap-y-3">
         {colors.map((c) => {
           const selected = selectedColor === c;

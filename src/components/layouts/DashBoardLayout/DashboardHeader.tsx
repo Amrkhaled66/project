@@ -24,7 +24,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const isAdminPath = location.pathname.startsWith(ADMIN_PATH);
 
   // User context
-  const { logout } = useAuth();
+  const {
+    logout,
+    authData: { user },
+  } = useAuth();
   const { cartItems } = useCart();
 
   // Admin context
@@ -55,8 +58,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   };
 
   return (
-    <header className="mx-auto w-full">
-      <div className="flex items-center justify-between py-3">
+    <header className="mx-auto bg-white px-6 drop-shadow-sm">
+      <div className="flex items-center justify-between py-1">
         {/* Left */}
         <div className="flex items-center justify-between gap-4">
           <button
@@ -82,12 +85,18 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         <div className="flex items-center justify-center gap-3">
           {/* Cart (USER ONLY) */}
           {!isAdminPath && (
-            <Link className="relative hidden lg:block" to="cart">
-              <div className="absolute -top-2 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                {cartItems.reduce((total, item) => total + item.quantity, 0)}
-              </div>
-              <ShoppingCart size={24} />
-            </Link>
+            <div className="flex gap-x-10">
+              <p className="hidden lg:block">
+                Welcome Back,{"  "}
+                <span className="font-bold">{user?.name.split(" ")[0]}</span>
+              </p>
+              <Link className="relative hidden lg:block" to="cart">
+                <div className="absolute -top-2 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                  {cartItems.reduce((total, item) => total + item.quantity, 0)}
+                </div>
+                <ShoppingCart size={24} />
+              </Link>
+            </div>
           )}
 
           {/* Profile */}

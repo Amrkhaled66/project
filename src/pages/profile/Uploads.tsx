@@ -1,36 +1,34 @@
 import { useState } from "react";
 import UploadForm from "src/components/Profile/Uploads/UploadForm";
 import UploadedImagesList from "src/components/Profile/Uploads/UploadedImagesList";
+import PageHeader from "src/components/ui/PageHeader";
 import Tabs from "src/components/ui/Tabs";
+import Toast from "src/components/ui/Toast";
 import {
   useUploadMyImages,
   useUserUploads,
   useDeleteMyUpload,
 } from "src/hooks/queries/upload.queries";
-import Toast from "src/components/ui/Toast";
-import { MAX_UPLOAD_SIZE, panels, IMAGE_TYPE } from "src/utils/defaultSettings";
 import usePageTitle from "src/hooks/useUpdatePageTitle";
+import { MAX_UPLOAD_SIZE, panels, IMAGE_TYPE } from "src/utils/defaultSettings";
 
 const ITEMS_PER_PAGE = 9;
 
 export default function Uploads() {
   usePageTitle("Panel Library");
 
-  /* ---------------- Tabs ---------------- */
   const [activeTab, setActiveTab] = useState<IMAGE_TYPE>("panel");
   const [hasVisitedCornerTab, setHasVisitedCornerTab] = useState(false);
 
-  /* ---------------- Pagination ---------------- */
   const [panelPage, setPanelPage] = useState(1);
   const [cornerPage, setCornerPage] = useState(1);
 
-  /* ---------------- Upload ---------------- */
   const uploadMutation = useUploadMyImages();
 
   const handleUpload = async (
     files: File[],
     type: IMAGE_TYPE,
-    clear: () => void
+    clear: () => void,
   ) => {
     try {
       await uploadMutation.mutateAsync({ files, type });
@@ -40,8 +38,6 @@ export default function Uploads() {
       Toast(err?.message || "Upload failed", "error", "#fee2e2", "top");
     }
   };
-
-  /* ---------------- Queries ---------------- */
 
   const panelsQuery = useUserUploads({
     type: panels.panel.key,
@@ -58,14 +54,10 @@ export default function Uploads() {
     enabled: hasVisitedCornerTab || activeTab === "corner",
   });
 
-  /* ---------------- Delete ---------------- */
-
   const deleteMutation = useDeleteMyUpload();
 
   const handleDelete = (id: string, type: IMAGE_TYPE) =>
     deleteMutation.mutate({ uploadId: id, type });
-
-  /* ---------------- Extract Data ---------------- */
 
   const panelUploads = panelsQuery.data?.data || [];
   const panelPages = panelsQuery.data?.pagination?.pages || 1;
@@ -75,17 +67,12 @@ export default function Uploads() {
 
   return (
     <div className="mx-auto space-y-8">
-      {/* HEADER */}
-      <div className="page-header">
-        <h1 className="text-2xl font-semibold sm:text-3xl">Photo Lab™</h1>
-        <p className="text-base font-light sm:text-lg">
-          Upload and organize components for your Blueprint™ library.
-        </p>
-      </div>
+      <PageHeader
+        title="Photo Lab™"
+        subtitle="Upload and organize the source images that power your Blueprint™ library."
+      />
 
-      {/* TWO COLUMNS */}
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-        {/* UPLOAD FORM */}
         <UploadForm
           maxFiles={
             MAX_UPLOAD_SIZE -
@@ -95,7 +82,6 @@ export default function Uploads() {
           onUpload={handleUpload}
         />
 
-        {/* TABS */}
         <Tabs
           activeTab={activeTab}
           onChange={(key) => {
