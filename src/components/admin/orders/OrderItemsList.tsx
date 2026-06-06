@@ -60,6 +60,7 @@ const OrderItemsList = ({ items }: Props) => {
           !!startingSize &&
           designData.canvas.size !== designData.startingSize;
         const shippingPrice = canvasSize?.shippingPrice ?? 0;
+        const panelSize = Number(designData.panelSize) || 10;
 
         return (
           <motion.div
@@ -127,6 +128,7 @@ const OrderItemsList = ({ items }: Props) => {
                     label="Grid"
                     value={`${designData.canvas.rows} × ${designData.canvas.cols}`}
                   />
+                  <InfoChip label="Panel Size" value={`${panelSize} in`} />
                   {hasSizeDifference && (
                     <>
                       <InfoChip label="Starting" value={designData.startingSize} />

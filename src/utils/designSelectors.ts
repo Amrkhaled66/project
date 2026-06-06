@@ -10,6 +10,7 @@ import type {
 
 const DIRTY_SECTION_KEYS: DirtySection[] = [
   "canvas",
+  "panelSize",
   "colors",
   "photos",
   "upgrades",

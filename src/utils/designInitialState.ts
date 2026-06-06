@@ -3,6 +3,7 @@ import type { DesignData } from "src/types/design.types";
 
 export const initialDesignState: DesignData = {
   startingSize: BLANKET_SIZES[0].id,
+  panelSize: 10,
   canvas: {
     size: BLANKET_SIZES[0].id,
     rows: BLANKET_SIZES[0].rows,

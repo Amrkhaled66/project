@@ -1,6 +1,7 @@
 import { RotateCcw } from "lucide-react";
 
 import DesginContainer from "src/components/Profile/Design/DesginContainer";
+import FormSelect from "src/components/ui/FormSelect";
 import {
   BLANKET_SIZES,
   type BlanketSizeId,
@@ -15,13 +16,21 @@ import showDesignViewer from "src/utils/designViewer";
 
 const Sizes = () => {
   const { designData } = useDesignEditorState();
-  const { updateCanvasSize } = useDesignEditorActions();
+  const { updateCanvasSize, updatePanelSize } = useDesignEditorActions();
   const startingSizeId = designData.startingSize || BLANKET_SIZES[0].id;
+  const panelSize = Number(designData.panelSize) || 10;
   const {
     size: selectedId,
     cols,
     rows,
   } = designData.canvas || { name: "Lap", cols: 2, rows: 3 };
+  const panelSizeOptions = Array.from({ length: 15 }, (_, index) => {
+    const value = String(index + 10);
+    return {
+      label: `${value} in`,
+      value,
+    };
+  });
 
   const startingSizeIndex = BLANKET_SIZES.findIndex(
     (size) => size.id === startingSizeId,
@@ -54,9 +63,28 @@ const Sizes = () => {
     }
   };
 
+  const handlePanelSizeChange = (value: string) => {
+    const nextPanelSize = Number(value);
+
+    if (!Number.isFinite(nextPanelSize) || nextPanelSize === panelSize) {
+      return;
+    }
+
+    updatePanelSize(nextPanelSize);
+    showDesignViewer(`Panel size updated to ${nextPanelSize} in`);
+  };
+
   return (
     <DesginContainer header="Premium Build™ Size" className="h-full">
-      <div className="w-full space-y-3">
+      <div className="w-full space-y-4">
+        <FormSelect
+          label="Panel Size"
+          name="panelSize"
+          value={String(panelSize)}
+          options={panelSizeOptions}
+          onChange={(event) => handlePanelSizeChange(event.target.value)}
+        />
+
         {visibleSizes.map((size) => {
           const isSelected = selectedId === size.id;
           const isFlippable = size.rows !== size.cols;

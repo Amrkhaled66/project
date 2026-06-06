@@ -13,7 +13,10 @@ export const designReducer = (
 ): DesignData => {
   switch (action.type) {
     case "hydrate":
-      return action.designData;
+      return {
+        ...initialDesignState,
+        ...action.designData,
+      };
 
     case "set-blanket-color":
       return {
@@ -106,6 +109,12 @@ export const designReducer = (
           rows: action.size.rows,
           cols: action.size.cols,
         },
+      };
+
+    case "set-panel-size":
+      return {
+        ...state,
+        panelSize: action.panelSize,
       };
 
     case "replace-photos":

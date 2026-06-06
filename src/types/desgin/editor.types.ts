@@ -3,6 +3,7 @@ import type { sizeObj, DesignData } from "src/types/design.types";
 
 export type DirtySection =
   | "canvas"
+  | "panelSize"
   | "colors"
   | "photos"
   | "upgrades"
@@ -33,6 +34,7 @@ export type DesignEditorActionsValue = {
   updateQualityPreserveColor: (color: string | null) => void;
   toggleUpgrade: (id: string) => void;
   updateCanvasSize: (size: sizeObj) => void;
+  updatePanelSize: (panelSize: number) => void;
   replacePhotos: (items: any[]) => void;
   appendPhotos: (items: any[]) => void;
   removePhoto: (id: string) => void;
@@ -71,6 +73,7 @@ export type DesignEditorAction =
   | { type: "set-quality-preserve-color"; color: string | null }
   | { type: "toggle-upgrade"; id: string }
   | { type: "set-canvas-size"; size: sizeObj }
+  | { type: "set-panel-size"; panelSize: number }
   | { type: "replace-photos"; items: any[] }
   | { type: "append-photos"; items: any[] }
   | { type: "remove-photo"; id: string }

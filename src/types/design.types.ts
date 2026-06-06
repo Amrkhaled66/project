@@ -10,6 +10,7 @@ export interface sizeObj {
 export interface DesignData {
   canvas: sizeObj;
   startingSize: BlanketSizeId;
+  panelSize: number;
   colors: {
     blanket: string | null;
     border: string | null;

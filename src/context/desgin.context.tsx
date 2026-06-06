@@ -159,6 +159,8 @@ export const DesignProvider = ({
         dispatch({ type: "set-quality-preserve-color", color }),
       toggleUpgrade: (id) => dispatch({ type: "toggle-upgrade", id }),
       updateCanvasSize: (size) => dispatch({ type: "set-canvas-size", size }),
+      updatePanelSize: (panelSize) =>
+        dispatch({ type: "set-panel-size", panelSize }),
       replacePhotos: (items) => dispatch({ type: "replace-photos", items }),
       appendPhotos: (items) => dispatch({ type: "append-photos", items }),
       removePhoto: (id) => dispatch({ type: "remove-photo", id }),
