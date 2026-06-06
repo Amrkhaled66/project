@@ -1,17 +1,21 @@
+import { RotateCcw } from "lucide-react";
+
 import DesginContainer from "src/components/Profile/Design/DesginContainer";
 import {
   BLANKET_SIZES,
-  BlanketSizeId,
-  getSizeById,
+  type BlanketSizeId,
   flipSizeOrientation,
+  getSizeById,
 } from "src/data/blanketSizes";
-
-import { useDesign } from "src/context/desgin.context";
-import { RotateCcw } from "lucide-react";
+import {
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 import showDesignViewer from "src/utils/designViewer";
 
 const Sizes = () => {
-  const { designData, updateCanvasSize } = useDesign();
+  const { designData } = useDesignEditorState();
+  const { updateCanvasSize } = useDesignEditorActions();
   const startingSizeId = designData.startingSize || BLANKET_SIZES[0].id;
   const {
     size: selectedId,
@@ -20,27 +24,26 @@ const Sizes = () => {
   } = designData.canvas || { name: "Lap", cols: 2, rows: 3 };
 
   const startingSizeIndex = BLANKET_SIZES.findIndex(
-    (s) => s.id === startingSizeId,
+    (size) => size.id === startingSizeId,
   );
-
   const visibleSizes = BLANKET_SIZES.slice(
     startingSizeIndex >= 0 ? startingSizeIndex : 0,
   );
 
   const onSelectSize = (id: BlanketSizeId) => {
-    const s = getSizeById(id);
+    const size = getSizeById(id);
     updateCanvasSize({
-      size: s.id,
-      cols: s.cols,
-      rows: s.rows,
+      size: size.id,
+      cols: size.cols,
+      rows: size.rows,
     });
-    showDesignViewer(`Size updated to ${s.name}`);
+    showDesignViewer(`Size updated to ${size.name}`);
   };
 
   const handleFlipOrientation = () => {
     if (rows !== cols) {
-      const isFlipped = getSizeById(selectedId)?.cols === rows; 
-      const flipped = flipSizeOrientation(selectedId,isFlipped); // MUST use ID
+      const isFlipped = getSizeById(selectedId)?.cols === rows;
+      const flipped = flipSizeOrientation(selectedId, isFlipped);
 
       updateCanvasSize({
         size: flipped.id,
@@ -54,14 +57,14 @@ const Sizes = () => {
   return (
     <DesginContainer header="Premium Build™ Size" className="h-full">
       <div className="w-full space-y-3">
-        {visibleSizes.map((s) => {
-          const isSelected = selectedId === s.id;
-          const isFlippable = s.rows !== s.cols;
-          const stepPrice = s.price - getSizeById(startingSizeId)?.price!;
+        {visibleSizes.map((size) => {
+          const isSelected = selectedId === size.id;
+          const isFlippable = size.rows !== size.cols;
+          const stepPrice = size.price - getSizeById(startingSizeId)?.price!;
 
           return (
             <div
-              key={s.id}
+              key={size.id}
               className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 transition ${
                 isSelected ? "bg-neutral-100" : "hover:bg-neutral-50"
               }`}
@@ -72,16 +75,16 @@ const Sizes = () => {
                     type="radio"
                     name="blanketSize"
                     checked={isSelected}
-                    onChange={() => onSelectSize(s.id)}
+                    onChange={() => onSelectSize(size.id)}
                     className="h-4 w-4 accent-black"
                   />
 
                   <span className="text-sm text-neutral-900">
-                    {s.name} ({s.cols}x{s.rows})
+                    {size.name} ({size.cols}x{size.rows})
                   </span>
                 </div>
 
-                {s.id !== startingSizeId && (
+                {size.id !== startingSizeId && (
                   <span className="text-sm font-medium text-neutral-800">
                     ${stepPrice.toFixed(2)}
                   </span>

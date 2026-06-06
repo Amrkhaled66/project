@@ -9,7 +9,7 @@ import {
 import CanvasFront from "./FrontGrid";
 import CanvasBack from "./BackGrid";
 import { GridItemType } from "src/components/Profile/Design/Canvas/GridItem";
-import { useDesign } from "src/context/desgin.context";
+import { useDesignEditorState } from "src/context/desgin.context";
 export interface CanvasHandle {
   getSnapshot: () => Promise<string>;
 }
@@ -27,9 +27,7 @@ const Canvas = forwardRef<
     { items, onUpdateItems, onDeleteItem, isFlipped },
     ref,
   ) => {
-
-    // Load from Design Context
-    const { designData } = useDesign();
+    const { designData } = useDesignEditorState();
 
     const backingColor = designData.colors?.backing;
     const bindingColor = designData.colors?.binding;

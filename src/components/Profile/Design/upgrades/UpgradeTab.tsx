@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { upgradesTabs, upgrades } from "src/data/upgrades";
+import { upgradesTabs, upgradesByTab } from "src/data/upgrades";
 import { UpgradeOption } from "src/data/upgrades";
+import { BlanketSizeId } from "src/data/blanketSizes";
 import UpgradeRow from "./UpgradeRow";
 
 type Props = {
   selectedSet: Set<string>;
   onToggle: (id: string) => void;
   onOpen: (item: UpgradeOption) => void;
-  size: string;
-  priceMap: any;
+  size: BlanketSizeId;
+  priceMap: (upgradeId: UpgradeOption["id"], sizeId: BlanketSizeId) => number;
 };
 
 function cn(...classes: Array<string | false | undefined>) {
@@ -28,8 +29,7 @@ export default function UpgradeTab({
     <div className="space-y-3">
       {Object.entries(upgradesTabs).map(([key, tab]) => {
         const isOpen = openTab === key;
-
-        const tabUpgrades = upgrades.filter((u) => tab.elments.includes(u.id));
+        const tabUpgrades = upgradesByTab[key] ?? [];
 
         return (
           <div
@@ -73,7 +73,7 @@ export default function UpgradeTab({
                       checked={selectedSet.has(item.id)}
                       onToggle={onToggle}
                       onOpen={onOpen}
-                      price={priceMap[item.id]?.[size]}
+                      price={priceMap(item.id, size)}
                       active={item.selected}
                     />
                   ))}

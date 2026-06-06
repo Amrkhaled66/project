@@ -11,7 +11,6 @@ export type TabId =
 export interface Tab {
   id: TabId;
   label: string;
-  component: React.ReactNode;
   isActive: boolean;
 }
 

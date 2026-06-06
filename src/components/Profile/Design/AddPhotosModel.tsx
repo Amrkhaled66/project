@@ -4,7 +4,10 @@ import Pagination from "src/components/ui/Pagination";
 import { X, Check } from "lucide-react";
 import MainDashButton from "src/components/ui/MainDashButton";
 import Toast from "src/components/ui/Toast";
-import { useDesign } from "src/context/desgin.context";
+import {
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 import { useUserUploads } from "src/hooks/queries/upload.queries";
 import { panels } from "src/utils/defaultSettings";
 import getImageLink from "src/utils/getImageLink";
@@ -39,7 +42,8 @@ export default function AddPhotosModel({
 
   const [selected, setSelected] = useState<string[]>([]);
 
-  const { designData, update } = useDesign();
+  const { designData } = useDesignEditorState();
+  const { appendPhotos } = useDesignEditorActions();
   const items = designData?.photos?.items || [];
 
   const maxphoto = designData.canvas.cols * designData.canvas.rows;
@@ -70,14 +74,12 @@ export default function AddPhotosModel({
   /* ---------------- ADD ---------------- */
 
   const handleAddSelected = () => {
-    selected.slice(0, maxphoto).forEach((src) => {
-      update((d) => {
-        d.photos.items.push({
-          id: src,
-          image: src,
-        });
-      });
-    });
+    appendPhotos(
+      selected.slice(0, maxphoto).map((src) => ({
+        id: src,
+        image: src,
+      })),
+    );
 
     setSelected([]);
     onClose();

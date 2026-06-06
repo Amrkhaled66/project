@@ -1,41 +1,33 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { DesignService } from "src/services/design.service";
-import { Design, DesignData } from "src/types/design.types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import { useAuth } from "src/context/auth.context";
-/* -------------------------------------------------------------------------- */
-/* GET ALL DESIGNS                                                             */
-/* -------------------------------------------------------------------------- */
+import type { DirtySection } from "src/types/desgin/editor.types";
+import { DesignService } from "src/services/design.service";
+import type { Design, DesignData } from "src/types/design.types";
+
 export const useDesigns = () => {
   const {
     authData: { user },
   } = useAuth();
+
   return useQuery<Design[]>({
     queryKey: ["designs", user?.email],
     queryFn: () => DesignService.getAll(),
   });
 };
 
-/* -------------------------------------------------------------------------- */
-/* GET ONE DESIGN (EDITOR PAGE)                                                */
-/* -------------------------------------------------------------------------- */
 export const useDesign = (id?: string) => {
   return useQuery<Design>({
     queryKey: ["design", id],
     queryFn: () => DesignService.getById(id!),
     enabled: !!id,
-
-    staleTime: 0, // always stale → always refetch
-    refetchOnMount: true, // refetch every time component mounts
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 };
 
-/* -------------------------------------------------------------------------- */
-/* UPDATE DESIGN (AUTO-SAVE JSON ONLY)                                         */
-/* -------------------------------------------------------------------------- */
 export const useUpdateDesign = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<
     { success: boolean; price: number },
     Error,
@@ -45,22 +37,15 @@ export const useUpdateDesign = () => {
         name?: string;
         designData?: Partial<DesignData>;
       };
+      dirtySections?: DirtySection[];
       preview?: Blob | null;
     }
   >({
     mutationFn: ({ id, payload, preview }) =>
       DesignService.update(id, payload, preview ?? null),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["design", variables.id],
-      });
-    },
   });
 };
 
-/* -------------------------------------------------------------------------- */
-/* DELETE DESIGN                                                              */
-/* -------------------------------------------------------------------------- */
 export const useDeleteDesign = () => {
   const queryClient = useQueryClient();
 
@@ -72,9 +57,6 @@ export const useDeleteDesign = () => {
   });
 };
 
-/* -------------------------------------------------------------------------- */
-/* GET LATEST DESIGN                                                           */
-/* -------------------------------------------------------------------------- */
 export const useLatestDesign = () => {
   return useQuery({
     queryKey: ["latestDesign"],

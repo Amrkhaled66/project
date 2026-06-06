@@ -1,12 +1,13 @@
 // BlanketColorSelector.tsx
 import ColorSelector from "src/components/ui/ColorSelector";
-import { useDesign } from "src/context/desgin.context";
+import {
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 import showDesignViewer from "src/utils/designViewer";
 export default function BindingColor() {
-  const {
-    updateBindingColor,
-    designData,
-  } = useDesign();
+  const { designData } = useDesignEditorState();
+  const { updateBindingColor } = useDesignEditorActions();
   const onSelectColor = (color: string) => {
     updateBindingColor(color);
     showDesignViewer("Heirloom edge color applied");

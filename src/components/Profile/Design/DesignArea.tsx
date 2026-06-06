@@ -5,12 +5,16 @@ import DesginContainer from "./DesginContainer";
 import Canvas from "./Canvas/Canvas";
 import AddPhotosModel from "./AddPhotosModel";
 
-import { useDesign } from "src/context/desgin.context";
+import {
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 import Toast from "src/components/ui/Toast";
 import Button from "src/components/ui/Button";
 import showDesignViewer from "src/utils/designViewer";
 const DesignArea = () => {
-  const { designData, update, resetDesign } = useDesign();
+  const { designData } = useDesignEditorState();
+  const { replacePhotos, removePhoto, resetDesign } = useDesignEditorActions();
 
   const items = designData?.photos?.items ?? [];
   const backingColor = designData?.colors?.backing;
@@ -39,23 +43,22 @@ const DesignArea = () => {
   const handleUpdateItems = useCallback(
     (newItems: any[]) => {
       previewDirtyRef.current = true;
-      update((d) => {
-        d.photos.items = newItems;
-      });
+      replacePhotos(newItems);
     },
-    [update],
+    [replacePhotos],
   );
 
   /* ------------------------------------------------------------------------ */
   /* Delete item                                                              */
   /* ------------------------------------------------------------------------ */
-  const handleDeleteItem = useCallback((id: string) => {
-    previewDirtyRef.current = true;
-    update((d) => {
-      d.photos.items = d.photos.items.filter((i) => i.id !== id);
-    });
-    showDesignViewer("Photo removed from design");
-  }, [update]);
+  const handleDeleteItem = useCallback(
+    (id: string) => {
+      previewDirtyRef.current = true;
+      removePhoto(id);
+      showDesignViewer("Photo removed from design");
+    },
+    [removePhoto],
+  );
 
   return (
     <DesginContainer
@@ -108,8 +111,7 @@ const DesignArea = () => {
       }
     >
       <div className="flex flex-col gap-4">
-        {/* Toolbar */}
-
+      
         {/* Canvas */}
         <div className="flex w-full justify-center">
           <Canvas

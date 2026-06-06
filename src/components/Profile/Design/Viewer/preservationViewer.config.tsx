@@ -8,8 +8,15 @@ export const PRESERVATION_AXIS_ORDER = [
   PRESERVATION_AXES.PERFORMANCE,
 ] as const satisfies readonly PreservationAxis[];
 
-export const MAX_AXIS_POINTS = 12;
-export const MAX_TOTAL_POINTS = PRESERVATION_AXIS_ORDER.length * MAX_AXIS_POINTS;
+export const AXIS_MAX_SCORES: Record<PreservationAxis, number> = {
+  [PRESERVATION_AXES.STRUCTURE]: 8,
+  [PRESERVATION_AXES.DESIGN_HIERARCHY]: 16,
+  [PRESERVATION_AXES.PERFORMANCE]: 8,
+};
+
+export const TOTAL_AUTHORITY_TARGET = 0.75;
+export const TOTAL_AXIS_WEIGHT = 0.55;
+export const TOTAL_INFLUENCE_WEIGHT = 0.45;
 
 export const preservationAxisVisuals: Record<
   PreservationAxis,

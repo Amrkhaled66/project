@@ -1,7 +1,6 @@
 import { DesignData } from "src/types/design.types";
 import { BLANKET_SIZES } from "src/data/blanketSizes";
-import { upgrades } from "src/data/upgrades";
-import { priceMap } from "src/data/upgrades";
+import { getUpgradePrice } from "src/data/upgrades";
 export function calculateDesignPrice(designData: DesignData): number {
   if (!designData) return 0;
 
@@ -23,10 +22,7 @@ export function calculateDesignPrice(designData: DesignData): number {
 
   let totalUpgrades = 0;
   for (const id of selected) {
-    const upgrade = upgrades.find((u) => u.id === id);
-    if (upgrade) {
-      totalUpgrades += priceMap[upgrade.id]?.[sizeName] ?? 0;
-    }
+    totalUpgrades += getUpgradePrice(id as any, sizeName);
   }
 
   return Number((basePrice + totalUpgrades).toFixed(2));

@@ -10,13 +10,16 @@ import {
 import { Navigate, useParams } from "react-router-dom";
 
 import DesginArea from "src/components/Profile/Design/DesignArea";
-import priceFormmater from "src/utils/priceFormmater";
 
 import TabButton, {
   TabId,
 } from "src/components/Profile/Design/upgrades/TabButton";
 
-import { useDesign } from "src/context/desgin.context";
+import {
+  useDesignDerived,
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 import { useCart } from "src/context/cart.context";
 import LeavePageModal from "src/components/Profile/Design/Canvas/LeavePageModal";
 import Skeleton from "react-loading-skeleton";
@@ -25,7 +28,6 @@ import useUnsavedChangesBlocker from "src/hooks/useUnsavedChangesBlocker";
 import PageHeader from "src/components/ui/PageHeader";
 import DesignViewer from "src/components/Profile/Design/Viewer";
 import "react-loading-skeleton/dist/skeleton.css";
-import MainDashButton from "src/components/ui/MainDashButton";
 
 /* -------------------------------------------------------------------------- */
 /* Page Component                                                             */
@@ -34,15 +36,10 @@ export default function BlanketDesigner() {
   const { id: designId } = useParams<{ id: string }>();
   const tabs = useGetUpgradeTabs();
 
-  const {
-    designData,
-    handleDragEnd,
-    isLoading,
-    isError,
-    hasChanged,
-    price,
-    data,
-  } = useDesign();
+  const { designData, designRecord, isLoading, isError } =
+    useDesignEditorState();
+  const { handleDragStart, handleDragEnd } = useDesignEditorActions();
+  const { hasChanged, price } = useDesignDerived();
 
   const { addOrIncrease, isItemInCart, updateItemPrice } = useCart();
   const [activeTab, setActiveTab] = useState<TabId>(tabs[0].id);
@@ -62,7 +59,8 @@ export default function BlanketDesigner() {
     useUnsavedChangesBlocker({});
 
   const activeTabs = tabs.filter((t) => t.isActive);
-  const activeTabContent = tabs.find((t) => t.id === activeTab)?.component;
+  const activeTabConfig = tabs.find((t) => t.id === activeTab);
+  const ActiveTabComponent = activeTabConfig?.Component;
 
   useEffect(() => {
     if (
@@ -83,10 +81,10 @@ export default function BlanketDesigner() {
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
       <div className="mx-auto min-h-dvh space-y-4">
-        {/* Header */}
         {isLoading ? (
           <header className="page-header flex items-center justify-between">
             <Skeleton width={120} height={24} />
@@ -98,40 +96,27 @@ export default function BlanketDesigner() {
               title="Blueprint Review™"
               subtitle="Finalize your artisanal configuration before build commencement."
             />
-            <div className="flex h-fit items-center gap-x-12 rounded-3xl bg-white px-8 py-3 drop-shadow-sm">
-              <div className="flex flex-row">
-                <span className="text-subTitle tracking-wider uppercase">
-                  Total:
-                </span>
-
-                <span className="font-bold">
-                  {priceFormmater(Number(price))}
-                </span>
-              </div>
-              <MainDashButton
-                disabled={inCart}
-                text={inCart ? "Added" : "Commission Build"}
-                className="!h-fit !rounded-full px-3"
-                onClick={() =>
-                  addOrIncrease({
-                    designId: designId || " ",
-                    name: data?.name || "",
-                    previewImage: data?.previewImage ?? null,
-                    price: Number(data?.price) || 0,
-                    sizeId: designData?.canvas.size || " ",
-                  })
-                }
-              />
-            </div>
           </div>
         )}
 
         {!isLoading && (
-          <DesignViewer selectedUpgrades={designData.upgrades.selected} />
+          <DesignViewer
+            selectedUpgrades={designData.upgrades.selected}
+            price={Number(price)}
+            inCart={inCart}
+                onAddToCart={() =>
+                  addOrIncrease({
+                    designId: designId || " ",
+                    name: designRecord?.name || "",
+                    previewImage: designRecord?.previewImage ?? null,
+                    price: Number(designRecord?.price) || 0,
+                    sizeId: designData?.canvas.size || " ",
+                  })
+                }
+          />
         )}
 
         <div className="flex flex-col gap-x-6 gap-y-4 lg:flex-row">
-          {/* Canvas */}
           <div className="flex-1">
             {isLoading ? (
               <div className="w-full space-y-3">
@@ -147,13 +132,6 @@ export default function BlanketDesigner() {
           {/* Sidebar */}
           <aside className="sticky top-2 flex h-fit w-full flex-col space-y-4 rounded-3xl bg-white p-4 shadow-sm lg:w-[40%]">
             <div className="flex h-fit items-start justify-between">
-              {/* <div className="max-w-[75%] space-y-1">
-                <h2 className="text-xl font-medium">Build Configuration</h2>
-
-                <h3 className="text-sm text-neutral-500">
-                  Configure your Premium Build™ Blueprint
-                </h3>
-              </div> */}
             </div>
             <nav className="relative grid grid-cols-4 border-b border-neutral-200 px-5 pb-2">
               {isLoading
@@ -187,7 +165,9 @@ export default function BlanketDesigner() {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.25 }}
                   >
-                    {activeTabContent}
+                    {ActiveTabComponent ? (
+                      <ActiveTabComponent {...activeTabConfig?.componentProps} />
+                    ) : null}
                   </motion.div>
                 </AnimatePresence>
               </div>

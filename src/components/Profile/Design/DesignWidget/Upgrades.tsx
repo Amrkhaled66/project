@@ -6,18 +6,21 @@ import {
   PRESERVATION_AXIS_ORDER,
   preservationAxisVisuals,
 } from "src/components/Profile/Design/Viewer";
-import { useDesign } from "src/context/desgin.context";
 import {
-  priceMap,
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
+import {
+  getUpgradePrice,
   upgradePreservationPoints,
-  upgrades,
+  upgradeMap,
   UpgradeOption,
 } from "src/data/upgrades";
 import UpgradeTab from "src/components/Profile/Design/upgrades/UpgradeTab";
 import showDesignViewer from "src/utils/designViewer";
 
 type AddonsCheckboxProps = {
-  selectedUpgrades: string[];
+  selectedUpgrades?: string[];
 };
 
 function cn(...classes: Array<string | false | undefined>) {
@@ -25,28 +28,19 @@ function cn(...classes: Array<string | false | undefined>) {
 }
 
 export default function AddonsCheckbox({
-  selectedUpgrades,
+  selectedUpgrades = [],
 }: AddonsCheckboxProps) {
   const {
-    toggleUpgrade,
     designData: {
       canvas: { size },
     },
-  } = useDesign();
+  } = useDesignEditorState();
+  const { toggleUpgrade } = useDesignEditorActions();
 
   const [activeUpgrade, setActiveUpgrade] = useState<UpgradeOption | null>(
     null,
   );
   const [isImageLoading, setIsImageLoading] = useState(false);
-
-  // preload upgrade images
-  useEffect(() => {
-    upgrades.forEach((u) => {
-      if (!u.img) return;
-      const img = new Image();
-      img.src = u.img;
-    });
-  }, []);
 
   const selectedSet = useMemo(
     () => new Set(selectedUpgrades),
@@ -65,7 +59,7 @@ export default function AddonsCheckbox({
   const handleToggle = useCallback(
     (id: string) => {
       const isSelected = selectedSet.has(id);
-      const upgrade = upgrades.find((item) => item.id === id);
+      const upgrade = upgradeMap[id as keyof typeof upgradeMap];
       toggleUpgrade(id);
       showDesignViewer(
         isSelected
@@ -113,6 +107,9 @@ export default function AddonsCheckbox({
   const activeUpgradePoints = activeUpgrade
     ? upgradePreservationPoints[activeUpgrade.id]
     : null;
+  const activeUpgradePrice = activeUpgrade
+    ? getUpgradePrice(activeUpgrade.id, size)
+    : null;
 
   return (
     <>
@@ -122,7 +119,7 @@ export default function AddonsCheckbox({
           onToggle={handleToggle}
           onOpen={handleOpen}
           size={size}
-          priceMap={priceMap}
+          priceMap={getUpgradePrice}
         />
       </DesginContainer>
 
@@ -167,10 +164,8 @@ export default function AddonsCheckbox({
                     )}
 
                     <div className="absolute right-3 bottom-3 rounded-full bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white shadow-lg">
-                      {typeof priceMap[activeUpgrade.id]?.[size] === "number"
-                        ? priceFormmater(
-                            priceMap[activeUpgrade.id]?.[size] ?? 0,
-                          )
+                      {typeof activeUpgradePrice === "number"
+                        ? priceFormmater(activeUpgradePrice)
                         : "Selected"}
                     </div>
                   </div>

@@ -1,6 +1,9 @@
-// src/components/upgrades/Blocking.tsx
-import React, { useEffect, useMemo, useCallback, useState } from "react";
-import { useDesign } from "src/context/desgin.context";
+import React, { useCallback, useEffect, useState } from "react";
+
+import {
+  useDesignDerived,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 
 interface BlockingProps {
   rows: number;
@@ -19,42 +22,39 @@ type Block = {
 };
 
 const Blocking: React.FC<BlockingProps> = ({ rows, cols, gridRef }) => {
-  const { designData,hasBlocking } = useDesign();
-
-
-  // ✅ memoized colors (NO new array each render)
+  const { designData } = useDesignEditorState();
+  const { hasBlocking } = useDesignDerived();
   const colors = designData.colors.blocking.colors;
-
-  const isRandom = hasBlocking && colors.length > 1 && designData.colors.blocking.random;
-
+  const isRandom =
+    hasBlocking && colors.length > 1 && designData.colors.blocking.random;
   const [intersections, setIntersections] = useState<Block[]>([]);
 
-  // ✅ memoized color resolver
   const getColor = useCallback(
     (index: number) =>
       isRandom
         ? colors[Math.floor(Math.random() * colors.length)]
         : colors[index % colors.length],
-    [colors, isRandom]
+    [colors, isRandom],
   );
 
   useEffect(() => {
     const grid = gridRef.current;
-    if (!grid) return;
+    if (!grid) {
+      return;
+    }
 
     const parent = grid.parentElement as HTMLElement | null;
-    if (!parent) return;
+    if (!parent) {
+      return;
+    }
 
     const recalcBlocks = () => {
       const gridRect = grid.getBoundingClientRect();
       const parentRect = parent.getBoundingClientRect();
-
       const hasFringePadding = grid.classList.contains("p-4");
       const innerPadding = hasFringePadding ? FRINGE_PADDING : 0;
-
       const offsetLeft = gridRect.left - parentRect.left;
       const offsetTop = gridRect.top - parentRect.top;
-
       const innerWidth = gridRect.width - innerPadding * 2;
       const innerHeight = gridRect.height - innerPadding * 2;
 
@@ -63,55 +63,51 @@ const Blocking: React.FC<BlockingProps> = ({ rows, cols, gridRef }) => {
         return;
       }
 
-      const cellWidth =
-        (innerWidth - GRID_GAP * (cols - 1)) / cols;
+      const cellWidth = (innerWidth - GRID_GAP * (cols - 1)) / cols;
+      const cellHeight = (innerHeight - GRID_GAP * (rows - 1)) / rows;
+      const nextBlocks: Block[] = [];
 
-      const cellHeight =
-        (innerHeight - GRID_GAP * (rows - 1)) / rows;
-
-      const blocks: Block[] = [];
-
-      for (let r = 0; r < rows - 1; r++) {
-        for (let c = 0; c < cols - 1; c++) {
+      for (let row = 0; row < rows - 1; row++) {
+        for (let col = 0; col < cols - 1; col++) {
           const xInsideGrid =
-            innerPadding + (c + 1) * cellWidth + c * GRID_GAP + 3;
-
+            innerPadding + (col + 1) * cellWidth + col * GRID_GAP + 3;
           const yInsideGrid =
-            innerPadding + (r + 1) * cellHeight + r * GRID_GAP + 3;
+            innerPadding + (row + 1) * cellHeight + row * GRID_GAP + 3;
 
-          blocks.push({
+          nextBlocks.push({
             left: offsetLeft + xInsideGrid - BLOCK_SIZE / 2,
             top: offsetTop + yInsideGrid - BLOCK_SIZE / 2,
-            color: getColor(r * (cols - 1) + c),
+            color: getColor(row * (cols - 1) + col),
           });
         }
       }
 
-      setIntersections(blocks);
+      setIntersections(nextBlocks);
     };
 
     recalcBlocks();
 
     const resizeObserver = new ResizeObserver(recalcBlocks);
     resizeObserver.observe(grid);
-
     return () => resizeObserver.disconnect();
-  }, [rows, cols, getColor]); 
+  }, [cols, getColor, gridRef, rows]);
 
-  if (!hasBlocking) return null;
+  if (!hasBlocking) {
+    return null;
+  }
 
   return (
     <>
-      {intersections.map((b, i) => (
+      {intersections.map((block, index) => (
         <div
-          key={i}
+          key={index}
           className="absolute pointer-events-none"
           style={{
-            top: `${b.top}px`,
-            left: `${b.left}px`,
+            top: `${block.top}px`,
+            left: `${block.left}px`,
             width: `${BLOCK_SIZE}px`,
             height: `${BLOCK_SIZE}px`,
-            backgroundColor: b.color,
+            backgroundColor: block.color,
             borderRadius: "2px",
             boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
             zIndex: 50,

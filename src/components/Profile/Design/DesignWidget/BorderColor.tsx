@@ -1,9 +1,13 @@
 // BorderColorSelector.tsx
 import ColorSelector from "src/components/ui/ColorSelector";
-import { useDesign } from "src/context/desgin.context";
+import {
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 import showDesignViewer from "src/utils/designViewer";
 export default function BorderColorSelector() {
- const {updateBorderColor , designData } = useDesign();
+ const { designData } = useDesignEditorState();
+ const { updateBorderColor } = useDesignEditorActions();
   const onSelectColor = (color: string) => {
     updateBorderColor(color);
     showDesignViewer("Frame bordering color applied");

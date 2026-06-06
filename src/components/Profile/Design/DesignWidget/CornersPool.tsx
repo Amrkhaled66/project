@@ -1,48 +1,41 @@
 import { useState } from "react";
 import { useDraggable } from "@dnd-kit/core";
+
 import Pagination from "src/components/ui/Pagination";
-import { useDesign } from "src/context/desgin.context";
+import EmptyState from "src/components/ui/EmptyState";
+import {
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 import getImageLink from "src/utils/getImageLink";
 import { useUserUploads } from "src/hooks/queries/upload.queries";
 import { panels } from "src/utils/defaultSettings";
-import EmptyState from "src/components/ui/EmptyState";
 import showDesignViewer from "src/utils/designViewer";
+
 const ITEMS_PER_PAGE = 16;
 
 export default function CornersPool() {
-  /* ---------------- PAGINATION ---------------- */
   const [page, setPage] = useState(1);
-
-  /* ---------------- QUERY ---------------- */
-
   const { data, isLoading } = useUserUploads({
     type: panels.corner.key,
     used: false,
     page,
     limit: ITEMS_PER_PAGE,
   });
-
   const uploads = data?.data || [];
   const pagination = data?.pagination;
-
-  const { designData, update } = useDesign();
-
-  /* ---------------- SELECTED CORNERS ---------------- */
-
+  const { designData } = useDesignEditorState();
+  const { removeCornerImage } = useDesignEditorActions();
   const cornerImages = designData.upgrades?.props?.cornerstones.images || {};
   const cornerEntries = Object.entries(cornerImages);
 
   const deleteCornerImage = (index: number) => {
-    update((d) => {
-      if (d.upgrades.props.cornerstones.images[index]) {
-        delete d.upgrades.props.cornerstones.images[index];
-      }
-    });
+    removeCornerImage(index);
     showDesignViewer("Corner image removed");
   };
 
   if (isLoading) {
-    return <div className="p-3 text-sm text-neutral-500">Loading images…</div>;
+    return <div className="p-3 text-sm text-neutral-500">Loading images...</div>;
   }
 
   if (!uploads.length) {
@@ -56,13 +49,10 @@ export default function CornersPool() {
 
   return (
     <div className="space-y-3">
-      {/* IMAGES POOL */}
       <div className="flex flex-wrap items-center gap-4 rounded-lg bg-neutral-200 p-3">
         {uploads.map((img: any) => {
-          const foundEntry = cornerEntries.find(
-            ([, value]) => value === getImageLink(img.imageUrl),
-          );
-
+          const imageSrc = getImageLink(img.imageUrl);
+          const foundEntry = cornerEntries.find(([, value]) => value === imageSrc);
           const isSelected = !!foundEntry;
           const selectedCornerIndex = foundEntry ? Number(foundEntry[0]) : null;
 
@@ -70,7 +60,7 @@ export default function CornersPool() {
             <CornerImage
               key={img.id}
               id={img.id}
-              src={getImageLink(img.imageUrl)}
+              src={imageSrc}
               isSelected={isSelected}
               cornerIndex={selectedCornerIndex}
               deleteCornerImage={deleteCornerImage}
@@ -79,7 +69,6 @@ export default function CornersPool() {
         })}
       </div>
 
-      {/* PAGINATION */}
       {pagination?.pages > 1 && (
         <Pagination
           pageCount={pagination.pages}
@@ -135,7 +124,7 @@ function CornerImage({
           onClick={() => deleteCornerImage(cornerIndex)}
           className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-red-500 text-xs text-white shadow"
         >
-          ✕
+          x
         </button>
       )}
     </div>

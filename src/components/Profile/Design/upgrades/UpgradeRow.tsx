@@ -16,13 +16,16 @@ function cn(...classes: Array<string | false | undefined>) {
 }
 
 function UpgradeAxisPoints({ upgradeId }: { upgradeId: string }) {
-  const points = upgradePreservationPoints[upgradeId as keyof typeof upgradePreservationPoints];
+  const points =
+    upgradePreservationPoints[
+      upgradeId as keyof typeof upgradePreservationPoints
+    ];
 
   if (!points) {
     return null;
   }
 
-    return (
+  return (
     <div className="mt-2 flex flex-wrap gap-1.5">
       {PRESERVATION_AXIS_ORDER.map((axis) => {
         const value = points[axis];
@@ -35,11 +38,11 @@ function UpgradeAxisPoints({ upgradeId }: { upgradeId: string }) {
         return (
           <span
             key={axis}
-            className="inline-flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary"
+            className="px text-primary inline-flex items-center justify-center  rounded-full border border-neutral-200 bg-white p-2 text-[10px] font-semibold tracking-[0.12em] uppercase"
             title={`${axis} +${value}`}
           >
-            <span className="block size-3 text-current">{icon}</span>
-            +{value}
+            <span className="block text-current">{icon}</span>
+            <span className="-translate-y-1" >+{value}</span>
           </span>
         );
       })}
@@ -94,7 +97,7 @@ const UpgradeRow = React.memo(function UpgradeRow({
             />
 
             <div className="min-w-0">
-              <p className="text-sm text-primary">{item.name}</p>
+              <p className="text-primary text-sm">{item.name}</p>
               <UpgradeAxisPoints upgradeId={item.id} />
             </div>
           </div>
@@ -107,7 +110,7 @@ const UpgradeRow = React.memo(function UpgradeRow({
                 "rounded-full border px-2.5 py-1 text-xs font-semibold",
                 checked
                   ? "border-primary bg-primary text-white"
-                  : "border-neutral-200 bg-neutral-50 text-primary",
+                  : "text-primary border-neutral-200 bg-neutral-50",
               )}
             >
               {priceFormmater(price)}
@@ -122,7 +125,7 @@ const UpgradeRow = React.memo(function UpgradeRow({
             }}
             className={cn(
               "flex size-7 items-center justify-center rounded-full border",
-              "border-neutral-200 bg-primary hover:bg-secondary animate text-xs font-semibold text-white",
+              "bg-primary hover:bg-secondary animate border-neutral-200 text-xs font-semibold text-white",
               "transition-all hover:text-white",
             )}
             aria-label={`More info about ${item.name}`}

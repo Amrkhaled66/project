@@ -1,37 +1,62 @@
+import type {
+  AutosavePayload,
+  DirtySection,
+} from "src/types/desgin/editor.types";
 import { getChangedFields } from "./getChangedFields";
+
+const VISUAL_SECTIONS = new Set<DirtySection>([
+  "canvas",
+  "colors",
+  "photos",
+  "upgrades",
+]);
 
 export function createDesignUpdater<T extends Record<string, unknown>>(options: {
   designId: string;
   mutate: (args: {
     id: string;
-    payload: { designData: Partial<T> };
+    payload: AutosavePayload;
     preview?: Blob | null;
-  }) => void | Promise<void>;
+  }) => void | Promise<unknown>;
   generatePreview?: () => Promise<Blob | null>;
+  onCommitted?: () => void;
 }) {
   let lastSnapshot: Partial<T> | undefined;
   let saveTimeout: ReturnType<typeof setTimeout> | null = null;
   let hydrated = false;
+  let pendingCurrent: Partial<T> | null = null;
+  let pendingDirtySections = new Set<DirtySection>();
 
-  const VISUAL_KEYS: (keyof T)[] = ["canvas", "colors", "photos","upgrades"] as any;
+  const execute = async () => {
+    if (!hydrated || !pendingCurrent) {
+      return;
+    }
 
-  async function execute(current: Partial<T>) {
-    if (!hydrated) return;
+    const current = pendingCurrent;
+    const dirtySections = [...pendingDirtySections];
+    pendingCurrent = null;
+    pendingDirtySections = new Set<DirtySection>();
 
     const changed = getChangedFields<T>(lastSnapshot, current);
-    if (Object.keys(changed).length === 0) return;
-
-    let preview: Blob | null | undefined = null;
-
-    if (
-      options.generatePreview 
-    ) {
-      preview = await options.generatePreview();
+    if (Object.keys(changed).length === 0) {
+      options.onCommitted?.();
+      return;
     }
+
+    const shouldGeneratePreview =
+      !!options.generatePreview &&
+      dirtySections.some((section) => VISUAL_SECTIONS.has(section));
+
+    const preview = shouldGeneratePreview
+      ? await options.generatePreview?.()
+      : null;
 
     await options.mutate({
       id: options.designId,
-      payload: { designData: changed },
+      payload: {
+        designData: changed,
+        dirtySections,
+      },
       preview,
     });
 
@@ -39,43 +64,63 @@ export function createDesignUpdater<T extends Record<string, unknown>>(options: 
       ...lastSnapshot,
       ...changed,
     };
-  }
+    options.onCommitted?.();
+  };
 
-  function hydrate(initial: T) {
+  const hydrate = (initial: T) => {
     lastSnapshot = initial;
     hydrated = true;
-  }
+  };
 
-  function schedule(current: Partial<T>, delay = 1500) {
-    if (!hydrated) return;
+  const schedule = (
+    current: Partial<T>,
+    dirtySections: DirtySection[],
+    delay = 1500,
+  ) => {
+    if (!hydrated) {
+      return;
+    }
 
-    if (saveTimeout) clearTimeout(saveTimeout);
+    pendingCurrent = current;
+    dirtySections.forEach((section) => pendingDirtySections.add(section));
+
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
 
     saveTimeout = setTimeout(() => {
-      execute(current);
+      saveTimeout = null;
+      void execute();
     }, delay);
-  }
+  };
 
-  async function flush(current: Partial<T>) {
+  const flush = async (current: Partial<T>, dirtySections: DirtySection[]) => {
     if (saveTimeout) {
       clearTimeout(saveTimeout);
       saveTimeout = null;
     }
-    await execute(current);
-  }
 
-  // ✅ الجديد
-  function hasPendingChanges(current: Partial<T>): boolean {
-    if (!hydrated) return false;
+    pendingCurrent = current;
+    pendingDirtySections = new Set(dirtySections);
+    await execute();
+  };
+
+  const hasPendingChanges = (current: Partial<T>): boolean => {
+    if (!hydrated) {
+      return false;
+    }
+
     const changed = getChangedFields<T>(lastSnapshot, current);
     return Object.keys(changed).length > 0;
-  }
+  };
+
+  const getSnapshot = () => lastSnapshot;
 
   return {
     hydrate,
     schedule,
     flush,
-    hasPendingChanges, // 👈 expose it
+    hasPendingChanges,
+    getSnapshot,
   };
 }
-

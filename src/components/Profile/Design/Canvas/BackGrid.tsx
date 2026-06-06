@@ -1,7 +1,7 @@
 // src/components/Canvas/CanvasBack.tsx
 import React from "react";
 import { backingColors } from "src/data/colors";
-import { useDesign } from "src/context/desgin.context";
+import { useDesignDerived } from "src/context/desgin.context";
 interface CanvasBackProps {
   cols: number;
   rows: number;
@@ -16,7 +16,7 @@ const CanvasBack: React.FC<CanvasBackProps> = ({
   bindingColor
 }) => {
   const backing = backingColors.find((c) => c.name === backgingColor);
-  const { hasBinding } = useDesign();
+  const { hasBinding } = useDesignDerived();
   return (
     <div
       style={{

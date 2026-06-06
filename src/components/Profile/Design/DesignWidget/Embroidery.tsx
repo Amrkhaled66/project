@@ -1,52 +1,29 @@
-import { embroideryZones } from "src/data/zones";
 import type { CSSProperties } from "react";
-import { useEffect } from "react";
-import { useDesign } from "src/context/desgin.context";
+
+import { embroideryZones } from "src/data/zones";
+import { useDesignEditorState } from "src/context/desgin.context";
 
 const EmbroideryZones = () => {
-  const { designData, update,hasDoubleCorner } = useDesign();
+  const { designData } = useDesignEditorState();
+  const zones = designData.upgrades?.props?.embroidery?.zones || [];
 
-  const embroideryProps = designData.upgrades?.props?.embroidery;
-  const zones = embroideryProps?.zones || [];
-
-
-  if (zones.length === 0) return null;
-
-  useEffect(() => {
-    if (hasDoubleCorner && zones.length > 0) {
-      // check if any zone is CENTER
-      const hasCenterZone = zones.some((z: any) => {
-        const zone = embroideryZones.find((zone) => zone.id === z.id);
-        return zone?.label.split(" ")[1] === "Center";
-      });
-
-      if (hasCenterZone) {
-        const filteredZones = zones.filter((z: any) => {
-          const zone = embroideryZones.find((zone) => zone.id === z.id);
-          return zone?.label.split(" ")[1] !== "Center";
-        });
-
-        // update context
-        update((d) => {
-          d.upgrades.props.embroidery.zones = filteredZones;
-        });
-      }
-    }
-  }, [hasDoubleCorner]);
+  if (zones.length === 0) {
+    return null;
+  }
 
   return (
     <>
-      {zones.map((z: any) => {
-        const zoneConfig = embroideryZones.find((zone) => zone.id === z.id);
+      {zones.map((zone: any) => {
+        const zoneConfig = embroideryZones.find((item) => item.id === zone.id);
 
         return (
           <div
-            key={z.id}
+            key={zone.id}
             style={
               {
                 position: "absolute",
-                color: z.color,
-                fontFamily: z.font,
+                color: zone.color,
+                fontFamily: zone.font,
                 fontSize: 14,
                 fontWeight: 600,
                 opacity: 0.9,
@@ -55,7 +32,7 @@ const EmbroideryZones = () => {
               } as CSSProperties
             }
           >
-            {z.text}
+            {zone.text}
           </div>
         );
       })}

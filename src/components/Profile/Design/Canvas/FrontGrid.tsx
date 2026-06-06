@@ -13,7 +13,10 @@ import Blocking from "../DesignWidget/Blocking";
 import EmbroideryZones from "../DesignWidget/Embroidery";
 import QualityPreservedEffect from "src/components/ui/pattern/QualityPreservedEffect";
 
-import { useDesign } from "src/context/desgin.context";
+import {
+  useDesignDerived,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 
 // -------------------------------------------------------
 // Memoized Components
@@ -61,17 +64,15 @@ interface CanvasFrontProps {
 }
 
 const CanvasFront: React.FC<CanvasFrontProps> = ({ onDeleteItem }) => {
+  const { designData, canvasRef } = useDesignEditorState();
   const {
-    designData,
     hasBinding,
     hasBlocking,
     hasCornerstones,
     hasEmbroidery,
     hasQualityPreserve,
     hasFringe,
-    canvasRef,
-  } = useDesign();
-  console.log(designData);
+  } = useDesignDerived();
 
   const { canvas, photos, colors } = designData;
 

@@ -67,6 +67,12 @@ export const PRESERVATION_AXES = {
 export type PreservationAxis =
   (typeof PRESERVATION_AXES)[keyof typeof PRESERVATION_AXES];
 
+export type UpgradePreservationProfile = {
+  axes: Partial<Record<PreservationAxis, number>>;
+  totalInfluence: number;
+  authorityBonus?: number;
+};
+
 export const upgrades: UpgradeOption[] = [
   {
     id: UPGRADE_IDS.HEIRLOOM_FRAMING,
@@ -97,6 +103,7 @@ export const upgrades: UpgradeOption[] = [
   {
     id: UPGRADE_IDS.HEIRLOOM_EDGE,
     name: "Heirloom Edge™",
+    autoAppliedBy: UPGRADE_IDS.HEIRLOOM_PRESERVE,
     description:
       "Protective stitched edge wrapping the full blanket; auto-enabled with Heirloom Preserve.",
     img: egdeImg,
@@ -154,6 +161,13 @@ export const upgradeMap: Record<UpgradeId, UpgradeOption> = upgrades.reduce(
   },
   {} as Record<UpgradeId, UpgradeOption>,
 );
+
+export const upgradesByTab = Object.fromEntries(
+  Object.entries(upgradesTabs).map(([tabId, tab]) => [
+    tabId,
+    tab.elments.map((upgradeId) => upgradeMap[upgradeId]),
+  ]),
+) as Record<string, UpgradeOption[]>;
 
 type UpgradePriceBySize = Record<BlanketSizeId, number>;
 
@@ -244,45 +258,85 @@ export const getUpgradePrice = (
   return priceMap[upgradeId]?.[sizeId] ?? 0;
 };
 
+export const upgradePreservationProfiles: Record<
+  UpgradeId,
+  UpgradePreservationProfile
+> = {
+  [UPGRADE_IDS.HEIRLOOM_PANEL]: {
+    axes: {
+      [PRESERVATION_AXES.STRUCTURE]: 1,
+      [PRESERVATION_AXES.DESIGN_HIERARCHY]: 2,
+      [PRESERVATION_AXES.PERFORMANCE]: 3,
+    },
+    totalInfluence: 0.18,
+  },
+  [UPGRADE_IDS.HEIRLOOM_FRAMING]: {
+    axes: {
+      [PRESERVATION_AXES.STRUCTURE]: 1,
+      [PRESERVATION_AXES.DESIGN_HIERARCHY]: 2,
+    },
+    totalInfluence: 0.12,
+  },
+  [UPGRADE_IDS.HEIRLOOM_PRESERVE]: {
+    axes: {
+      [PRESERVATION_AXES.PERFORMANCE]: 1,
+      [PRESERVATION_AXES.STRUCTURE]: 2,
+      [PRESERVATION_AXES.DESIGN_HIERARCHY]: 3,
+    },
+    totalInfluence: 0.28,
+    authorityBonus: 0.06,
+  },
+  [UPGRADE_IDS.HEIRLOOM_EDGE]: {
+    axes: {
+      [PRESERVATION_AXES.STRUCTURE]: 1,
+      [PRESERVATION_AXES.PERFORMANCE]: 2,
+      [PRESERVATION_AXES.DESIGN_HIERARCHY]: 3,
+    },
+    totalInfluence: 0.18,
+    authorityBonus: 0.03,
+  },
+  [UPGRADE_IDS.HEIRLOOM_SEAL]: {
+    axes: {
+      [PRESERVATION_AXES.DESIGN_HIERARCHY]: 1,
+      [PRESERVATION_AXES.STRUCTURE]: 2,
+    },
+    totalInfluence: 0.1,
+    authorityBonus: 0.05,
+  },
+  [UPGRADE_IDS.HEIRLOOM_BLOCK]: {
+    axes: {
+      [PRESERVATION_AXES.STRUCTURE]: 1,
+      [PRESERVATION_AXES.PERFORMANCE]: 2,
+      [PRESERVATION_AXES.DESIGN_HIERARCHY]: 3,
+    },
+    totalInfluence: 0.1,
+  },
+  [UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE]: {
+    axes: {
+      [PRESERVATION_AXES.DESIGN_HIERARCHY]: 1,
+    },
+    totalInfluence: 0.03,
+  },
+  [UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE]: {
+    axes: {
+      [PRESERVATION_AXES.DESIGN_HIERARCHY]: 1,
+    },
+    totalInfluence: 0.05,
+  },
+  [UPGRADE_IDS.HEIRLOOM_SCRIPT]: {
+    axes: {
+      [PRESERVATION_AXES.DESIGN_HIERARCHY]: 1,
+    },
+    totalInfluence: 0.04,
+  },
+};
+
 export const upgradePreservationPoints: Record<
   UpgradeId,
   Partial<Record<PreservationAxis, number>>
-> = {
-  [UPGRADE_IDS.HEIRLOOM_PANEL]: {
-    [PRESERVATION_AXES.STRUCTURE]: 1,
-    [PRESERVATION_AXES.DESIGN_HIERARCHY]: 2,
-    [PRESERVATION_AXES.PERFORMANCE]: 3,
-  },
-  [UPGRADE_IDS.HEIRLOOM_FRAMING]: {
-    [PRESERVATION_AXES.STRUCTURE]: 1,
-    [PRESERVATION_AXES.DESIGN_HIERARCHY]: 2,
-  },
-  [UPGRADE_IDS.HEIRLOOM_PRESERVE]: {
-    [PRESERVATION_AXES.PERFORMANCE]: 1,
-    [PRESERVATION_AXES.STRUCTURE]: 2,
-    [PRESERVATION_AXES.DESIGN_HIERARCHY]: 3,
-  },
-  [UPGRADE_IDS.HEIRLOOM_EDGE]: {
-    [PRESERVATION_AXES.STRUCTURE]: 1,
-    [PRESERVATION_AXES.PERFORMANCE]: 2,
-    [PRESERVATION_AXES.DESIGN_HIERARCHY]: 3,
-  },
-  [UPGRADE_IDS.HEIRLOOM_SEAL]: {
-    [PRESERVATION_AXES.DESIGN_HIERARCHY]: 1,
-    [PRESERVATION_AXES.STRUCTURE]: 2,
-  },
-  [UPGRADE_IDS.HEIRLOOM_BLOCK]: {
-    [PRESERVATION_AXES.STRUCTURE]: 1,
-    [PRESERVATION_AXES.PERFORMANCE]: 2,
-    [PRESERVATION_AXES.DESIGN_HIERARCHY]: 3,
-  },
-  [UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE]: {
-    [PRESERVATION_AXES.DESIGN_HIERARCHY]: 1,
-  },
-  [UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE]: {
-    [PRESERVATION_AXES.DESIGN_HIERARCHY]: 1,
-  },
-  [UPGRADE_IDS.HEIRLOOM_SCRIPT]: {
-    [PRESERVATION_AXES.DESIGN_HIERARCHY]: 1,
-  },
-};
+> = Object.fromEntries(
+  Object.entries(upgradePreservationProfiles).map(([upgradeId, profile]) => [
+    upgradeId,
+    profile.axes,
+  ]),
+) as Record<UpgradeId, Partial<Record<PreservationAxis, number>>>;

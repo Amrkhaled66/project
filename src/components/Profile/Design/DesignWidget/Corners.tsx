@@ -1,6 +1,10 @@
 import { useDroppable } from "@dnd-kit/core";
-import { useDesign } from "src/context/desgin.context";
-import { UPGRADE_IDS } from "src/data/upgrades";
+
+import {
+  useDesignDerived,
+  useDesignEditorState,
+} from "src/context/desgin.context";
+
 const CornerBox = ({
   index,
   position,
@@ -8,10 +12,8 @@ const CornerBox = ({
   index: number;
   position: string;
 }) => {
-  const { designData } = useDesign();
-
+  const { designData } = useDesignEditorState();
   const cornerImages = designData.upgrades?.props?.cornerstones?.images || {};
-
   const { isOver, setNodeRef } = useDroppable({
     id: `corner-${index}`,
   });
@@ -27,7 +29,7 @@ const CornerBox = ({
     >
       {cornerImages[index] && (
         <img
-          src={ cornerImages[index]}
+          src={cornerImages[index]}
           className="h-full w-full object-cover"
         />
       )}
@@ -36,7 +38,7 @@ const CornerBox = ({
 };
 
 export default function Corners() {
-  const { designData } = useDesign();
+  const { hasDoubleCorner } = useDesignDerived();
 
   const positions = [
     "top-0 left-0",
@@ -49,16 +51,12 @@ export default function Corners() {
     "bottom-0 left-1/2 -translate-x-1/2",
   ];
 
-  const isDouble = designData.upgrades?.selected?.includes(
-    UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE
-  );
-
-  const cornersToRender = isDouble ? positions : positions.slice(0, 4);
+  const cornersToRender = hasDoubleCorner ? positions : positions.slice(0, 4);
 
   return (
     <div className="pointer-events-auto size-full">
-      {cornersToRender.map((pos, index) => (
-        <CornerBox key={index} index={index} position={pos} />
+      {cornersToRender.map((position, index) => (
+        <CornerBox key={index} index={index} position={position} />
       ))}
     </div>
   );

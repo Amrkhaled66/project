@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useBlocker } from "react-router-dom";
-import { useDesign } from "src/context/desgin.context";
+import { useDesignDerived } from "src/context/desgin.context";
 type UseUnsavedChangesBlockerOptions = {
   onConfirmLeave?: () => void | Promise<void>;
 };
@@ -8,8 +8,7 @@ type UseUnsavedChangesBlockerOptions = {
 const useUnsavedChangesBlocker = ({
   onConfirmLeave,
 }: UseUnsavedChangesBlockerOptions) => {
-  const { hasChanged } = useDesign();
-  console.log(hasChanged)
+  const { hasChanged } = useDesignDerived();
   const blocker = useBlocker(hasChanged);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);

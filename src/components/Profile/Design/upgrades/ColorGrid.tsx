@@ -5,10 +5,10 @@ import BindingColor from "src/components/Profile/Design/DesignWidget/BindingColo
 import BlockingColor from "src/components/Profile/Design/DesignWidget/BlockingColor";
 import QualityPreserveColor from "src/components/Profile/Design/DesignWidget/QualityPreservedColor";
 
-import { useDesign } from "src/context/desgin.context";
+import { useDesignDerived } from "src/context/desgin.context";
 
 const ColorGrid = () => {
-  const { hasBinding, hasBlocking, hasQualityPreserve } = useDesign();
+  const { hasBinding, hasBlocking, hasQualityPreserve } = useDesignDerived();
   return (
     <div className="grid gap-4">
       <BlanketColor />

@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { useDesign } from "src/context/desgin.context"; // ✅ بدل useCart
-import { Pencil, Trash2 } from "lucide-react";
-import MainDashButton from "src/components/ui/MainDashButton";
 import { motion, AnimatePresence } from "framer-motion";
+import { Pencil, Trash2 } from "lucide-react";
+
+import MainDashButton from "src/components/ui/MainDashButton";
 import FormInput from "src/components/ui/FormInput";
 import { embroideryZones } from "src/data/zones";
+import {
+  useDesignDerived,
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 import showDesignViewer from "src/utils/designViewer";
 
 const fonts = [
@@ -15,9 +20,9 @@ const fonts = [
 ];
 
 const Text = () => {
-  const { designData, update, hasDoubleCorner } = useDesign(); // ✅ استخدام الـ Design Context
-
-  // embroidery zones come from designData
+  const { designData } = useDesignEditorState();
+  const { setEmbroideryZones } = useDesignEditorActions();
+  const { hasDoubleCorner } = useDesignDerived();
   const existingZones = designData.upgrades?.props?.embroidery?.zones || [];
 
   const [selectedZone, setSelectedZone] = useState(embroideryZones[0].id);
@@ -53,14 +58,12 @@ const Text = () => {
     };
 
     const updatedZones = editingId
-      ? existingZones.map((z: any) => (z.id === editingId ? newZone : z))
+      ? existingZones.map((zone: any) =>
+          zone.id === editingId ? newZone : zone,
+        )
       : [...existingZones, newZone];
 
-    // ✅ Update using design context
-    update((d) => {
-      d.upgrades.props.embroidery.zones = updatedZones;
-    });
-
+    setEmbroideryZones(updatedZones);
     showDesignViewer(editingId ? "Embroidery updated" : "Embroidery applied");
 
     resetForm();
@@ -68,27 +71,22 @@ const Text = () => {
   };
 
   const handleDelete = (id: string) => {
-    const updated = existingZones.filter((z: any) => z.id !== id);
-
-    update((d) => {
-      d.upgrades.props.embroidery.zones = updated;
-    });
+    setEmbroideryZones(existingZones.filter((zone: any) => zone.id !== id));
     showDesignViewer("Embroidery removed");
   };
 
-  const handleEdit = (z: any) => {
-    setSelectedZone(z.id);
-    setFont(z.font);
-    setText(z.text);
-    setNotes(z.notes);
-    setColor(z.color);
-    setEditingId(z.id);
+  const handleEdit = (zone: any) => {
+    setSelectedZone(zone.id);
+    setFont(zone.font);
+    setText(zone.text);
+    setNotes(zone.notes);
+    setColor(zone.color);
+    setEditingId(zone.id);
     setShowForm(true);
   };
 
   return (
     <div className="space-y-6">
-      {/* LIST VIEW */}
       {existingZones.length > 0 && !showForm && (
         <>
           <AnimatePresence>
@@ -103,70 +101,68 @@ const Text = () => {
               </h4>
 
               <div className="space-y-3 px-1">
-                {existingZones.map((z: any) => {
-                  return (
-                    <motion.div
-                      key={z.id}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0 }}
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 250,
-                        damping: 18,
-                      }}
-                      className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md"
-                    >
-                      <div className="space-y-1">
-                        <p className="flex items-center gap-2 text-sm font-bold text-gray-900">
-                          {z.text}
-                          <span
-                            className="h-3 w-3 rounded-full border border-gray-300"
-                            style={{ backgroundColor: z.color }}
-                          />
+                {existingZones.map((zone: any) => (
+                  <motion.div
+                    key={zone.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 250,
+                      damping: 18,
+                    }}
+                    className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md"
+                  >
+                    <div className="space-y-1">
+                      <p className="flex items-center gap-2 text-sm font-bold text-gray-900">
+                        {zone.text}
+                        <span
+                          className="h-3 w-3 rounded-full border border-gray-300"
+                          style={{ backgroundColor: zone.color }}
+                        />
+                      </p>
+
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-md bg-gray-100 px-2 py-1 text-xs text-gray-600">
+                          {zone.font}
+                        </span>
+
+                        <span className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-600">
+                          {
+                            embroideryZones.find((item) => item.id === zone.id)
+                              ?.label
+                          }
+                        </span>
+                      </div>
+
+                      {zone.notes && (
+                        <p className="text-xs text-gray-500 italic">
+                          "{zone.notes}"
                         </p>
+                      )}
+                    </div>
 
-                        <div className="flex items-center gap-2">
-                          <span className="rounded-md bg-gray-100 px-2 py-1 text-xs text-gray-600">
-                            {z.font}
-                          </span>
+                    <div className="flex gap-3">
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleEdit(zone)}
+                        className="rounded-lg bg-blue-50 p-2 text-blue-600 hover:bg-blue-100"
+                      >
+                        <Pencil size={17} />
+                      </motion.button>
 
-                          <span className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-600">
-                            {
-                              embroideryZones.find((zone) => zone.id === z.id)
-                                ?.label
-                            }
-                          </span>
-                        </div>
-
-                        {z.notes && (
-                          <p className="text-xs text-gray-500 italic">
-                            "{z.notes}"
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="flex gap-3">
-                        <motion.button
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => handleEdit(z)}
-                          className="rounded-lg bg-blue-50 p-2 text-blue-600 hover:bg-blue-100"
-                        >
-                          <Pencil size={17} />
-                        </motion.button>
-
-                        <motion.button
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => handleDelete(z.id)}
-                          className="rounded-lg bg-red-50 p-2 text-red-600 hover:bg-red-100"
-                        >
-                          <Trash2 size={17} />
-                        </motion.button>
-                      </div>
-                    </motion.div>
-                  );
-                })}
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleDelete(zone.id)}
+                        className="rounded-lg bg-red-50 p-2 text-red-600 hover:bg-red-100"
+                      >
+                        <Trash2 size={17} />
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
           </AnimatePresence>
@@ -181,7 +177,6 @@ const Text = () => {
         </>
       )}
 
-      {/* FORM VIEW */}
       {(existingZones.length === 0 || showForm) && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -198,9 +193,10 @@ const Text = () => {
               {embroideryZones.map((zone) => {
                 if (
                   (hasDoubleCorner && zone.id.includes("center")) ||
-                  existingZones.find((z: any) => z.id === zone.id)
-                )
-                  return;
+                  existingZones.find((existingZone: any) => existingZone.id === zone.id)
+                ) {
+                  return null;
+                }
 
                 const active = selectedZone === zone.id;
 
@@ -222,34 +218,32 @@ const Text = () => {
             </div>
           </div>
 
-          {/* Font Picker */}
           <div>
             <label className="text-sm font-medium text-gray-600">
               Font Style
             </label>
 
             <div className="mt-2 flex flex-wrap gap-2">
-              {fonts.map((f) => {
-                const active = f.value === font;
+              {fonts.map((fontOption) => {
+                const active = fontOption.value === font;
                 return (
                   <motion.button
-                    key={f.value}
+                    key={fontOption.value}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setFont(f.value)}
+                    onClick={() => setFont(fontOption.value)}
                     className={`rounded-md border px-3 py-2 text-sm transition ${
                       active
                         ? "border-gray-900 bg-gray-900 text-white"
                         : "border-gray-300 bg-gray-100 hover:bg-gray-200"
                     }`}
                   >
-                    {f.label}
+                    {fontOption.label}
                   </motion.button>
                 );
               })}
             </div>
           </div>
 
-          {/* Color Picker */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-600">
               Thread Color
@@ -271,7 +265,7 @@ const Text = () => {
                 type="color"
                 required
                 value={color}
-                onChange={(e) => setColor(e.target.value)}
+                onChange={(event) => setColor(event.target.value)}
                 className="h-10 w-14 cursor-pointer border-none bg-transparent p-0"
               />
 
@@ -281,25 +275,23 @@ const Text = () => {
             </motion.div>
           </div>
 
-          {/* Text Input */}
           <FormInput
             label="Embroidery Text"
             name="embroideryText"
             required
             placeholder="Enter text..."
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(event) => setText(event.target.value)}
           />
 
-          {/* Notes */}
           <FormInput
             label="Notes / Orientation"
             name="notes"
             placeholder="Special instructions..."
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={(event) => setNotes(event.target.value)}
           />
-          {/* Submit */}
+
           <MainDashButton
             text={editingId ? "Update Script" : "Apply Script"}
             onClick={handleAddOrUpdate}

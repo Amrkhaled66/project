@@ -1,123 +1,38 @@
 import {
   createContext,
-  useContext,
-  useState,
-  useEffect,
-  useRef,
   useCallback,
-  ReactNode,
+  useContext,
+  useEffect,
   useMemo,
+  useReducer,
+  useRef,
+  useState,
+  type ReactNode,
 } from "react";
-
-import {
-  useDesign as useDesignQuery,
-  useUpdateDesign,
-} from "src/hooks/queries/design.queries";
-
-import { DesignData, sizeObj } from "src/types/design.types";
 import { arrayMove } from "@dnd-kit/sortable";
-import { toBlob } from "html-to-image";
 
-import { createDesignUpdater } from "src/utils/designUpdater";
-import { calculateDesignPrice } from "src/utils/calcDesignPrice";
+import { useDesignDerivedValue } from "src/hooks/useDesignDerivedValue";
+import { useDesignEditorPersistence } from "src/hooks/useDesignEditorPersistence";
+import { designReducer } from "src/utils/designReducer";
+import { initialDesignState } from "src/utils/designInitialState";
 import showDesignViewer from "src/utils/designViewer";
+import type {
+  DesignContextType,
+  DesignDerivedValue,
+  DesignEditorActionsValue,
+  DesignEditorStateValue,
+} from "src/types/desgin/editor.types";
 
-import { BLANKET_SIZES } from "src/data/blanketSizes";
-import { UPGRADE_IDS } from "src/data/upgrades";
+const DesignEditorStateContext = createContext<
+  DesignEditorStateValue | undefined
+>(undefined);
+const DesignEditorActionsContext = createContext<
+  DesignEditorActionsValue | undefined
+>(undefined);
+const DesignDerivedContext = createContext<DesignDerivedValue | undefined>(
+  undefined,
+);
 
-/* -------------------------------------------------------------------------- */
-/* Context                                                                     */
-/* -------------------------------------------------------------------------- */
-const DesignContext = createContext<DesignContextType | undefined>(undefined);
-
-/* -------------------------------------------------------------------------- */
-/* Types                                                                       */
-/* -------------------------------------------------------------------------- */
-type DesignContextType = {
-  designId: string;
-  designData: DesignData;
-  update: (fn: (draft: DesignData) => void) => void;
-
-  isLoading: boolean;
-  isError: boolean;
-
-  canvasRef: React.RefObject<HTMLDivElement | null>;
-
-  handleDragStart: () => void;
-  handleDragEnd: (event: any) => void;
-  isDragging: boolean;
-  data: any;
-  updateBlanketColor: (color: string | null) => void;
-  updateBorderColor: (color: string | null) => void;
-  updateBackingColor: (color: string | null) => void;
-  updateBindingColor: (color: string | null) => void;
-  updateBlocking: (colors: string[], random: boolean) => void;
-  updateQualityPreserveColor: (color: string | null) => void;
-  toggleUpgrade: (id: string) => void;
-  updateCanvasSize: (sizeObj: sizeObj) => void;
-  resetDesign: () => void;
-
-  hasCornerstones: boolean;
-  hasDoubleCorner: boolean;
-  hasBlocking: boolean;
-  hasEmbroidery: boolean;
-  hasCustomPanel: boolean;
-  hasQualityPreserve: boolean;
-  hasBinding: boolean;
-  hasFringe: boolean;
-  hasChanged: boolean;
-  price: string;
-};
-
-/* -------------------------------------------------------------------------- */
-/* Initial State                                                               */
-/* -------------------------------------------------------------------------- */
-const initialDesignState: DesignData = {
-  startingSize: BLANKET_SIZES[0].id,
-  canvas: {
-    size: BLANKET_SIZES[0].id,
-    rows: BLANKET_SIZES[0].rows,
-    cols: BLANKET_SIZES[0].cols,
-  },
-  colors: {
-    blanket: "",
-    border: "",
-    backing: "",
-    binding: "",
-    blocking: {
-      colors: [],
-      random: false,
-    },
-    qualityPreserve: "",
-  },
-
-  upgrades: {
-    selected: [],
-    props: {
-      embroidery: {
-        zones: null,
-      },
-      cornerstones: {
-        type: null,
-        images: {},
-      },
-    },
-  },
-
-  text: {
-    items: [],
-  },
-
-  photos: {
-    items: [],
-  },
-
-  price: "0.00",
-};
-
-/* -------------------------------------------------------------------------- */
-/* Provider                                                                    */
-/* -------------------------------------------------------------------------- */
 export const DesignProvider = ({
   children,
   designId,
@@ -125,144 +40,93 @@ export const DesignProvider = ({
   children: ReactNode;
   designId: string;
 }) => {
-  const { data, isLoading, isError } = useDesignQuery(designId);
-  const updateMutation = useUpdateDesign();
-  /* ------------------------------------------------------------------------ */
-  /* State                                                                    */
-  /* ------------------------------------------------------------------------ */
-  const [designData, setDesignData] = useState<DesignData>(initialDesignState);
-
-  /* ------------------------------------------------------------------------ */
-  /* Refs                                                                     */
-  /* ------------------------------------------------------------------------ */
-  const hydrated = useRef(false);
-  const isDragging = useRef(false);
+  const [designData, dispatch] = useReducer(designReducer, initialDesignState);
+  const [snapshotVersion, setSnapshotVersion] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const latestDesignDataRef = useRef(designData);
 
-  const updaterRef = useRef<ReturnType<
-    typeof createDesignUpdater<DesignData & Record<string, unknown>>
-  > | null>(null);
-
-  /* ------------------------------------------------------------------------ */
-  /* Reset on designId change                                                  */
-  /* ------------------------------------------------------------------------ */
   useEffect(() => {
-    hydrated.current = false;
-    updaterRef.current = null;
-    setDesignData(initialDesignState);
+    dispatch({ type: "hydrate", designData: initialDesignState });
   }, [designId]);
 
-  /* ------------------------------------------------------------------------ */
-  /* Preview Generator                                                        */
-  /* ------------------------------------------------------------------------ */
-  const generatePreviewBlob = async (): Promise<Blob | null> => {
-    if (!canvasRef.current) return null;
-
-    try {
-      return await toBlob(canvasRef.current, {
-        type: "image/webp",
-        quality: 0.85,
-        pixelRatio: 2,
-        cacheBust: true,
-      });
-    } catch {
-      return null;
-    }
-  };
-
-  /* ------------------------------------------------------------------------ */
-  /* Hydration from API                                                        */
-  /* ------------------------------------------------------------------------ */
   useEffect(() => {
-    if (!data?.designData) return;
-    if (hydrated.current) return;
-
-    const cloned = structuredClone(data.designData);
-    setDesignData(cloned);
-
-    updaterRef.current = createDesignUpdater<
-      DesignData & Record<string, unknown>
-    >({
-      designId,
-      mutate: updateMutation.mutate,
-      generatePreview: generatePreviewBlob,
-    });
-
-    updaterRef.current.hydrate(cloned as any);
-    hydrated.current = true;
-  }, [data?.designData, designId]);
-
-  /* ------------------------------------------------------------------------ */
-  /* Update helper                                                            */
-  /* ------------------------------------------------------------------------ */
-  const update = useCallback((fn: (draft: DesignData) => void) => {
-    setDesignData((prev) => {
-      const next = structuredClone(prev);
-      fn(next);
-      return next;
-    });
-  }, []);
-
-  /* ------------------------------------------------------------------------ */
-  /* Autosave (debounced, diff-based)                                          */
-  /* ------------------------------------------------------------------------ */
-
-  useEffect(() => {
-    if (!hydrated.current) return;
-    updaterRef.current?.schedule(designData as any);
     latestDesignDataRef.current = designData;
   }, [designData]);
 
-  /* ------------------------------------------------------------------------ */
-  /* Manual flush save                                                         */
-  /* ------------------------------------------------------------------------ */
+  const handleCommitted = useCallback(() => {
+    setSnapshotVersion((value) => value + 1);
+  }, []);
+
+  const {
+    designRecord,
+    isLoading,
+    isError,
+    scheduleSave,
+    hasPendingChanges,
+    getSnapshot,
+    hydratedRef,
+  } = useDesignEditorPersistence({
+    designId,
+    canvasRef,
+    designData,
+    onHydrate: (data) => dispatch({ type: "hydrate", designData: data }),
+    onCommitted: handleCommitted,
+  });
+
+  const derivedValue = useDesignDerivedValue({
+    designData,
+    snapshot: getSnapshot(),
+    snapshotVersion,
+    isDragging,
+  });
 
   useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (!hydrated.current) return;
+    scheduleSave(derivedValue.dirtySections);
+  }, [derivedValue.dirtySections, scheduleSave]);
 
-      const hasChanges = updaterRef.current?.hasPendingChanges(
-        latestDesignDataRef.current as any,
-      );
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!hydratedRef.current) {
+        return;
+      }
 
-      if (!hasChanges) return;
+      if (!hasPendingChanges(latestDesignDataRef.current)) {
+        return;
+      }
 
-      e.preventDefault();
-      e.returnValue = "";
+      event.preventDefault();
+      event.returnValue = "";
     };
+
     window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
-  /* ------------------------------------------------------------------------ */
-  /* Drag handlers                                                            */
-  /* ------------------------------------------------------------------------ */
-  const handleDragStart = () => {
-    isDragging.current = true;
-  };
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [hasPendingChanges, hydratedRef]);
 
-  const handleDragEnd = (event: any) => {
-    isDragging.current = false;
+  const handleDragStart = useCallback(() => {
+    setIsDragging(true);
+  }, []);
+
+  const handleDragEnd = useCallback((event: any) => {
+    setIsDragging(false);
     const { active, over } = event;
-    if (!over) return;
+
+    if (!over) {
+      return;
+    }
 
     const type = active.data.current?.type;
 
     if (type === "grid-item") {
-      let moved = false;
-      update((d) => {
-        const list = d.photos.items;
-        const oldIndex = list.findIndex((i) => i.id === active.id);
-        const newIndex = list.findIndex((i) => i.id === over.id);
-        if (oldIndex >= 0 && newIndex >= 0) {
-          d.photos.items = arrayMove(list, oldIndex, newIndex);
-          moved = oldIndex !== newIndex;
-        }
-      });
+      const list = latestDesignDataRef.current.photos.items;
+      const oldIndex = list.findIndex((item: any) => item.id === active.id);
+      const newIndex = list.findIndex((item: any) => item.id === over.id);
 
-      if (moved) {
+      if (oldIndex >= 0 && newIndex >= 0 && oldIndex !== newIndex) {
+        dispatch({
+          type: "replace-photos",
+          items: arrayMove(list, oldIndex, newIndex),
+        });
         showDesignViewer("Photo layout updated");
       }
     }
@@ -270,185 +134,100 @@ export const DesignProvider = ({
     if (type === "corner-image") {
       const url = active.data.current?.image;
       const index = Number(String(over.id).replace("corner-", ""));
-      update((d) => {
-        d.upgrades.props.cornerstones.images[index] = url;
-      });
-      showDesignViewer(`Corner image applied to slot ${index + 1}`);
-    }
-  };
 
-  /* ------------------------------------------------------------------------ */
-  /* Flags                                                                    */
-  /* ------------------------------------------------------------------------ */
-  const hasCornerstones = designData.upgrades.selected.some((u: any) =>
-    [
-      UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE,
-      UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE,
-    ].includes(u),
+      if (url) {
+        dispatch({ type: "set-corner-image", index, url });
+        showDesignViewer(`Corner image applied to slot ${index + 1}`);
+      }
+    }
+  }, []);
+
+  const actionsValue = useMemo<DesignEditorActionsValue>(
+    () => ({
+      handleDragStart,
+      handleDragEnd,
+      updateBlanketColor: (color) =>
+        dispatch({ type: "set-blanket-color", color }),
+      updateBorderColor: (color) => dispatch({ type: "set-border-color", color }),
+      updateBackingColor: (color) =>
+        dispatch({ type: "set-backing-color", color }),
+      updateBindingColor: (color) =>
+        dispatch({ type: "set-binding-color", color }),
+      updateBlocking: (colors, random) =>
+        dispatch({ type: "set-blocking", colors, random }),
+      updateQualityPreserveColor: (color) =>
+        dispatch({ type: "set-quality-preserve-color", color }),
+      toggleUpgrade: (id) => dispatch({ type: "toggle-upgrade", id }),
+      updateCanvasSize: (size) => dispatch({ type: "set-canvas-size", size }),
+      replacePhotos: (items) => dispatch({ type: "replace-photos", items }),
+      appendPhotos: (items) => dispatch({ type: "append-photos", items }),
+      removePhoto: (id) => dispatch({ type: "remove-photo", id }),
+      setEmbroideryZones: (zones) =>
+        dispatch({ type: "set-embroidery-zones", zones }),
+      setCornerImage: (index, url) =>
+        dispatch({ type: "set-corner-image", index, url }),
+      removeCornerImage: (index) =>
+        dispatch({ type: "remove-corner-image", index }),
+      resetDesign: () => dispatch({ type: "reset" }),
+    }),
+    [handleDragEnd, handleDragStart],
   );
 
-  /* ------------------------------------------------------------------------ */
-  /* toggle updrade                                                           */
-  /* ------------------------------------------------------------------------ */
-  const toggleUpgrade = (id: string) =>
-    update((d) => {
-      const selected = d.upgrades.selected;
-      const isActive = selected.includes(id);
-      /* ---------------- Toggle ---------------- */
-      d.upgrades.selected = isActive
-        ? selected.filter((x) => x !== id)
-        : [...selected, id];
-      /* ---------------- Side Effects ---------------- */
-      switch (id) {
-        // case UPGRADE_IDS.HEIRLOOM_PANEL: {
-        //   if (isActive) {
-        //     d.photos.items = d.photos.items.filter(
-        //       (p) => p.type !== UPGRADE_IDS.HEIRLOOM_PANEL,
-        //     );
-        //   }
-        //   break;
-        // }
-        case UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE: {
-          if (
-            selected.includes(UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE) &&
-            !isActive
-          ) {
-            d.upgrades.selected = d.upgrades.selected.filter(
-              (u) => u !== UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE,
-            );
-          }
-          break;
-        }
-
-        case UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE: {
-          if (
-            selected.includes(UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE) &&
-            !isActive
-          ) {
-            d.upgrades.selected = d.upgrades.selected.filter(
-              (u) => u !== UPGRADE_IDS.HEIRLOOM_CORNER_SINGLE,
-            );
-          }
-          break;
-        }
-
-        case UPGRADE_IDS.HEIRLOOM_PRESERVE: {
-          if (
-            !isActive &&
-            !d.upgrades.selected.includes(UPGRADE_IDS.HEIRLOOM_EDGE)
-          ) {
-            d.upgrades.selected.push(UPGRADE_IDS.HEIRLOOM_EDGE);
-          }
-          break;
-        }
-
-        default:
-          break;
-      }
-    });
-
-  const resetDesign = () => {
-    setDesignData((prev) => {
-      const size = BLANKET_SIZES.find((s) => s.id === prev.startingSize);
-      return {
-        ...initialDesignState,
-        startingSize: prev.startingSize,
-        canvas: {
-          size: prev.startingSize,
-          rows: size?.rows ?? BLANKET_SIZES[0].rows,
-          cols: size?.cols ?? BLANKET_SIZES[0].cols,
-        },
-      };
-    });
-  };
-  /* ------------------------------------------------------------------------ */
-  /* Context value                                                            */
-  /* ------------------------------------------------------------------------ */
-  const value: DesignContextType = useMemo(
+  const stateValue = useMemo<DesignEditorStateValue>(
     () => ({
       designId,
       designData,
-      data,
-      update,
+      designRecord,
       isLoading,
       isError,
-      price: calculateDesignPrice(designData).toString(),
       canvasRef,
-      handleDragStart,
-      handleDragEnd,
-      isDragging: isDragging.current,
-      updateBlanketColor: (c) => update((d) => (d.colors.blanket = c)),
-      updateBorderColor: (c) => update((d) => (d.colors.border = c)),
-      updateBackingColor: (c) => update((d) => (d.colors.backing = c)),
-      updateBindingColor: (c) => update((d) => (d.colors.binding = c)),
-      updateBlocking: (colors, random) =>
-        update((d) => {
-          d.colors.blocking.colors = colors;
-          d.colors.blocking.random = random;
-        }),
-      updateQualityPreserveColor: (c) =>
-        update((d) => (d.colors.qualityPreserve = c)),
-      toggleUpgrade,
-      updateCanvasSize: (sizeObj: sizeObj) =>
-        update((d) => {
-          d.canvas.size = sizeObj.size;
-          d.canvas.rows = sizeObj.rows;
-          d.canvas.cols = sizeObj.cols;
-        }),
-      resetDesign,
-
-      hasCornerstones,
-      hasDoubleCorner:
-        hasCornerstones &&
-        designData.upgrades.selected.includes(
-          UPGRADE_IDS.HEIRLOOM_CORNER_DOUBLE,
-        ),
-      hasBlocking: designData.upgrades.selected.includes(
-        UPGRADE_IDS.HEIRLOOM_BLOCK,
-      ),
-      hasEmbroidery: designData.upgrades.selected.includes(
-        UPGRADE_IDS.HEIRLOOM_SCRIPT,
-      ),
-      hasCustomPanel: designData.upgrades.selected.includes(
-        UPGRADE_IDS.HEIRLOOM_PANEL,
-      ),
-      hasQualityPreserve: designData.upgrades.selected.includes(
-        UPGRADE_IDS.HEIRLOOM_PRESERVE,
-      ),
-      hasBinding: designData.upgrades.selected.includes(
-        UPGRADE_IDS.HEIRLOOM_EDGE,
-      ),
-      hasFringe: designData.upgrades.selected.includes(
-        UPGRADE_IDS.HEIRLOOM_SEAL,
-      ),
-      hasChanged:
-        updaterRef.current?.hasPendingChanges(
-          latestDesignDataRef.current as any,
-        ) || false,
     }),
-    [
-      designId,
-      designData,
-      isLoading,
-      isError,
-      updaterRef.current?.hasPendingChanges(latestDesignDataRef.current as any),
-    ],
+    [designData, designId, designRecord, isError, isLoading],
   );
 
   return (
-    <DesignContext.Provider value={value}>
-      {children}
-    </DesignContext.Provider>
+    <DesignEditorStateContext.Provider value={stateValue}>
+      <DesignEditorActionsContext.Provider value={actionsValue}>
+        <DesignDerivedContext.Provider value={derivedValue}>
+          {children}
+        </DesignDerivedContext.Provider>
+      </DesignEditorActionsContext.Provider>
+    </DesignEditorStateContext.Provider>
   );
 };
 
-/* -------------------------------------------------------------------------- */
-/* Hook                                                                       */
-/* -------------------------------------------------------------------------- */
-export const useDesign = () => {
-  const ctx = useContext(DesignContext);
-  if (!ctx) {
-    throw new Error("useDesign must be used within DesignProvider");
+export const useDesignEditorState = () => {
+  const context = useContext(DesignEditorStateContext);
+
+  if (!context) {
+    throw new Error("useDesignEditorState must be used within DesignProvider");
   }
-  return ctx;
+
+  return context;
 };
+
+export const useDesignEditorActions = () => {
+  const context = useContext(DesignEditorActionsContext);
+
+  if (!context) {
+    throw new Error("useDesignEditorActions must be used within DesignProvider");
+  }
+
+  return context;
+};
+
+export const useDesignDerived = () => {
+  const context = useContext(DesignDerivedContext);
+
+  if (!context) {
+    throw new Error("useDesignDerived must be used within DesignProvider");
+  }
+
+  return context;
+};
+
+export const useDesign = (): DesignContextType => ({
+  ...useDesignEditorState(),
+  ...useDesignEditorActions(),
+  ...useDesignDerived(),
+});

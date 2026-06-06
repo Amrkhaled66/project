@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 
-import { useDesign } from "src/context/desgin.context";
+import {
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 import { useUserUploads } from "src/hooks/queries/upload.queries";
 import { panels } from "src/utils/defaultSettings";
-
 import EmptyState from "src/components/ui/EmptyState";
 import Button from "src/components/ui/Button";
-
 import getImageLink from "src/utils/getImageLink";
 import showDesignViewer from "src/utils/designViewer";
 
@@ -19,14 +20,10 @@ type CustomPanelItem = {
 const ITEMS_PER_PAGE = 20;
 
 const CustomPanel = () => {
-  const { designData, update } = useDesign();
-
+  const { designData } = useDesignEditorState();
+  const { appendPhotos } = useDesignEditorActions();
   const maxphoto = designData.canvas.cols * designData.canvas.rows;
-
-  /* ---------------- Pagination ---------------- */
   const [page] = useState(1);
-
-  /* ---------------- Fetch custom panels ---------------- */
 
   const { data, isLoading, isError } = useUserUploads({
     type: panels.custome_panel.key,
@@ -36,9 +33,6 @@ const CustomPanel = () => {
   });
 
   const panelsList: CustomPanelItem[] = data?.data || [];
-
-  /* ---------------- Selection ---------------- */
-
   const [selected, setSelected] = useState<string[]>([]);
 
   const toggleSelect = (src: string) => {
@@ -53,27 +47,23 @@ const CustomPanel = () => {
 
     setSelected((prev) =>
       prev.includes(src)
-        ? prev.filter((i) => i !== src)
+        ? prev.filter((item) => item !== src)
         : designData.photos.items.length + selected.length < maxphoto
           ? [...prev, src]
-          : [...prev],
+          : prev,
     );
   };
-
-  /* ---------------- Add to design ---------------- */
 
   const handleAddSelected = () => {
     const addedCount = Math.min(selected.length, maxphoto);
 
-    selected.slice(0, maxphoto).forEach((src) => {
-      update((d) => {
-        d.photos.items.push({
-          id: src,
-          image: src,
-          type: "custom_PANEL",
-        });
-      });
-    });
+    appendPhotos(
+      selected.slice(0, maxphoto).map((src) => ({
+        id: src,
+        image: src,
+        type: "custom_PANEL",
+      })),
+    );
 
     showDesignViewer(
       `${addedCount} custom panel${addedCount === 1 ? "" : "s"} added to design`,
@@ -81,22 +71,18 @@ const CustomPanel = () => {
     setSelected([]);
   };
 
-  /* ---------------- Loading ---------------- */
-
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, i) => (
+        {Array.from({ length: 6 }).map((_, index) => (
           <div
-            key={i}
+            key={index}
             className="aspect-square animate-pulse rounded-lg bg-gray-200"
           />
         ))}
       </div>
     );
   }
-
-  /* ---------------- Error ---------------- */
 
   if (isError) {
     return (
@@ -107,8 +93,6 @@ const CustomPanel = () => {
     );
   }
 
-  /* ---------------- Empty ---------------- */
-
   if (!panelsList.length) {
     return (
       <EmptyState
@@ -118,15 +102,14 @@ const CustomPanel = () => {
     );
   }
 
-  console.log(designData.photos);
   return (
     <div className="space-y-4">
-      {/* GRID */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         {panelsList.map((panel) => {
           const src = panel.imageUrl;
-          const included = designData.photos.items.some((i) => i.id === src);
+          const included = designData.photos.items.some((item: any) => item.id === src);
           const isSelected = selected.includes(src) || included;
+
           return (
             <button
               key={panel.id}
@@ -142,21 +125,18 @@ const CustomPanel = () => {
                 className="aspect-square w-full object-cover"
               />
 
-              {/* SELECTED OVERLAY */}
-              {designData.photos.items.some((i) => i === src) ||
-                (isSelected && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
-                      <Check className="text-primary h-5 w-5" />
-                    </div>
+              {(isSelected || included) && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
+                    <Check className="text-primary h-5 w-5" />
                   </div>
-                ))}
+                </div>
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* ACTION */}
       <div className="flex items-center justify-end border-t pt-4">
         <Button onClick={handleAddSelected} disabled={!selected.length}>
           Add to Design

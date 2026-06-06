@@ -1,6 +1,9 @@
 import React from "react";
 import StitchPattern from "./StitchPattern";
-import { useDesign } from "src/context/desgin.context";
+import {
+  useDesignDerived,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 
 interface StitchTileProps {
   size?: number;
@@ -46,8 +49,8 @@ const QualityPreservedEffect: React.FC<PatternGridProps> = ({
   dash = "6 6",
   opacity = 0.7,
 }) => {
-
-  const { designData, hasQualityPreserve } = useDesign();
+  const { designData } = useDesignEditorState();
+  const { hasQualityPreserve } = useDesignDerived();
 
   if (!hasQualityPreserve) return null;
 

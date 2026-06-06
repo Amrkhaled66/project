@@ -1,15 +1,15 @@
 // src/components/DesignWidget/QualityPreserveColor.tsx
 import ColorSelector from "src/components/ui/ColorSelector";
-import { useDesign } from "src/context/desgin.context";
+import {
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 
 import { UPGRADE_IDS } from "src/data/upgrades";
 import showDesignViewer from "src/utils/designViewer";
 export default function QualityPreserveColor() {
-  const {
-    updateQualityPreserveColor,
-
-    designData,
-  } = useDesign();
+  const { designData } = useDesignEditorState();
+  const { updateQualityPreserveColor } = useDesignEditorActions();
 
   // get the selected color from upgrade props
   const selectedColor =

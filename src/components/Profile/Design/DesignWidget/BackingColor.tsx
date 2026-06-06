@@ -1,14 +1,15 @@
 // BlanketColorSelector.tsx
 import DesginContainer from "../DesginContainer";
 import { backingColors } from "src/data/colors";
-import { useDesign } from "src/context/desgin.context";
+import {
+  useDesignEditorActions,
+  useDesignEditorState,
+} from "src/context/desgin.context";
 import showDesignViewer from "src/utils/designViewer";
 
 export default function BackingColorSelector() {
-  const {
-    updateBackingColor,
-    designData,
-  } = useDesign();
+  const { designData } = useDesignEditorState();
+  const { updateBackingColor } = useDesignEditorActions();
   const onSelectColor = (color: string) => {
     updateBackingColor(color);
     showDesignViewer(`${color} backing applied`);
