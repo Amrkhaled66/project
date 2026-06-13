@@ -18,7 +18,7 @@ const Sizes = () => {
   const { designData } = useDesignEditorState();
   const { updateCanvasSize, updatePanelSize } = useDesignEditorActions();
   const startingSizeId = designData.startingSize || BLANKET_SIZES[0].id;
-  const panelSize = Number(designData.panelSize) || 10;
+  const panelSize = Number(designData.panelSize) || 15;
   const {
     size: selectedId,
     cols,
