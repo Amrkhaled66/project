@@ -6,7 +6,7 @@ import FormInput from "src/components/ui/FormInput";
 import Button from "src/components/ui/Button";
 
 import { useLoginAsUser } from "src/hooks/queries/adminAuth.queries";
-
+import { useCart } from "src/context/cart.context";
 /* ------------------------------------------------------------------ */
 /* Types                                                              */
 /* ------------------------------------------------------------------ */
@@ -22,6 +22,7 @@ const AdminLoginAsUser = () => {
   /* Mutation                                                           */
   /* ------------------------------------------------------------------ */
   const { mutateAsync, isPending } = useLoginAsUser();
+  const { clearCart } = useCart();
 
   /* ------------------------------------------------------------------ */
   /* Form                                                              */
@@ -44,8 +45,8 @@ const AdminLoginAsUser = () => {
       },
       onSubmit: async ({ email }) => {
         try {
-          const res = await mutateAsync({ email });
-
+          await mutateAsync({ email });
+          clearCart();
           window.open("/profile", "_blank");
         } catch {
           updateError("User not found or cannot be impersonated", "email");
