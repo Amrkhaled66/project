@@ -1,15 +1,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BLANKET_SIZES } from "src/data/blanketSizes";
-import {
-  getUpgradePrice,
-  upgradeMap,
-  UPGRADE_IDS,
-} from "src/data/upgrades";
+import { getUpgradePrice, upgradeMap, UPGRADE_IDS } from "src/data/upgrades";
 import getImageLink from "src/utils/getImageLink";
 import priceFormmater from "src/utils/priceFormmater";
 import { Design } from "src/types/design.types";
-
+import { backingColors } from "src/data/colors";
 type Props = {
   items: Design[];
 };
@@ -23,7 +19,13 @@ const SectionLabel = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const InfoChip = ({ label, value }: { label: string; value: React.ReactNode }) => (
+const InfoChip = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) => (
   <div className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm shadow-sm">
     <span className="text-gray-400">{label}</span>
     <span className="font-semibold text-gray-800">{value}</span>
@@ -54,7 +56,9 @@ const OrderItemsList = ({ items }: Props) => {
           (size) => size.id === designData.startingSize,
         );
         const sizeDifference =
-          canvasSize && startingSize ? canvasSize.price - startingSize.price : 0;
+          canvasSize && startingSize
+            ? canvasSize.price - startingSize.price
+            : 0;
         const hasSizeDifference =
           !!canvasSize &&
           !!startingSize &&
@@ -104,9 +108,13 @@ const OrderItemsList = ({ items }: Props) => {
                   </div>
                 )}
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">{item.name}</h3>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {item.name}
+                  </h3>
                   {item.previewImage && (
-                    <p className="mt-0.5 text-xs text-gray-400">Design Preview</p>
+                    <p className="mt-0.5 text-xs text-gray-400">
+                      Design Preview
+                    </p>
                   )}
                 </div>
               </div>
@@ -131,9 +139,12 @@ const OrderItemsList = ({ items }: Props) => {
                   <InfoChip label="Panel Size" value={`${panelSize} in`} />
                   {hasSizeDifference && (
                     <>
-                      <InfoChip label="Starting" value={designData.startingSize} />
+                      <InfoChip
+                        label="Starting"
+                        value={designData.startingSize}
+                      />
                       <div className="flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm">
-                        <span className="text-amber-500 font-semibold">
+                        <span className="font-semibold text-amber-500">
                           +{priceFormmater(sizeDifference)} upsize
                         </span>
                       </div>
@@ -207,7 +218,7 @@ const OrderItemsList = ({ items }: Props) => {
                             {upgrade === UPGRADE_IDS.HEIRLOOM_SCRIPT &&
                               designData.upgrades.props.embroidery?.zones && (
                                 <div className="space-y-2">
-                                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                                  <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                     Embroidery Zones
                                   </p>
                                   {designData.upgrades.props.embroidery.zones.map(
@@ -227,29 +238,39 @@ const OrderItemsList = ({ items }: Props) => {
                                       >
                                         <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1">
                                           <span>
-                                            <span className="text-gray-400">Position: </span>
+                                            <span className="text-gray-400">
+                                              Position:{" "}
+                                            </span>
                                             <span className="font-medium text-gray-800">
                                               {zone.id}
                                             </span>
                                           </span>
                                           <span>
-                                            <span className="text-gray-400">Font: </span>
+                                            <span className="text-gray-400">
+                                              Font:{" "}
+                                            </span>
                                             <span className="font-medium text-gray-800">
                                               {zone.font}
                                             </span>
                                           </span>
                                         </div>
                                         <div className="mb-2">
-                                          <span className="text-gray-400">Text: </span>
+                                          <span className="text-gray-400">
+                                            Text:{" "}
+                                          </span>
                                           <span className="font-medium text-gray-800">
                                             {zone.text}
                                           </span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                          <span className="text-gray-400">Color:</span>
+                                          <span className="text-gray-400">
+                                            Color:
+                                          </span>
                                           <div
                                             className="h-4 w-4 rounded-full border border-gray-300 shadow-sm"
-                                            style={{ backgroundColor: zone.color }}
+                                            style={{
+                                              backgroundColor: zone.color,
+                                            }}
                                           />
                                           <span className="font-mono text-xs text-gray-600">
                                             {zone.color}
@@ -272,8 +293,11 @@ const OrderItemsList = ({ items }: Props) => {
                               designData.upgrades.props.cornerstones?.type && (
                                 <div className="text-sm">
                                   <span className="text-gray-400">Type: </span>
-                                  <span className="font-medium capitalize text-gray-800">
-                                    {designData.upgrades.props.cornerstones.type}
+                                  <span className="font-medium text-gray-800 capitalize">
+                                    {
+                                      designData.upgrades.props.cornerstones
+                                        .type
+                                    }
                                   </span>
                                 </div>
                               )}
@@ -296,7 +320,9 @@ const OrderItemsList = ({ items }: Props) => {
                         {designData.photos.items.length}
                       </span>
                       <span className="mb-1 text-sm text-gray-400">
-                        {designData.photos.items.length === 1 ? "photo" : "photos"}
+                        {designData.photos.items.length === 1
+                          ? "photo"
+                          : "photos"}
                       </span>
                     </div>
                   </div>
@@ -309,8 +335,7 @@ const OrderItemsList = ({ items }: Props) => {
                         .filter(([_, value]) => value)
                         .map(([key, value]) => {
                           if (key === "blocking") {
-                            const isObj =
-                              value && typeof value === "object";
+                            const isObj = value && typeof value === "object";
                             const colors = isObj
                               ? (value as any).colors
                               : [value as string];
@@ -319,10 +344,10 @@ const OrderItemsList = ({ items }: Props) => {
                                 key={key}
                                 className="flex items-center gap-2 text-sm"
                               >
-                                <span className="w-16 capitalize text-gray-400">
+                                <span className="w-16 text-gray-400 capitalize">
                                   {key}
                                 </span>
-                                <div className="flex items-center gap-1">
+                                <div className="flex flex-wrap items-center gap-1">
                                   {colors.map((c: string, ci: number) => (
                                     <div
                                       key={ci}
@@ -335,12 +360,36 @@ const OrderItemsList = ({ items }: Props) => {
                               </div>
                             );
                           }
+                          if (key === "backing") {
+                            const color = backingColors.filter(
+                              (c) => c.name === value,
+                            )[0];
+                            return (
+                              <div
+                                key={key}
+                                className="flex items-center gap-2 text-sm"
+                              >
+                                <span className="w-16 text-gray-400 capitalize">
+                                  {key}
+                                </span>
+                                <div className="flex items-center gap-1">
+                                  <img
+                                    key={color.name}
+                                    src={color.img}
+                                    alt={color.name}
+                                    className="size-5"
+                                  />
+                                  - {color.name as string}
+                                </div>
+                              </div>
+                            );
+                          }
                           return (
                             <div
                               key={key}
                               className="flex items-center gap-2 text-sm"
                             >
-                              <span className="w-16 capitalize text-gray-400">
+                              <span className="w-16 text-gray-400 capitalize">
                                 {key}
                               </span>
                               <div
@@ -391,7 +440,7 @@ const OrderItemsList = ({ items }: Props) => {
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-3 top-3 rounded-full bg-white/90 p-2 text-gray-700 shadow-lg backdrop-blur-sm hover:bg-white"
+                className="absolute top-3 right-3 rounded-full bg-white/90 p-2 text-gray-700 shadow-lg backdrop-blur-sm hover:bg-white"
                 onClick={() => setZoomedImage(null)}
               >
                 <svg

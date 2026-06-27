@@ -22,7 +22,7 @@ const CanvasBack: React.FC<CanvasBackProps> = ({
       style={{
         backgroundImage: `url(${backing?.img || ""})`,
         backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundPosition: "top",
         gridTemplateColumns: `repeat(${cols}, minmax(0, 100px))`,
         gridTemplateRows: `repeat(${rows}, minmax(0, 100px))`,
       }}

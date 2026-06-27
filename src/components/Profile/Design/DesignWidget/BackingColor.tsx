@@ -18,7 +18,7 @@ export default function BackingColorSelector() {
   return (
     <DesginContainer header="Backing Textile">
       <div className="space-y-3">
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           {backingColors.map((c) => (
             <button
               key={c.name}
