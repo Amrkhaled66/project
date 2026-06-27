@@ -24,6 +24,14 @@ export const DEFAULT_COLORS: string[] = [
 
 export const backingColors: { name: string; img: string }[] = [
   {
+    name: "grey",
+    img: grayBacking,
+  },
+  {
+    name: "midnight",
+    img: midnight,
+  },
+  {
     name: "LIME",
     img: "https://mookfabrics.com/core/wp-content/uploads/2021/03/ITEM-109700-FLANNEL-108-MARBLE-LIME.jpg",
   },
