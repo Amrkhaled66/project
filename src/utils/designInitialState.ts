@@ -32,9 +32,6 @@ export const initialDesignState: DesignData = {
       },
     },
   },
-  text: {
-    items: [],
-  },
   photos: {
     items: [],
   },

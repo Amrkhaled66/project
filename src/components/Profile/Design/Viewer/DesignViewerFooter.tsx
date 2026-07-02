@@ -12,6 +12,7 @@ const DesignViewerFooter = ({
   inCart,
   onAddToCart,
 }: DesignViewerFooterProps) => {
+  console.log(price)
   return (
     <div className="mt-3 lg:w-[40%] ms-auto flex h-fit flex-col items-center justify-between gap-4 rounded-[18px] border border-[color:rgba(0,32,81,0.08)] bg-white px-6 py-4 shadow-[0_8px_20px_rgba(0,32,81,0.06)] sm:flex-row">
       <div className="flex flex-row items-center gap-2">

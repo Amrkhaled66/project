@@ -24,7 +24,6 @@ export const getDirtySections = (
   if (!snapshot) {
     return [];
   }
-
   const changed = getChangedFields(snapshot as any, current as any);
   return DIRTY_SECTION_KEYS.filter((key) => key in changed);
 };

@@ -83,7 +83,7 @@ export const DesignProvider = ({
 
   useEffect(() => {
     scheduleSave(derivedValue.dirtySections);
-  }, [derivedValue.dirtySections, scheduleSave]);
+  }, [derivedValue.dirtySections]);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {

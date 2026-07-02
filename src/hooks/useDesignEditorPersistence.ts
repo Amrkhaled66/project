@@ -39,7 +39,6 @@ export const useDesignEditorPersistence = ({
     if (!data?.designData || hydratedRef.current) {
       return;
     }
-
     onHydrate(data.designData);
 
     updaterRef.current = createDesignUpdater<

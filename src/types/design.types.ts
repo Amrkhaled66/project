@@ -36,10 +36,6 @@ export interface DesignData {
     };
   };
 
-  text: {
-    items: any[];
-  };
-
   photos: {
     items: any[];
   };
