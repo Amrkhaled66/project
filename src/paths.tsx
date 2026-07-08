@@ -12,6 +12,7 @@ import {
   AddDesign,
   AddUser,
   AdminLogin,
+  BuyNewBuild,
   Cart,
   CustomPanels,
   Dashboard,
@@ -112,6 +113,7 @@ const router = createBrowserRouter(
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="uploads" element={<Uploads />} />
         <Route path="custom-panels" element={<CustomPanels />} />
+        <Route path="buy-new-build" element={<BuyNewBuild />} />
         <Route
           path="cart"
           element={

@@ -41,7 +41,6 @@ const OrderCustomerForm = ({ order }: Props) => {
   const onSubmit = (values: any) => {
     const changedFields = getChangedFields(initialFormValues, values);
 
-    // لو مفيش أي تغيير
     if (Object.keys(changedFields).length === 0) {
       setIsEditing(false);
       return;

@@ -8,3 +8,12 @@ export const useCreateInvoice = () => {
       axiosPrivate.post("/invoices", payload).then((res) => res.data),
   });
 };
+
+export const useCreatePremiumBuildInvoice = () => {
+  return useMutation({
+    mutationFn: (payload: { build: string }) =>
+      axiosPrivate
+        .post("/invoices/premium-build", payload)
+        .then((res) => res.data),
+  });
+};

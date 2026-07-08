@@ -9,6 +9,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Skeleton from "react-loading-skeleton";
 import { useNavigate } from "react-router-dom";
+import Button from "src/components/ui/Button";
 import PageHeader from "src/components/ui/PageHeader";
 import { useCart } from "src/context/cart.context";
 import { useDesigns } from "src/hooks/queries/design.queries";
@@ -56,10 +57,20 @@ export default function DesignLibraryPage() {
       variants={fadeUp}
       className="min-h-screen space-y-4"
     >
-      <PageHeader
-        title="Blueprint Review™"
-        subtitle={`${totalDesigns} saved Blueprint™${totalDesigns === 1 ? "" : "s"} ready for review, editing, or commissioning.`}
-      />
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <PageHeader
+          title="Blueprint Review"
+          subtitle={`${totalDesigns} saved Blueprint${totalDesigns === 1 ? "" : "s"} ready for review, editing, or commissioning.`}
+          className="flex-1"
+        />
+
+        <Button
+          onClick={() => navigate("/profile/buy-new-build")}
+          className="w-full lg:w-auto"
+        >
+          Buy New Build
+        </Button>
+      </div>
 
       <div className=" max-w-6xl">
         {isLoading && (
@@ -210,7 +221,7 @@ export default function DesignLibraryPage() {
                           }}
                         >
                           <Edit size={14} strokeWidth={2} />
-                          Edit Blueprint™
+                          Edit Blueprint�
                         </motion.button>
 
                         <motion.button

@@ -1,10 +1,10 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { motion, Variants } from "framer-motion";
 import { useEffect, useState } from "react";
+
 import Button from "src/components/ui/Button";
 import usePageTitle from "src/hooks/useUpdatePageTitle";
 
-// Confetti particle
 const Particle = ({ index }: { index: number }) => {
   const colors = [
     "#6366f1",
@@ -78,6 +78,7 @@ const pulseRingVariants: Variants = {
 
 const OrderSuccess = () => {
   usePageTitle("Order Success");
+
   const navigate = useNavigate();
   const { id: routeId } = useParams();
   const [searchParams] = useSearchParams();
@@ -85,8 +86,16 @@ const OrderSuccess = () => {
 
   const orderId =
     routeId || searchParams.get("id") || searchParams.get("orderId") || "";
+  const flow = searchParams.get("flow") || "final-payment";
+  const build = searchParams.get("build") || "";
+  const isCommissionFlow = flow === "commission";
 
-  const handleTrackOrder = () => {
+  const handlePrimaryAction = () => {
+    if (isCommissionFlow) {
+      navigate("/profile/design-library");
+      return;
+    }
+
     const query = orderId ? `?orderId=${encodeURIComponent(orderId)}` : "";
     navigate(`/profile/orders${query}`);
   };
@@ -96,11 +105,24 @@ const OrderSuccess = () => {
     return () => clearTimeout(t);
   }, []);
 
+  const title = isCommissionFlow ? "Build Commissioned" : "Payment Confirmed";
+  const subtitle = isCommissionFlow
+    ? "Your Premium Build is ready in your account"
+    : "Your final payment was received";
+  const statusLabel = isCommissionFlow
+    ? "COMMISSION PAYMENT RECEIVED"
+    : "FINAL PAYMENT RECEIVED";
+  const description = isCommissionFlow
+    ? "Your build has been created and added to your library. Open it to continue with the next design steps."
+    : "Your payment has been recorded and your order is now in production. You can review the order status from your commissions page.";
+  const primaryButtonLabel = isCommissionFlow
+    ? "Open Build Library ->"
+    : "View Commission Status ->";
+
   const particles = Array.from({ length: 60 });
 
   return (
     <div className="relative min-h-screen overflow-hidden px-4 py-12">
-      {/* Confetti */}
       {showParticles && (
         <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
           {particles.map((_, i) => (
@@ -109,7 +131,6 @@ const OrderSuccess = () => {
         </div>
       )}
 
-      {/* Soft background blobs — rose/red tones */}
       <div
         className="pointer-events-none absolute top-0 left-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/4 rounded-full opacity-25 blur-3xl"
         style={{ background: "radial-gradient(circle, #fecdd3, #fff1f2)" }}
@@ -124,20 +145,17 @@ const OrderSuccess = () => {
       />
 
       <div className="relative mx-auto mt-7">
-        {/* Success Icon */}
         <motion.div
           className="mb-10 flex flex-col items-center"
           initial="hidden"
           animate="visible"
         >
           <div className="relative flex h-24 w-24 items-center justify-center">
-            {/* Pulse ring */}
             <motion.div
               variants={pulseRingVariants}
               className="absolute inset-0 rounded-full"
               style={{ border: "2px solid #6366f1" }}
             />
-            {/* Glassy circle */}
             <motion.div
               variants={circleVariants}
               className="bg-primary flex h-24 w-24 items-center justify-center rounded-full"
@@ -168,7 +186,6 @@ const OrderSuccess = () => {
           </div>
         </motion.div>
 
-        {/* Header text */}
         <motion.div
           className="mb-8 text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -183,14 +200,13 @@ const OrderSuccess = () => {
               lineHeight: 1.1,
             }}
           >
-            Commission Confirmed
+            {title}
           </h1>
           <p className="text-lg" style={{ color: "#6b7280", fontWeight: 400 }}>
-            Your Jersey Blanket™ commission is confirmed
+            {subtitle}
           </p>
         </motion.div>
 
-        {/* Glassy Card */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -207,7 +223,6 @@ const OrderSuccess = () => {
               "0 8px 32px rgba(99,102,241,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
           }}
         >
-          {/* Status row */}
           <div className="mb-2 flex items-center gap-3">
             <div
               className="h-2 w-2 rounded-full"
@@ -222,11 +237,25 @@ const OrderSuccess = () => {
                 textTransform: "uppercase",
               }}
             >
-              COMMISSION PAYMENT RECEIVED
+              {statusLabel}
             </span>
           </div>
 
-          {orderId && (
+          {isCommissionFlow && build && (
+            <p
+              className="mt-1"
+              style={{
+                color: "#9ca3af",
+                fontSize: "13px",
+                fontWeight: 400,
+                letterSpacing: "0.05em",
+              }}
+            >
+              BUILD {build.toUpperCase()}
+            </p>
+          )}
+
+          {!isCommissionFlow && orderId && (
             <p
               className="mt-1"
               style={{
@@ -240,7 +269,6 @@ const OrderSuccess = () => {
             </p>
           )}
 
-          {/* Shimmer divider */}
           <div
             className="my-6"
             style={{
@@ -259,15 +287,11 @@ const OrderSuccess = () => {
               fontWeight: 400,
             }}
           >
-            Your commission has been recorded and assigned a Build ID. Your
-            project will now proceed through the Jersey Blanket™ production
-            process. You will receive updates as your build advances through
-            Photo Lab™, Blueprint™ verification, and Stitch Arena™
-            production.
+            {description}
           </p>
 
-          <Button onClick={handleTrackOrder} className="w-full">
-            View Commission Status →
+          <Button onClick={handlePrimaryAction} className="w-full">
+            {primaryButtonLabel}
           </Button>
         </motion.div>
       </div>

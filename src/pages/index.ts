@@ -12,6 +12,7 @@ export { default as SetPassword } from "./SetPassword";
 export { default as SignupPage } from "./Signup";
 export { default as DesignLibrary } from "./profile/DesignLibrary";
 export { default as CustomPanels } from "./profile/CustomPanels";
+export { default as BuyNewBuild } from "./profile/BuyNewBuild";
 
 // Admin Pages
 export { default as AdminLogin } from "./dashboard/AdminLogin";
